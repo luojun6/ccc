@@ -1,7 +1,8 @@
-#include <SDL2/SDL.h>
 #include <iostream>
+#include <SDL2/SDL.h>
 
-#define FILE_PATH "./res/sample.wav"
+/* Simple WAV Player */
+#define FILE_PATH "./res/audio/mixkit-wild-lion-animal-roar-6.wav"
 
 struct AudioData
 {
@@ -37,7 +38,7 @@ int main(int argc, char **argv)
 	if(SDL_LoadWAV(FILE_PATH, &wavSpec, &wavStart, &wavLength) == NULL)
 	{
 		// TODO: Proper error handling
-		std::cerr << "Error: " << FILE_PATH
+		std::cerr << "Error" << FILE_PATH
 				  << " could not be loaded as an audio file" << std::endl;
 		return 1;
 	}

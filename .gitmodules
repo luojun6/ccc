@@ -1,3 +1,6 @@
 [submodule "cmake_101/OLAS/external/glfw"]
 	path = cmake_101/OLAS/external/glfw
 	url = https://github.com/glfw/glfw.git
+[submodule "sdl2_demo/external/SDL"]
+	path = sdl2_demo/external/SDL
+	url = https://github.com/libsdl-org/SDL.git
