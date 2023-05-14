@@ -10,7 +10,7 @@ public:
         cout << "BaseClass constructor executing." << endl;
     }
 
-    ~BaseClass()
+    virtual ~BaseClass()
     {
         cout << "BaseClass destructor executing." << endl;
     }
