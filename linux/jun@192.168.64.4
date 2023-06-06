@@ -658,7 +658,7 @@ void cleanup_simple(void)
 
 module_init(init_simple);
 module_exit(cleanup_simple);
-MODULE_LICENSE("GPL");
+MODULE_LICENSE("GPL")
 ```
 
 ```sh
@@ -668,5 +668,3 @@ insmod ./simplemodule.ko
 rmmod simple module
 dmesg | tail
 ```
-
-![simple_module.png](images/simple_module.png)
