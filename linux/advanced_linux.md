@@ -665,8 +665,320 @@ MODULE_LICENSE("GPL");
 echo "obj-m := simplemodule.o" > Makefile
 make -C /lib/modules/$(uname -r)/build M=$PWD modules
 insmod ./simplemodule.ko
-rmmod simple module
+rmmod simplemodule
 dmesg | tail
 ```
 
 ![simple_module.png](images/simple_module.png)
+
+### 03-05 Challenge & Solution
+
+**Check the author and description of ko**
+
+```sh
+./make-module.sh
+modinfo -a lab4.ko
+modinfo -d lab4.ko
+```
+
+**Modify the module parameters**
+
+```sh
+modinfo -p lab4.ko
+sudo insmod lab4.ko number=9988 word="hotdog"
+```
+
+## 04 Linux Kernel Source Code
+
+### 04-01 Obtaining a Distribution's Source
+
+- **Fetching Kernel Source**
+
+  - **CentOS**:
+    - `yumdownloader -source kernel`
+  - **Ubuntu**:
+    - `git clone git://kernel.ubuntu.com/ubuntu/ubuntu-<release codename>.git`
+    - e.g. `git clone git://kernel.ubuntu.com/ubuntu/ubuntu-focal.git`
+
+- **Using Kernel Source RPM**
+
+  - `rpm -i kernel*.rpm`
+  - `cd ~/rpmbuild/SPECS`
+  - `rpmuild -bp kernel.spec`
+  - `cd ../BUILD`
+  - `ls`
+
+- **The Kernel Makefile**
+
+  - Make help lists lots pf options
+  - Make menuconfig or make xconfig are common choices for configuring a kernel
+  - All configuration choices are sotred in `.config`
+  - Other important targets are `bzImage, modules, modules_install, install, clean`
+
+- **Official Kernel Source**
+  - Download from kernel.org/pub/linux/kernel
+  - `wget http://kernel.org/publ/linux/kernel/v4.x/linux-4.4.xz`
+
+Access into the directory of `./ubuntu-focal`
+
+**_DO NOT EDIT IT!_**
+
+```sh
+ls -a .config
+head .config
+```
+
+### 04-02 Explore the Kernel Makefile
+
+- **Version Info**
+  - VERSION = 3
+  - PATCHLEVEL = 10
+  - SUBLEVEL = 0
+  - EXTRAVERSION =
+  - NAME = Unicycling Gorilla
+
+```sh
+head Makefile
+```
+
+- **make help**
+
+  - Cleaning targets:
+
+    - clean - Remove most generated files but keep the config ...
+    - mrproper - Remove all generated files + config + various backup files
+    - distclean - mrproper + remove editor backup and patch files
+
+  - Configuration targets:
+
+    - config - Update current config utilising a line-oriented program
+    - nconfig - Update current config utilising a ncurses menu based program
+    - menuconfig - Update current config utilising a menu based program
+    - xconffig - Update current config utilising a QT based front-end
+    - gconfig - Update current config utilising a GTK based front-end
+
+  - Other generic targets:
+
+    - all - Build all targets marked with [*]
+    - - vmlinux - Build the bare kernel
+    - - modules - Build all modules
+    - modules_install - Install all modules to `INSTALL_MOD_PATH` (default: `/`)
+
+  - Architecture specific targets: (x86):
+    - - bzImage - Compressed kernel image (arch/x86/boot/bzImage)
+    - install - Install kernel using (your) `~/bin/installkernel` or (distribution) `/sbin/installkernel` or install to `$(INSTALL_PATH)` and run lilo
+
+```sh
+make help | wc -l
+```
+
+### 04-03 Examine and Build Kernel Documentation
+
+- **The Source Code**
+
+  - Changes rapidly - approximately 10K lines per day
+    - Will not always find all the answers in the documentation, web resource, etc.
+  - Use the source to your kernel
+  - Documentation in the source tree
+
+- **Documentation Subdirectory**
+
+  - Lots of files from code authors
+  - Some lengthy documents
+  - `grep -rl` in documentation (handy)
+
+- **Example: devices.txt**
+
+  - Provides mappings of maijor and minor numbers for devices files
+    1 char Memory devices
+    1 = /dev/mem Physical memory access
+    2 = /dev/kmem Kernel virtual memory access
+    3 = /dev/null Null device
+    4 = /dev/port I/O port access
+    5 = /dev/zero Null byte source
+    6 = /dev/core OBSOLETE - replaced by /proc/kcore
+    ...
+
+Access into the directory of `./ubuntu-focal/Documentation`
+
+```sh
+grep -rl ftrace . | grep -v output/
+find . -name devices.txt
+make dochelp
+```
+
+Go back to the directory of `./ubuntu-focal/`
+
+```sh
+make SPHINXDIRS="security" htmldocs
+ls Documentation/output/security/
+```
+
+### 04-04 Search the Kernel Source Code
+
+- **`Grep`**
+  - `grep -r`
+  - `-i`
+  - `-l`
+  - `grep -rli sys_read include`
+
+Access into the directory of `./ubuntu-focal`
+
+```sh
+grep -rli sys_read include
+grep -r sys_read include
+```
+
+- **cscope**
+
+  - `make cscope`
+  - `cscope -d` to launch
+  - Fast search, with menus
+  - Move top and buttom with TAB key
+  - `Wxit` with `Ctrl-d`
+  - Launches editor, usually vi
+
+- **Tags**
+  - Make tags
+  - `vi -t <TAG>`
+  - For example, `vi -t sys_read`
+  - `Ctrl-]` on a symbol
+  - `Ctrl-t` to go back
+
+```sh
+vi -i sys_read
+```
+
+### 04-05 Examine Kernel Driver Source Code
+
+- **Driver Subdirectory**
+  - Lots of driver directories!
+- **net/ethernet**
+  - Lots of Ethernet drivers
+- **`char`**
+  - Character drivers include `mem.c`, the "memory" driver, which includes `/dev/null` and its siblings.
+- **`mem.c`**
+  `cat /dev/null`
+  -> `open("/dev/null", ...)`
+  -> `read(fd, buff, count)`
+
+  ```c
+  static ssize_t read_null(struct file *file, char __user *buf, size_t count, loff_t *ppos)
+  {
+    return 0;
+  }
+  ```
+
+  `echo hi > /dev/null`
+  -> `open("/dev/null" ...)`
+  -> `write(fd, "hi\n", 3)`
+
+```c
+static ssize_t write_null(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+{
+  return count;
+}
+```
+
+```sh
+cd drivers
+ls
+find . -type d | wc -l
+find . -name '*.c' | wc -l
+```
+
+Use cscope
+
+```sh
+cscope -d
+```
+
+Then type `read_null` in the blank of `Find this global definition:`
+
+### 04-06 Additional Selected Directories
+
+- **`inlcude`**
+  - Kernel code must be compiled using an include directory that corresponds to the kernel version and configuration that the code will be used with
+  - Kernel code does not use files from `/usr/include`
+  - Some files in `/usr/include`, such as some needed by `glibc`, are derived from kernel include files, though
+
+Go back to the directory of `./ubuntu-focal`
+
+```sh
+cd include
+find . | wc -l
+```
+
+- **fs**
+  **Linux has a wide variety of filesystem:**
+  - Virtual (`proc` and `sysfs`)
+  - On-disk (`ext{2,3,4}`, `btrfs` and `xfs`)
+  - Network (`nfs`)
+  - compatible (`ntfs` `fat` and `hfs`)
+
+Go back to the directory of `./ubuntu-focal`
+
+```sh
+cd fs
+ls
+```
+
+- **arch**
+  **Linux has been ported to many computer architectures**
+  **Linux kernel code is written to be portable for...**
+  - Different architectures
+  - Different address sizes (32 or 64 bits)
+  - Single or multiprocessor
+
+Go back to the directory of `./ubuntu-focal`
+
+```sh
+cd arch
+ls
+cd arm
+ls
+cd configs
+ls
+cd ../mach-davinci/
+ls
+vi cpuidle.c
+```
+
+- **security**
+  - `security.c` provides the fundamental hooks that `SELinux` and `apparmor` and other security systems use
+  - `security.c` essentially provides a hook into all system calls so that extra checks can be made
+  - The kernel portion of `SELinux` and `apparmor` are also in the security directory
+
+Go back to the directory of `./ubuntu-focal`
+
+```sh
+cd security
+ls
+vi security.c
+```
+
+Search `patch_chmod`, this is a hook here get call if the process needs to change priviliges
+
+```sh
+grep security_hook security.c
+```
+
+### 04-07 Challenges and Solutions
+
+**_Alternatives method to get the ubuntu source code_**
+
+A bzip file will be downloaded at /usr/src/ containing the source code.
+
+```sh
+time git clone git://kernel.ubuntu.com/ubuntu/ubuntu-focal.git
+cd ubuntu-focal
+time make cscope
+time make tags
+vi
+```
+
+In the vi page
+
+```sh
+:tag sys_open
+```
