@@ -120,19 +120,19 @@ enable
     - List defined aliases by simply typing alias
     - Unset an alias with the unlias command
 
-    ```sh
-    echo "x=22" > setx.sh
-    chmod +x setx.sh
-    echo $x                 # Print: nothing
-    ./setx.sh
-    echo $x                 # Print: nothing
-    source ./setx.sh
-    echo $x                 # Print: 22
-    x=1
-    echo $x                 # Print: 1
-    . ./setx.sh
-    alias ls                # Pirnt: alias ls='ls --color=auto'
-    ```
+```sh
+echo "x=22" > setx.sh
+chmod +x setx.sh
+echo $x                 # Print: nothing
+./setx.sh
+echo $x                 # Print: nothing
+source ./setx.sh
+echo $x                 # Print: 22
+x=1
+echo $x                 # Print: 1
+. ./setx.sh
+alias ls                # Pirnt: alias ls='ls --color=auto'
+```
 
 ### 01-06 Dispaly Text with the Echo Command
 
@@ -373,3 +373,583 @@ hvar = $(printhello)
 function printhello {
     echo Hello
 }
+```
+
+*`func.sh`*
+*`func2.sh`*
+
+### 02-04 Using File Descriptors, File Redirection, Pipes and Here Documents
+
+- **Redirection and Pipes**
+    - Processes normally have three files open:
+        0 => stdin, 1 => stdout, 2 => stderr
+    - `command > stdout-here 2> stderr-her < stdin-from-here`
+    - `command &> file`
+        - file gets stdout and stderr from command,
+        - file is created or overwritten
+    - `command | command2`
+        - command2's `stdin` comes from command's `stdout`
+    - `command 2>&1 | command2`
+        - gets `stdout` and `stderr` from command
+    - `command |& command2`
+        - alternative way for command2 to get command's `stdout` and `stderr` as its `stdin`
+    - `command >> file`
+        - appends `stdout` of `command` to end of file
+    - `command &>> file`
+        - appends `stdout` and `stderr` of `command` to end of file
+
+- **Here Documents: <<**
+    - Here documents are a way to embed input for standard input inside of a script.
+    - They avoid having to create a new file just to hold some input values.
+
+```sh
+sort <<END
+> cherry
+> banana
+> apple
+> orange
+> END
+```
+apple
+banana
+cherry
+orange
+
+
+- **Open and Close File Descriptors**
+    - `exec N< myfile`
+        - opens file descriptor N for reading from file `myfile`
+
+    - `exec N> myfile`
+        - opens file descriptor N for writting to `myfile`
+
+    - `exec N<> myfile`
+        - opens file descriptor N for reading & writing with `myfile`
+
+    - `exec N>&- or exec N<&-`
+        - closes file descriptor `N`
+
+    - Use `lsof` (list open files) to see what file descriptors for a process are open
+
+    - `exec 7>/tmp/myfile7`
+      `lsof -p $$` => `$$` is shell's PID
+
+    *`redirect.sh`*
+    *`here.sh`*
+
+### 02-05 Control-flow case statements and if-then-else with the test command 
+
+- **The Case Statement**
+
+```sh
+case expression in
+pattern 1 )
+    command list ;;
+pattern 2 )
+    command list ;;
+    ...
+esac
+```
+
+```sh
+case $ans in 
+yes|YES|y|Y|y.x ) echo "Will do!";;
+n*|N*) echo "Will NOT do!";;
+*) echo "Oops!";;
+esac
+```
+
+- **The If-Then-Else Statement**
+
+```sh
+if 
+command list # last result is used
+then
+command list
+[else 
+command list]
+fi
+```
+
+```sh
+if 
+grep -q import myfile
+then
+    echo myfile has import stuff
+else 
+    echo myfile does not have important stuff
+fi
+```
+
+- **Tests in Bash**
+    - The builtin test is used to check various conditions and set the return code with the result.
+    - Loops and conditionals often use the result of test.
+    - An alternative to test is `[[]]` or `(())`.
+
+- **Test Examples**
+
+```sh
+if 
+test -f afile
+```
+
+```sh
+if [[ if bfile ]]
+```
+
+```sh
+if
+test $x -gt 5
+```
+
+- **Test Operators**
+    `[[ ex1 -eq ex2 ]]   [[ ex1 -ne ex2 ]]`
+    `[[ ex1 -lt ex2 ]]   [[ ex1 -gt ex2 ]]`
+    `[[ ex1 -le ex2 ]]   [[ ex1 -ge ex2 ]]`
+    `[[ ex1 && ex2 ]]   [[ ex1 || ex2 ]]`
+
+- **More Tests**
+
+```sh
+test -d X
+# success if X is a directory
+```
+
+```sh
+test -f X
+# success if X is a regular file
+```
+
+```sh 
+test -s X
+# success if X exists and not empty
+```
+
+```sh 
+test -x X
+# success if you have x permission on X
+```
+
+```sh 
+test -w X
+# success if you have w permission on X
+```
+
+```sh 
+test -r X
+# success if you have w permission on X
+```
+
+### 02-06 Using Arithmetic Operators
+
+- **Arithmetic Operators**
+
+Use in `(())` with let
+
+```sh
+id++ id-- ++id --id
+! ~ ** * / % + -
+<< >> <= >= < >
+== != & ^ | && ||
+expr?expr:expr
+= *= /= %= += -= <<= >>= &= ^= ^= !=
+expr1, expr2
+```
+
+- **Using Operators**
+
+```sh
+n=5
+((n++))
+if
+((n>4 || n == 0))
+```
+
+*`arith.sh`*
+```sh
+((n=2**3 + 5))
+((y=n^4))
+echo y = $y
+# prints 9, why
+```
+
+### 02-07 Challenge & Solution
+
+- **Challenge: Local Vars**
+    - Write a Bash script that has a function `f`
+    - Creates a local variable, sets it to 1, and then prints its value
+    - Sets A=2, calls f, and then prints A after returns
+
+
+- **Challenge: Loops**
+    - Write a Bash script that uses a `for loop` to loop all of the files in `/usr/bin` and echo the name of any one of them that has inside the string "unable to fork"
+
+    Hint:
+    ```sh
+    if 
+        strings $i | grep -q "unable to fork"
+        then
+    ...
+    ```
+
+- **Challenge: Arithmetci**
+    - Write a shell script that echos a running total of the RSS and SZ columns from the command: `ps -ly`
+
+    - Hint: 
+    ```sh
+    n=1
+    ps -ly | while
+    read c1, c2, c3, c4, c5, c6, c7, c8, c9, c10
+    do 
+        if ((n>1)) # skip the first line
+    ...
+    ```
+
+## 03 Using Filters and Parameters Expansion
+
+### 03-01 Defining Filters and Using `head` `tail` and `wc`
+
+- **Filters**
+    - In Linux, a program is a "filter" if it reads from stdin and writes to stdout.
+    - Filters can be used in pipes.
+    - Filters provide the powerful means of combining input and output of a sequence of commands to get kind of report that you want.
+
+- **The `head` and `tail` Commands
+    - `head` prints the first n lines of a file or stdin.
+    - `tail` prints the last n lines of a file or stdin.
+    ```sh
+    ls -l | head -5 # first 5 lines of ls -l
+    ls -l | tail -7 # last 5 lines of ls -l
+    ls -l | head -10 | tail -5 # lines 6-10
+    ```
+    - `wc` (word count) prints line, word, and char counts.
+    - `wc -l` prints the number of lines.
+    - `ls | wc -l` prints number of entries in directory
+
+*`headtailwc.sh`*
+*`makeoutput.sh`*
+
+```sh
+./makeoutput.sh > output &
+tail -n2 -f output # Keep running -f means --follow
+```
+
+### 03-02 Using `sed` and AWK More Powerful Scripts
+
+- **The Command `sed`**
+    - Is a pattern editor, which means it is not interactive
+    - Works great as a filter
+    - Is ideal for batch editing tasks
+    - Usually applies its editing to all lines in the input
+    - With the `-i` option, change a file instead of echoing the modified file to stdout
+
+- **Using `sed` Substitute**
+
+    ```sh
+    sed 's/old/new/' myfile
+    ```
+    - Substitute the first occurrence of `old`on each line for `new` in the file `myfile` and display the result on stdout.
+    - `old` is a pattern and can be a regular expression.
+
+- **`sed` Substitute**
+    - The `/` is the usual character to separate the old from the new.
+    - The file myfile will not be changed; the new version echoed to stdout.
+    - No options are required for simple substitutions.
+
+
+- **`sed` Examples**
+    ```sh
+    sed 's/@home/@domicile/; s/truck/lorrie'
+    sed -e 's/[xX]/Y/' -e "s/b.&/blue/'
+    sed -f sedscript -n sed4
+    date | sed 's/J/j/'
+    sed '1,5p'
+    sed '/alpha/s/beta/gamma/'
+    sed '/apple/,/orange/d'
+    sed '/important/!s/print/throw_away/'
+    ```
+
+- **The `awk` Language**
+    - A pattern matching language
+    - An interpreted programming language that work as a filter
+    - Good for report writing
+    - Handy for short "algorithmic" kinds of processing
+    - Processes a line at a time like sed
+    - Breaks each line into fields, `$1`, `$2`, etc
+    - Fields are delimited by the values in the variables normally white space
+    - `$0` is the entire line (record).
+
+- **`awk` Examples**
+    ```sh
+    $ ps -el | \
+    awk '/pts/||$8~/35/{printf("%5d %5d %s\n", $4, $5, $14)}'
+
+    *awkl*
+    ```sh
+    ps -ly | ./awkl
+    ```
+
+    ```sh
+    man ls | col -b | awk -f words.awk
+    ```
+
+```sh
+sed 's/apple/banana/' sometext
+```
+
+```sed2
+s/a/A/
+s/B/BBB/
+```
+```sh
+sed -f sed2 sometext
+```
+
+*sed3*
+```sh
+sed -n "$1, $2p"
+```
+```sh
+bash sed3 3 5 <sometext
+```
+
+
+### 03-03 Positional Parameters and Operators with Braces
+
+- **Script Parameters and `{}`**
+    - Parameters to a shell program: `$1`, `$2`, ...
+    - Called "posional parameters"
+    - To reference multidigit use `{}`, e.g., ${10}
+    - `$0` is the path to the program itself:
+        For example, echo Usage: `$0 arg1 ...`
+    - `Shift` moves `$2` into `$1`. `$3` into `$2`, etc.
+    - It is sometimes handy or required to use `{}` with named variable,. e.g., echo ${abc}DEF.
+```sh
+x=abc
+abc=def
+echo ${!x} #prints def. Indirection!
+```
+
+- **Unset or Null Variables**
+    - `${variable <OPR> value}`
+      `x=${var:-Hotdog}`
+    - `:-` if var unset/null, return value; otherwise return value of var
+    - `:=` if var unset/null var is assigned value & returned
+    - `:?` Displays an error and exit script if var unset/null
+    - `:+` if var unset/null return nothing; otherwise return value
+
+- **String Operations**
+    - `${var:offset}` - value of var starting at offset
+    - `${var:offset:len}` - value of var starting at offset up to length len
+    - ${#var} - length of var
+    - `${var#pre}` - remove matching prefix
+    - `${var%post}` - remove matching suffix
+    - prefix and postfix - handy processing filenames/paths
+    - Look at `info` bash for more details on thse and similar
+
+```sh
+./pos.sh {A..Z}
+./indrect.sh
+./unsetnull.sh
+./string.sh
+./prepost.sh
+```
+
+### 03-04 Challenges & Solutions
+
+- **Write a script that loops through all of the command-line args, echoing them one per line.**
+
+- **Write a script that will assign to the variable File the value of the variable TheFile if TheFile is set; otherwise, it will assign to File: `/tmp/data.file`**
+    - Use the special Unset/Null expansion operation
+
+- **Write a script that will echo all the names of the *.c files in the current directory without the ".c" suffix.**
+    - Use the string operation
+
+- **Write a script that uses `sed` to not echo line 1 and will remove the first space through the end of the line.**
+    - Test like this:
+        ```sh
+        ls -s | bash challenge.sh
+        ```
+    - Should print just the sizes; no "total" line
+
+- **Write an `awk` script that will calcute the sum and average of the numbers in three columns.**
+    - The input:
+        4   10  21
+        6   20  31
+    - Should print:
+        sum 10 30 52
+        ave 5 15 26
+
+## 04 The Advanced Bash
+
+### 04-01 Using the Coproc Command
+
+- **Using Coproceses**
+    A coprocess is a background process where your shell gets file descriptors for the process's stdin and stdout.
+
+    ***Implemented with pipe***
+
+We need a script that is a filter.
+```sh
+#!/bin/bash
+while 
+    read line
+do 
+    echo $line | tr "ABC" "abc" # tr means translate
+done
+```
+
+- **`coproc ./mycoproc.sh`**
+    - `echo BANANA >&"${COPROC[1]}"`
+    - `cat <&"${COPROOC[0]}`
+
+- **`coproc my { ./mycoproc.sh }`**
+    - `echo BANANA >&"${my[1]}"`
+    - `cat <&"${my[0]}`
+
+```sh
+coproc ./translate.sh
+echo BaNana >&"${COPROC[1]}"
+cat <&"${COPROC[0]}" # print: banana
+kill %1
+```
+
+```sh
+coproc myt { ./translate.sh ; }
+echo BaNana >&"${myt[1]}"
+cat <&"${myt[0]}" # print: banana
+kill %1
+```
+
+### 04-02 Debugging Scripts with -x and -u options
+
+- **Debugging Scripts**
+
+```sh
+bash prog
+```
+- Run prog; don't need execute permission
+
+```sh
+bash -x prog
+```
+- Echo commands after processing; can also do `set -x` or `set +x` inside of script
+
+```sh
+bash -n prog
+```
+- Do not execute commands, check for syntax error only
+
+```sh
+set -u
+```
+- Reports usage of an unset variable
+
+- Lots of echo statements
+- `tee`
+```sh
+cmd | tee log.file | ...
+```
+
+
+```sh
+bash debug1.sh
+bash -x debug1.sh
+bash -n debug1.sh
+```
+
+### 04-03 Signals and Traps
+
+- **Trap: Using Signals**
+    - The Bash trap command is for signal handling.
+        - ***Change behavior of signals within a script***
+        - ***Ignore signals during critical sections in a script***
+        - ***Allow the script to die gracefully***
+        - ***Perform some operations when a signal is received***
+
+```sh
+./trapint
+```
+
+```sh
+kill -l
+```
+
+### 04-04 Using the `eval` and `getopt` Command
+
+- **The `eval` Command**
+    - Used to have Bash evaluate a string.
+    - Makes a "second pass" over the string and then runs it as a command
+    - Runs "data," in effect, so be careful about providing a way for arbitrary code execution.
+```sh    
+c="ls | tr 'a' 'A'"; $c # doesn't work
+eval $c # works
+```
+
+http://mywiki.wooledge.org/BashFAQ/048
+
+- **The `getopt` Command**
+    - `getopt` is used to process command-line options.
+    - Option names, long and single letter, are specified and whether they take an argument.
+
+```sh
+opts=`getopt -o a: -l apple -- "$@"`
+# Option a, long form -apple, takes an argument.
+# getopt prints the parsed arguments.
+# $@ is the Bash variable for list of parameters passed.
+```
+
+```sh
+bash options.sh -b=hotdog
+bash options.sh -ryes
+bash options.sh -r yes
+bash options.sh -r=yes
+bash options.sh --branch
+bash options.sh --branchhotter
+```
+    
+### 04-05 Challenge & Solutions
+
+- **Wriete a Bash script that assigns to a variable, c, the value "`ls -s | sort -n`"**
+
+<!-- ***->Challenge1.sh*** -->
+```sh    
+c="ls -s | sort -n"; $c # doesn't work
+eval $c # works
+```
+
+- **Wriete a Bash script which sets a variable, opts, equal to "`a b \$1 \$2`**
+- **Do set -- "$opts" and echo $@. Run the script with command-line options: x y z. Do you see the x and y?**
+- **Change the set-- "$opts" to eval set -- "$opts" and run again**
+
+***->Challenge_04_B.sh.sh***
+```sh
+./Challenge_04_B.sh x y z
+```
+
+
+- **Add to the options.sh script, new options, -x and --exclude, that take a required value and set the variable `exlist` to the value; print `$exlist` at the end of the script**
+
+***->./challenge_04_C***
+
+
+
+- **Create a `coproc` that will run a script that uses the subsitute command to replace every occurrence of flag with banner**
+- **Run your `coproc` and send it the following input: The first flag was red and the second flag was blue. But, the third flag and fourth flag were purple. Such flags were colorful flag."**
+
+```sh
+coproc mysed { ./coproc-set ; }
+echo ${mysed[1]}    # prints 58
+echo ${mysed[0]}    # prints 62
+```
+
+- **Write a script that does the folloing:**
+    - echo no trap
+    - sleep 5
+    - trap INT with an empty string funciton
+    - echo ignore interrupt
+    - sleep 5
+    - trap INT with an echo message function
+    - echo trap with message
+    - sleep 5
+- **Run your script three times, hitting `Ctrl-c` in each of the three sleeps; decide what will happen first and then see if you were correct**
