@@ -982,3 +982,10 @@ In the vi page
 ```sh
 :tag sys_open
 ```
+
+```sh
+ubset TheFile
+./challenge2.sh
+export = TheFile="/usr/local/stuff"
+./challenge2.sh
+```
