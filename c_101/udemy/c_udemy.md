@@ -177,3 +177,435 @@
   - A big mistake for large programs, may be ok for very simple programs
   - The larger and more complex program is, the more planning it requires
   - Should develop the habit of planning before coding
+
+## 4 Overview
+
+### 4.1 Overview
+
+- C is a general-purpose, imperative computer programming language that supports structured programming
+
+  - Uses statements that change a program's state, focuses on how
+
+- Currently, it is one of the most widely used programming languages of all time
+
+- C is a modern language
+
+  - Has most basic control structures and features of modern languages
+  - Designed for top-down planning
+  - Organized around the use of functions (modular design) structured programming
+  - A very reliable and readable program
+
+- C is used on everything from minicomputers, Unix/Linux systems to PC's and mainframes
+- C is the preferred lanaguage for producing word processing programs, spreadsheets and compliers
+
+- C has become popular for programming embedded systems
+
+  - Used to program microprocessors found in automobiles, cameras, DVD players, etc
+
+- C has and continues to play a strong role in the development of Linux
+
+- C programs are easy to modify and easy to adapt to new models or lanaguages
+
+- In the 1990s, many software houses began turning to the C++ language for large programming projects
+
+- C is a subset of C++ with object-oriented programming tools added
+
+  - Any C program is a valid C++ program
+  - By learning C, you also learn much of C++
+
+- C remains a core skill needed by corporations and ranks in the top 10 of desired skills
+
+- C provides constructs that map efficiently to typical machine instructions and thus is used by programs that were previously implement in assembly language
+
+  - Provides low-level access to memory (has many low-level capabilities)
+  - Requires minimal run-time support
+
+- Was invented in 1972 by Dennis Ritchie of Bell Laboratories
+
+  - Ritchie was working on the design of the UNIX operating system
+
+- Was created by as a tool for working programers
+
+  - Main goal is to be a useful language
+  - Easy readability and writability
+
+### 4.2 History
+
+- C initially became widely known as the development language of the UNIX operating system
+
+  - Virtually all new major operating systems are written in C and/or C++
+
+- C evolved from a previous programming language named B
+
+  - Uses many of the important concepts of B while adding data typing and other powerful features
+  - B was a "typeless" language - every data item occupied one "word" in memory, and the burden of typing variables fell on the shoulders of the programmer
+
+- C is available for mosst computers
+
+- C is also hardware independent
+
+- By the late 1970s, C had evolved into what is now reffered to as "traditional C"
+
+- The rapid expansion of C working on many different hardware platforms led to many variations that were similar but often incompatible
+
+  - A standard version of C was created (C89/C90, C99, C11)
+
+- A program written only in Standard C and without any hardware-dependent assumptions will run correctly on any platform with a standard C compiler
+
+  - Non-standard C programs may run only on a certain platform with a particular compiler
+
+- C89 is supported by current C compilers
+
+  - Most C code being written today is based on it
+
+- C99 is revised standard C for the C programming language that refines and expands the capabilities of C
+
+  - Has not been widely adopted and not all popular C compilers support it
+
+- The current standard is commonly referred to as C11
+
+  - Some elements of the language as defined by C11 are optiontal
+  - Also possible that a C11 compiler may not implement all of the languages features mandated by the C11 standard
+
+- C is one of the most important popular programming languages
+
+- It has grown because people try it and like it
+
+- In the past decade or two, many have moved from C to languages such as C++, Objective C, and Java
+  - C is still an important language in its own right, as well as a migration path to these others
+
+## 5 Language Features
+
+### 5.1 Overview
+
+- C produces compact and efficient programs
+
+- C is one of the most important languages and will continue to be so
+
+- The main features of C are the following
+  - Efficient
+  - Portable
+  - Powerful and Flexible
+  - Programmer Oriented
+
+### 5.2 Efficiency and Portability
+
+- C is an efficient language
+
+  - Takes advantage of the capabilities of current computers
+  - C programs are compact and fast (similar to assembly language programs)
+  - Programmers can fine-tune their programs for maximum speed or most efficient use of memory
+
+- C is a portable language
+
+  - C programs written on one system can be run on other systems with little or no modifications
+  - A leader in portability
+  - Compilers are available for many computer architectures
+
+- Linux/Unix systems typically come with a C compiler as part of the package
+
+  - Computers are available for personal computers
+
+- A good chance that you can get a C compiler for whatever device you are using
+
+### 5.3 Power ad Flexibility
+
+- The Unix/Linux kernel is written in C
+
+- Many compilers and interpreters for other languages (FORTRAN, Perl, Python, Pascal, LISP, Logo and BASIC)
+
+- C programs have been used for solving physics and engineering problems and even for animating special effect for movies
+
+- C is flexible
+
+  - Used for developing just about everything you can imagine by way of a computer program
+  - Accounting applications to word processing and from games to operating sytems
+  - It is the basis for more advanced languages, such as C++
+
+- It is also used for developing mobile phone apps in the form of Objective-C
+
+- C is easy to learn because of its compactness
+  - It is an ideal first language to learn if you want to be a programer
+  - You will acquire sufficent knowledge for practical application development quickly and easily
+
+### 5.4 Programmer Oriented
+
+- C fulfills the needs of programmers
+
+  - Gives you access to hardware
+  - Enables you to manipulate individual bits in memory
+
+- C contians a large selection of operators which allws you to express yourself succinctly
+
+- C is less strict than most languages in limiting what you can do
+
+  - Can be both an advantage and a danger
+  - Advantage is that many tasks (such as converting forms of data) are easier in C
+  - Danger is that you can make mistakes (pointers) that are impossible in some languages
+  - C gives you more freedom, but it also puts more responsibility on you
+
+- C implementations have a large libary of useful C functions
+  - Deal with common needs of most programmers
+
+### 5.5 Other Features
+
+- Provides low level features that are generally provided by the lower level languages
+
+- Programs can be manipulated using bits
+
+  - Ability to manage memory representation on bit level
+  - Provides wide variety of bit manipulation operators
+
+- Pointers play a big role in C
+  - Direct access to memory
+  - Supports efficient use of pointers
+
+### 5.6 Disadvantages
+
+- Flexibility and freedom also requires added responsibility
+
+  - Use of pointers is problematic and abused
+  - You can make programming errors that are difficult to trace
+
+- Sometimes because of its wealth of operators and its conciseness, it makes the language difficult to read and follow
+  - There is an opportunity to write obscure code
+
+### 5.7 Summary
+
+![C Features Summary](images/c_features_summary.png)
+
+## 6 Creating a C Program
+
+### 6.1 Overview
+
+- There are four fundamental tasks in the creation of any C program
+
+  - Editing
+  - Compiling
+  - Linking
+  - Executing
+
+- These tasks will become second nature to you because you will be doing it so often
+
+- The processes of editing, compiling, linking, and executing are essentially the same for developing programs in any environment and with any compiled language
+
+- Editing is the process of creating and modifying your C source code
+  - Source code is inside a file and contains the program instructions your write
+  - Choose a wise name for your base file name (all source files end in the .c extension)
+
+### 6.2 Compiling
+
+- A compiler converts your source code into machine language and detects and reports errors in your code
+
+  - The input to the compiler is the file your produce during your editing (source file)
+
+- Compilation is a two-statge process
+
+  - The first stage is called the preprocessing phase, during which your code may be modified or added to
+  - The second stage is the actual compilation that generates the object code
+
+- The compiler examines eash program statement and checks it to ensure that it conforms to the syntax and semantics of the language
+
+  - Can also recoginze structural errors (dead code)
+  - Does not find logic errors
+  - Typical errors reported might be due to an expression that has unbalanced parentheses (syntactic error), or due to the use of a variable that is not "defined" (semantic error)
+
+- After all errors are fixed, the compiler will the take each statement of the program and translate it into assembly language
+
+- The compiler will then translate the assembly language statements into acutal machine instructions
+
+  - The output from the compiler is known as object code and it is stored in files called object files (same name as source file with a .obj or .o extension)
+
+- The standard command to compile the C programs will be `cc` (or the GNU compiler which is `gcc`)
+  - `cc -c myprog.c` or `gcc -c myprog.c`
+  - If you omit the `-c` flag, your program will automatically be linked as well
+
+### 6.3 Linking
+
+- After the program has been translated into object code, it is ready to be linked
+
+  - The purpose of the linking phase is to get the program into a final form for execution on the computer
+  - Linking usually occurs automatically when compiling depending on what system you are on, but, can sometimes be a separate command
+
+- The linker combines the object modules generated by the compiler with additional libraries needed by the program to create the whole executable
+
+  - Also deetects and reports errors
+    - If part of the program is missing or a nonexistent library component is referenced
+
+- Program libraries support and extend the C language by providing routines to carry out operations, that are not part of the language
+
+  - Input and output libraies, mathematical libraies, string manipulation libraries
+
+- A failure during the linking phase means that once again you have to go back and edit your source code
+
+- Success will produce an executable file
+
+  - Windows - .exe extension
+  - UNIX/Linux - no such extension (a.out by default)
+  - Many IDEs have a build option, which will compile and link your program in a single operation to produce the executable
+
+- A program of any signficant size will consist of several source code files
+
+  - Each source code file needs the compiler to generate the object file that need to be linked
+
+- The program is much easier to manage by breaking it up into a number of smaller source files
+  - It is cohesive and makes the development and maintenance of the program a lot easier
+  - The set of source files that make up the program will usually be integrated under a project name, which is used to refer to the whole program
+
+### 6.4 Executing
+
+- In most IDEs, you'll find an appropriate menu command that allows you to run or execute your compiled program
+
+  - Otherwise double click the exe file or type a.out on the console in linux manually
+
+- THe execution stage is where you run your program
+
+  - Each of the statements of the program is sequentially executed in turn
+  - If the program requests any data from the user the program temporarily suspend its execution so that the input can be entered
+  - Results that are displayed by the program (output) appear in a window called the console
+
+- This stage can also generate a wide variety of error conditions
+
+  - Producing the wrong output
+  - Just sitting there and doing nothing
+  - Crashing your computer
+
+- In the program does not perform the intended functionality then it will be necessary to go back and renalayze the program's logic
+  - Known as the debugging phase, correct all the known problems or bugs from the program
+  - Will need to make changes to the original source program
+  - The entire process of compiling, linking, and executing the program must be repeated until the desired results are obtained
+
+### 6.5 C Compilation Stages
+
+![C Compilation Stages](./images/compilesteps.png)
+
+## 7 Installing Code::Blocks
+
+## 8 Exploring the Code::Blocks Environment
+
+## 9 Creating a New Project in Code::Blocks
+
+## 10 Running the First Code in Code::Blocks
+
+Using vscode should be better!
+
+## 11 Challenge : Writing a C Program
+
+### 11.1 Requirements
+
+- Write a C program that displays your first name as output
+  - Create a project in code::blocks
+  - Delete the "main.c" file that was auto-generated when creating the Project
+  - Create a new source file in the above project (name the file test.c)
+  - Copy the source code as bellow
+
+```c
+#include <stdio.h>
+
+int main()
+{
+    printf("Hi, my name is .....");
+    return 0;
+}
+```
+
+### 11.2 Next Steps
+
+- Modify the source code to display your name
+
+- Compile and link the source code
+
+- Run the program!!!
+
+- Analyze the output to confirm it is correct and displays your name!!!
+
+## 12 Demonsttration : Writing a C Program
+
+## 13 Structure of a C Program
+
+```c
+#include <stdio.h>
+
+// Speicial function as the entry function of the whole C program
+int main()
+{
+    printf("Hi, my name is Jun");
+
+    // Exit from the C program
+    return 0;
+}
+```
+
+## 14 Comments
+
+### 14.1 Comments
+
+- Comments are used in a program to document a program and to enhance its readability
+
+- There to remind you, or someone else reading your code, what the program does or what a particular line of code is doing
+
+- Comments are ignored by the compiler
+
+- Comments are very useful
+  - A programmer may return to a program that he coded six months ago and may not remember the purpose of a particular funciton or line of code
+  - A simple comment can save a significant amount of time otherwise wasted on having to re-understand the code
+
+### 14.2 Syntax
+
+- There are two ways to add comments into a C program
+
+```c
+// single line comments
+
+/*
+multi-line comments
+multi-line comments
+multi-line comments
+*/
+```
+
+### 14.3 Style & Example
+
+```c
+/* This program adds two integer values
+and displays the results*/
+
+#include <stdio.h>
+
+int main(void)
+{
+    // Declare variables
+    int value1, value2, sum;
+
+    // Assign values and calculate their sum
+    value1 = 50;
+    value2 = 25;
+    sum = value1 + value2;
+
+    // Display the result
+    printf("The sume of %i and %i is %i\n", value1, value2, sum);
+
+    return 0;
+}
+```
+
+### 14.4 Use of Coments
+
+- It is possible to insert so many comments into a program that the readability of the program is actually degraded of improved!
+
+- You need to intelligently use comments
+
+- It is a good idea to get into the habit of inserting comment statements into the program as the program is being written or typed in
+
+  - Easier to document the program while the particular program logic is still fresh in your mind
+  - Reap the benifits of the comments during the debug phase, when program logic errors are being isolated and debugged
+
+- A comment can helps you read through the program, but it can also help point the way to the source of the logic mistake
+
+- Self documenting comments by using meaningful names
+
+## 15 The Preprocessor
+
+### 15.1 Overview
+
+- Another unique feature of the C language
