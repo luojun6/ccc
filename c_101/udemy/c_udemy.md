@@ -608,4 +608,227 @@ int main(void)
 
 ### 15.1 Overview
 
-- Another unique feature of the C language
+- Another unique feature of the C language that is not found in many other higher-level programming languages
+
+- Allows for programers to be easier to develop, easier to read, easier to modify, and easier to port to different computer systems
+
+- Part of the C compilation process that recognizes special statements
+  - Analyzes these statements before analysis of the C program itself takes place
+  - An instruction to the compiler to do something before compiling the source code
+  - Could be anywhere in the code 
+
+- Preprocessor statements are identified by the presence of a pound sign - `#`, which must be the first non-space character on the line
+
+- We will utilize the preprocessor to:
+  - Create are own constants and macros with the `#define` statement
+  - Build your own library files with the `#include` statement
+  - Make more powerful programs with the conditional `#ifdef`, `#endif`, `#else`, and `#ifndef` statements
+
+## 16 The `#include` Statement
+
+### 16.1 Overview
+
+- The `#include` statement is a preprocessor directive
+
+- `#include <stdio.h>`
+
+- It is not strictly part of the executable program, however, the program won't work without it
+
+- The symbol # indicates this is a preprocessing directive
+  - An instruction to your compiler to do something before compiling the source code
+  - Many preprocessing directives
+  - Are usually some at the beginning of the program source file, but they can be anywhere
+  - Similar to be `import` statement in Java
+
+- In the above example, the compiler is instructed to "include" in your program the contents of file with the name `stdio.h`
+  - Called a header file because it is usually included at the head of a program source file
+  - `.h` extension
+
+  ### 16.2 Header Files
+
+  - Header files define information about some of the functions that are provided by that file
+    - `stdio.h` is the standard C library header and provides functionality for displaying output, among many other things
+    - We need to include this file in a program when using `printf()` function from the standard library
+    - `stdio.h` contains the information that the compiler needs to understand what `printf()` means, as well as other functions that deal with input and output
+    - `stdio`, is short for *standard input/output*
+
+  - Header files specify information that the compiler uses to integrate any predefined functions within a program
+
+  - You will be creating your own header files for use with your programs
+
+  ### 16.3 Syntax
+
+  - Header file names are case sensitive 
+
+  - Two ways to `#include` files in a program
+    - Using angle brackets (`#include <JunLuo.h>`)
+      - Tells the preprocessor to look for the file in one or more standard system directories
+    - Using double quotes (`#include "JunLuo.h`)
+      - Tells the preprocesors to first look in the current directory
+
+  - Every C compiler that conforms to the C11 standard will have a set of standard header files supplied with it
+
+  - You should use `#ifndef` and `#define` to protect against multiple inclusions of a header file
+
+
+```c
+// some header 
+
+// typedef
+typedef struct names_st names;
+
+// function prototypes
+void get_names(names *);
+void show_names(const names *);
+char * s_gets(char * st, int n);
+
+/*
+header files includes many different things
+  #define directives
+  structure declarations
+  typedef statements
+  function prototypes
+*/
+
+// executable code normally goes into a source code file, not a header file
+```
+
+## 17 Displayin Output
+
+### 17.1 Overview
+
+- In out first challeng, you should have noticed that there was a line of code that included the word `printf`
+
+- `printf("Hello World!")`
+
+- `printf()` is a standard library function
+  - It outputs information to the command line (the standard output stream, which is the command line by default)
+  - The information displayed in based on what appears between the parentheses that immediately follow the function name `printf`
+  - Alos notice that this line does end with a semicolon `;`
+
+### `printf` Function
+
+- Probably the most common function used in C
+
+- Provides an easy and conveninent means to display program results
+
+- Not only can simply phrases be displayed, but the values of variables and results of computations can also be displayed
+  - Used for debugging
+
+
+## 18 Enums and Chars
+
+### 18.1 Enums
+
+- A data type that allows a programmer to define a vaiable specify the valid values could be stored into that variable
+  - Can create a variable named "myColor" and it can only contain one of the primary color, red, yellow, or blue, and nother values
+
+- First have to define the enum type and give a name
+  - Initiated by the keyword `enum`
+  - Then the name of enumaerated data type
+  - Then list of identifiers (enclosed in a set of curly braces) that define the permissible value that can be assigned to the type
+
+```c
+enum primaryColor {red, yellow, blue};
+```
+
+- Variables declared to be of this data type can be assigned the values red, yellow, and blue inside the program, and no other values
+
+- To declared a variable to be of type enum primaryColor
+  - Use the keyword `enum`
+  - Follow by the enumerated type name
+  - Follow by the variable list. So the statement.
+
+```c
+enum primaryColor myColor, gregsColor;
+```
+
+- Defines two variables myColor and gregsColor to be of type primaryColor
+  - The only permissible values that can be assigned to these variables are the names red, yellow, and blue
+  - `myColor = red;`
+
+- Another example
+```c
+enum month {January, February, March, April, May, June, July, August, Sepetember, October, Novemeber, December};
+```
+
+### 18.2 Enums as ints
+
+- The compiler actually treats enumeration identifiers as integer constants
+  - First name in list is 0
+
+```c
+enum month thisMonth;
+...
+...
+...
+```
+
+- The value 1 is assigned to thisMonth (and not the name `February`) because it is the second identifiy listed inside in enumeration list
+
+- If you want to have a specific integer value associated with an enumeration identifier, the integer can be assigned to the identifier when the data type is defined
+
+```c
+enum direction {up, down, left = 10, right}
+```
+
+- An enumerated data type direction is define with the values up, down, left and right
+- `up = 0` because it appears first in the list
+- 1 to down because it appears next
+- 10 to left because it is explicitly assigned this value
+
+- The compiler actually enumeration identifiers as integer constants 
+    first name in list is 0
+
+
+### 18.3 Char
+
+- Chars represent a single character such as teh letter 'a
+, the digit character `6`, or a semicolon (':')
+
+- Character literas use single quotes such 'A' or 'Z'
+
+- You can also declare char variable to be unsigned
+  - Can be used to explicitly tell the compiler that a particular variable is a signed quality
+
+### 18.4 Declaring a char
+
+```c
+char broiled;      /**declar a char variable*/
+broiled = 'T';     /*OK*/
+broiled = T;       /*Not OK! Thinks T is a variable*/
+broiled = "T";     /*Not OK! Thinks "T" is a string */
+
+- If you omit the quotes, the compiler thinks that T is the name of a variable
+  -             
+
+- If you use double quotes, it thinks you are using a string
+
+- You can also use the numerical code to assign values
+
+```c
+char grade = 65;    /*ok for ASCII, but poor style*/
+```
+
+### 13.4 Escape Characters
+
+- C contains special characters that represent actions
+  - Backspacing
+  - Going to the next line
+  - Making the terminal bell ring (or speaker beep)
+
+- We can represent these actions by using sysmbol sequences
+  - Called sequences
+
+- Escape sequences must be enclosed in single quotes when assigned to a character variables
+
+- Escape sequences must be enclosed in single quotes when assigned to a chracter value
+
+```c
+char x = '\n'
+```
+
+- Then print variable x = advance the printer or screen line
+
+![escape-sequence-in-c](https://www.geeksforgeeks.org/escape-sequence-in-c/) 
+

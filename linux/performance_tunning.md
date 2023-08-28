@@ -188,7 +188,7 @@ sudo perf record find / -xdev -name core > /dev/null 2>&1
 sudo perf report
 ```
 
-## 01-05 Performance Co-Pilot and Tuna
+### 01-05 Performance Co-Pilot and Tuna
 
 - **Perforance Co-Pilot(PCP) Setup**
     
@@ -246,3 +246,36 @@ pmchart
 ```sh
 sleep 10089 & # Get the PID
 ```
+
+### 01-06 SystemTap and Berkeley Package Filter
+
+- **SystemTap**
+
+    **Command to run Systemtap scripts: `stap`**
+    **Scripts interact with the kernel to**
+    - Gather information about your system
+    - Change configurations
+
+    **Install the systemtap-client package**
+    **Example scripts located in**
+    - `/usr/share/systemtap/examples`
+
+```sh
+cd /usr/share/systemtap
+ls
+cd examples
+ls
+find . -name *.stp | wc -l
+cd io
+ls
+view iotap.stp
+view iotap.meta
+./iotap.stp
+```
+
+- **Berkely Packet Filter (BPF)**
+
+    - BPF is a language with an interpreter inside the Linux kernel used as convenient way of getting system information or changing the kernel behavior
+    - BPF examples and valuable scripts available at https://github.com/iovisor/bc#tools
+    - The newer version of BPF is more properly called eBPS (extended BPF)
+    - Check kernel version requirements, kernel 4.1

@@ -1,3 +1,8 @@
+# Compile directories in udemy C learning
+output
+bin
+.vscode
+
 *.iso
 
 # C++ 
