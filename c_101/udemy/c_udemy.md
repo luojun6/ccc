@@ -810,7 +810,7 @@ broiled = "T";     /*Not OK! Thinks "T" is a string */
 char grade = 65;    /*ok for ASCII, but poor style*/
 ```
 
-### 13.4 Escape Characters
+### 18.4 Escape Characters
 
 - C contains special characters that represent actions
   - Backspacing
@@ -830,5 +830,28 @@ char x = '\n'
 
 - Then print variable x = advance the printer or screen line
 
-![escape-sequence-in-c](https://www.geeksforgeeks.org/escape-sequence-in-c/) 
+![escape_characters_summary.png](./images/escape_characters_summary.png) 
 
+
+## 19 Format Specifiers
+
+### 19.2 Overview
+
+- Format specifiers are used when displaying variables as output 
+  - They specify the type of data of the variable to be displayed 
+
+```c
+int sum = 89
+printf("The sum %d\n", sum);
+```
+
+- The `printf()` function can display as output the values of variables
+  - has wo items or arguments enclosed within the parentheses
+  - arguments are separated by comma
+  - first argument to the `printf()` routine is always the character string to be displayed
+  - along with the display of the character string, you might also frequently want to have the value of a certain program varaibles displayed
+
+- The percent character inside the first argument is a special character recognized by the `print()` function
+  - the character that immediately follows the percent sign specifies what type of value is to be displayed 
+
+![format_specifiers_summary.png](./images/format_specifiers_summary.png)
