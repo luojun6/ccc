@@ -613,9 +613,10 @@ int main(void)
 - Allows for programers to be easier to develop, easier to read, easier to modify, and easier to port to different computer systems
 
 - Part of the C compilation process that recognizes special statements
+
   - Analyzes these statements before analysis of the C program itself takes place
   - An instruction to the compiler to do something before compiling the source code
-  - Could be anywhere in the code 
+  - Could be anywhere in the code
 
 - Preprocessor statements are identified by the presence of a pound sign - `#`, which must be the first non-space character on the line
 
@@ -635,22 +636,25 @@ int main(void)
 - It is not strictly part of the executable program, however, the program won't work without it
 
 - The symbol # indicates this is a preprocessing directive
+
   - An instruction to your compiler to do something before compiling the source code
   - Many preprocessing directives
   - Are usually some at the beginning of the program source file, but they can be anywhere
   - Similar to be `import` statement in Java
 
 - In the above example, the compiler is instructed to "include" in your program the contents of file with the name `stdio.h`
+
   - Called a header file because it is usually included at the head of a program source file
   - `.h` extension
 
   ### 16.2 Header Files
 
   - Header files define information about some of the functions that are provided by that file
+
     - `stdio.h` is the standard C library header and provides functionality for displaying output, among many other things
     - We need to include this file in a program when using `printf()` function from the standard library
     - `stdio.h` contains the information that the compiler needs to understand what `printf()` means, as well as other functions that deal with input and output
-    - `stdio`, is short for *standard input/output*
+    - `stdio`, is short for _standard input/output_
 
   - Header files specify information that the compiler uses to integrate any predefined functions within a program
 
@@ -658,9 +662,10 @@ int main(void)
 
   ### 16.3 Syntax
 
-  - Header file names are case sensitive 
+  - Header file names are case sensitive
 
   - Two ways to `#include` files in a program
+
     - Using angle brackets (`#include <JunLuo.h>`)
       - Tells the preprocessor to look for the file in one or more standard system directories
     - Using double quotes (`#include "JunLuo.h`)
@@ -670,9 +675,8 @@ int main(void)
 
   - You should use `#ifndef` and `#define` to protect against multiple inclusions of a header file
 
-
 ```c
-// some header 
+// some header
 
 // typedef
 typedef struct names_st names;
@@ -715,12 +719,12 @@ header files includes many different things
 - Not only can simply phrases be displayed, but the values of variables and results of computations can also be displayed
   - Used for debugging
 
-
 ## 18 Enums and Chars
 
 ### 18.1 Enums
 
 - A data type that allows a programmer to define a vaiable specify the valid values could be stored into that variable
+
   - Can create a variable named "myColor" and it can only contain one of the primary color, red, yellow, or blue, and nother values
 
 - First have to define the enum type and give a name
@@ -744,10 +748,12 @@ enum primaryColor myColor, gregsColor;
 ```
 
 - Defines two variables myColor and gregsColor to be of type primaryColor
+
   - The only permissible values that can be assigned to these variables are the names red, yellow, and blue
   - `myColor = red;`
 
 - Another example
+
 ```c
 enum month {January, February, March, April, May, June, July, August, Sepetember, October, Novemeber, December};
 ```
@@ -777,14 +783,13 @@ enum direction {up, down, left = 10, right}
 - 1 to down because it appears next
 - 10 to left because it is explicitly assigned this value
 
-- The compiler actually enumeration identifiers as integer constants 
-    first name in list is 0
-
+- The compiler actually enumeration identifiers as integer constants
+  first name in list is 0
 
 ### 18.3 Char
 
 - Chars represent a single character such as teh letter 'a
-, the digit character `6`, or a semicolon (':')
+  , the digit character `6`, or a semicolon (':')
 
 - Character literas use single quotes such 'A' or 'Z'
 
@@ -793,14 +798,14 @@ enum direction {up, down, left = 10, right}
 
 ### 18.4 Declaring a char
 
-```c
+````c
 char broiled;      /**declar a char variable*/
 broiled = 'T';     /*OK*/
 broiled = T;       /*Not OK! Thinks T is a variable*/
 broiled = "T";     /*Not OK! Thinks "T" is a string */
 
 - If you omit the quotes, the compiler thinks that T is the name of a variable
-  -             
+  -
 
 - If you use double quotes, it thinks you are using a string
 
@@ -808,16 +813,18 @@ broiled = "T";     /*Not OK! Thinks "T" is a string */
 
 ```c
 char grade = 65;    /*ok for ASCII, but poor style*/
-```
+````
 
 ### 18.4 Escape Characters
 
 - C contains special characters that represent actions
+
   - Backspacing
   - Going to the next line
   - Making the terminal bell ring (or speaker beep)
 
 - We can represent these actions by using sysmbol sequences
+
   - Called sequences
 
 - Escape sequences must be enclosed in single quotes when assigned to a character variables
@@ -830,15 +837,14 @@ char x = '\n'
 
 - Then print variable x = advance the printer or screen line
 
-![escape_characters_summary.png](./images/escape_characters_summary.png) 
-
+![escape_characters_summary.png](./images/escape_characters_summary.png)
 
 ## 19 Format Specifiers
 
 ### 19.2 Overview
 
-- Format specifiers are used when displaying variables as output 
-  - They specify the type of data of the variable to be displayed 
+- Format specifiers are used when displaying variables as output
+  - They specify the type of data of the variable to be displayed
 
 ```c
 int sum = 89
@@ -846,12 +852,81 @@ printf("The sum %d\n", sum);
 ```
 
 - The `printf()` function can display as output the values of variables
+
   - has wo items or arguments enclosed within the parentheses
   - arguments are separated by comma
   - first argument to the `printf()` routine is always the character string to be displayed
   - along with the display of the character string, you might also frequently want to have the value of a certain program varaibles displayed
 
 - The percent character inside the first argument is a special character recognized by the `print()` function
-  - the character that immediately follows the percent sign specifies what type of value is to be displayed 
+  - the character that immediately follows the percent sign specifies what type of value is to be displayed
 
 ![format_specifiers_summary.png](./images/format_specifiers_summary.png)
+
+## 20 Command Line Arguments
+
+### 20.1 Overview
+
+- There are times when a program is developed that requires the user to enter a small amount of information at the terminal
+
+- This information might consist of a number indicating the triangular number that you want to have calculated or a word that you want tot have looked up in a dictionary
+
+- Two ways of handling this
+
+  - Requesting the data from the user
+  - Supply the information to the program at the time the program is executed (command-line arguments)
+
+- We know that the `main()` function is a special function in C
+
+  - Entry point of the program
+
+- When `main()` is called by the runtime system, two arguments are actually passed to the function
+
+  - the first argument (`argc` for argument count) is an integer value that specifies the number of arguments typed on the command line
+  - the second argument (`argv` for argument vector) is an array of character pointers (strings)
+
+- The first entry in this array is a pointer to the name of the program that is executing
+
+```c
+int main(int argc, char **argv[])
+{
+  ...
+}
+```
+
+## 21 Challenge of Data Types and Variables: Print the Area of a Rectangle
+
+- In this challenge, you are to create a C program that displays the perimeter and area of a rectangle
+
+- The program should create 4 variables of type double
+
+  - one variable to store the width of the rectangle
+  - one variable to store the height of the rectangle
+  - one variable to store the perimenter of the rectangle
+  - one variable to store the area of the rectangle
+
+- The program should perform the calculation for the perimeter of a rectangle
+
+  - Use the `+` operator to addition and the `*` operator for multiplication
+  - perimenter is calculated by adding the height and width and then multiplying by two
+  - Area is calculated by multiplying the width \* height variables
+
+- The program should display the height, width and perieter variables in the correct format in one first statement
+
+- The program should display the height, width and perieter variables in the correct formatin one print statement
+
+## 22 Challenge of Data Types and Variables: Create and use enum type
+
+- Create a C program that defines an enum type and uses that type to display the values of some variables
+
+- The program should create an enum type named Company
+
+  - Valid values for this type are GOOGLE, FACEBOOK, XEROX, YAHOO, EBAY, MICROSOFT
+
+- The program should create variables of the above enum type that are assigned values: XEROX, GOOGLE and EBAY
+
+- The program should display as output, the value of the three variables with each variable separated by a newline
+  - Correct output would be if XEROX, GOOGLE, nad EBAY variables are printed in that order:
+    - 2
+    - 0
+    - 4
