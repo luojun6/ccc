@@ -930,3 +930,1623 @@ int main(int argc, char **argv[])
     - 2
     - 0
     - 4
+
+## 23 Operators: Overview
+
+### 23.1 Overview
+
+- Operators are functions that use a symbolic name
+
+  - perform mathematical or logical functions
+
+- Operators are predefined in C, just like they are in most other languages, and most operators tend to be combied with infix style
+
+- A _logical operator_ (sometimes called a "Boolean operator") is an operator that returns a Boolean result that's based on the Boolean result of one or two other expressions
+
+- An arithmetic operator is a mathematical function that takes two operators and performs a calculation on them
+
+- Other operators include assignment, relational (<, >, !=), bitwise (<<, >>, ~)
+
+### 23.2 Expressions and Statement
+
+- Statement form the basic program steps of C, and most statements are constructed from expression
+
+- An _expression_ consists of a combination of operators and operands
+  - operands are what an operator operates on
+  - operands can be constans, variables, or combination of the two
+  - every expression has a value
+
+```c
+-6
+4+21
+a*(b+c/d)/20
+q=5*2
+x=++q%3
+```
+
+- Statement are the building blocks of a program (declaration)
+
+  - A program is a series of statements with special syntax ending with a semicolon (simple statements)
+  - A complete instruction to the computer
+
+- Declearation statement: `int Jason;`
+- Assignment statement: `Jason = 5;`
+- Function call statement: `printf("Jason");`
+- Structure statement: `while (Jason < 20) Jason = Jason + 1;`
+- Return statement: `return 0;`
+
+- C considers any expression to be a statement if you append a semicolon (expression statements)
+  - So, `8;` and `3-4;` are perfectly valid in C
+
+### 23.3 Compound Statements
+
+- two or more statements grouped together by enclosing them in brances (block)
+
+```c
+int index = 0;
+while (index < 10)
+{
+  printf("hello");
+  index = index + 1;
+}
+
+```
+
+## 24 Operators: Basic Operators
+
+### 24.1 Overview
+
+- Let's discuss, arithemtic, logical, assigment and relational operations
+
+- An arithmetic operator is a mathemmatical function that takes operands and performs a calculation on them
+
+- A logical operator (sometimes called a "Boolean opeator") is an operatpr that returns a Boolean result that's based on the Boolean result of one or two other operations
+
+- Assignment operators set variable equal to values
+
+  - Assign the value of the expression at its right to the variable at its left
+
+- A relation operator will compare varibales against each other
+
+### 24.2 Arithemetic Operators in C
+
+![Arithemetic Operators in C](images/arithmetic_operators_in_C.png)
+
+### 24.3 Logical Operators in C
+
+![Logical Operators in C](images/arithmetic_operators_in_C.png)
+
+### 24.4 Assignment Operators in C
+
+![Assignment Operators in C](images/assignment_operators_in_c.png)
+![Other_Assignment Operators in C](images/other_assignment_operators_in_c.png)
+
+### 24.5 Relational Operators in C
+
+![Relational Operators in C](images/relational_operators_in_c.png)
+
+## 25 Bitwise Operators
+
+### 25.1 Overview
+
+- C offers bitwise logical operators and shift operators
+
+  - look something like the logical operators you saw earlier but quite different
+  - operate on the bits in integer values
+
+- Not used in the common program
+- One major use of the bitwise `AND`, `&`, and the bitwise `OR`, `|`, is in operators to test and bits in an integer variables
+
+- You could use a single integer variable to store several characteristics of a persion.
+  - store whether the persion is male or female with one bit
+  - use three other bits to specify whether the person can speak French, German, or Italy
+  - another bit to record whether the person's salary is $50,000 or more
+  - in just four bits you have a substantial set of data recorded
+
+### 25.2 Bitwise Operators (tutorials point)
+
+![bitwise_operators](./images/bitwise_operators.png)
+
+### 25.3 Truth Table
+
+![truth_table](./images/truth_table.png)
+
+## 26 The Cast and Sizeof Operator
+
+### 26.1 Tye Conversions
+
+- Conversion of data between different types can happen automatically (implicit conversion) by the language or explicit by the program
+
+  - to effectivly develop C programs, you must understand the rules used for the implicit conversion of floating-point and integer values in C
+
+- Normally, you shouldn't mix types, but there are occasions when it is useful
+
+  - remember, C is flexible, gives you the freedom, but, do not abuse it
+
+- Whenever a floating-point value is assigned to an integer variable in C, the decimal portion of the number gets truncated
+
+```c
+int x = 0;
+float f = 12.125;
+x = f;
+// value stored in x is the number 12, only the int portiion stored
+```
+
+- Assigning an integer variable does not cause any change in the value of the number
+
+  - value is converted by the system and stored in the floating variable
+
+- When performing integer arithmetic
+  - if two operands in an expression are integers then any decimal portion resultingfrom a division operation is discarded, even if the result is floating variable
+  - if one operand is an int and the other is float then operation is performed operation
+
+### 26.2 The Cast Operator
+
+- As mentioned, you should usually steer clear of autotype conversion, especially of demotions
+
+  - better to do an explicit
+
+- It is possible for you to demand the precise type conversion that you want
+
+  - called a cast and consists of preceding the quantity with the name of desired type
+  - parenthses and type name together constitude a cast operator, i.e. (type)
+  - The actual type desired, such as long, is substituted for the actual type.
+
+- The type cast operator has a higher precedence than all the arithmetic operations except minus and unary plus.
+
+```c
+(int)21.51 + (int)26.99
+```
+
+### 26.3 Sizeof Operator
+
+- You can findout many bytes are occupied in memory by a give type using `sizeof` operator
+
+  - `sizeof` is a special keyword in C
+
+- `sizeof` is actually an operator, and not a function
+
+  - evaluated at compile time and not at runtime, unless a variable-length array is used in its argument
+
+- The argument to the sizeof operator can be a variable, an array name, the name of a basic data type, the name of a derived data type, or an expression
+
+`sizeof(int)` will result the number of bytes of type int
+
+- You can also apply the `sizeof` operator to an expression
+
+  - result is the size the value
+
+- Use the sizeof operators bitwise
+
+### 26.4 Other Operators
+
+- The asterisk `*` is an operator that represnets a pointer to a variable
+
+```c
+*a;
+```
+
+- `? : `is an operator used for comparisons
+  - If condition is true ? then value x : other value y
+  - name is the ternary operator
+
+## 27 Operator Precedence
+
+### 27.1 Overview
+
+- Operator precedence determins the grouping of terms in an expression and decides how an expression is evaluated
+
+  - Dictates order of evaluation when two operators share an operand
+  - Certain operators have higher precedence than others
+  - For example, the multiplication operator has a higher precedence than the addition operator
+
+  ```c
+  x = 7 + 3 * 2;
+  ```
+
+- Can result in 13 or 20 depending on the order of each operands evaluation
+
+- The order of executing the various operations can make a difference, so C needs unambiguous rules for choosing what to do first
+- In C, x is assigned 13, not 20 because operator `*` has higher precedece than `+`
+
+  - FIrst gets multiplied with `3 * 2` and then adds into `7`
+
+- Each operator is assigned a `precedence` level
+
+  - Multiplication and division have a higher precedence than addtion and subtraction, so they are performed first
+
+- Whatever is enclosed in parentheses is executed first, shuold just always use () to group expressions
+
+### 27.2 Associativity
+
+- What if two operators have the same precedence?
+
+  - Then associativity rules are applied
+
+- If they shared an operand, they are executed according to the other in which they occur in the statement
+
+  - For most operators, the order is from left to right
+
+```c
+1 == 2 != 3
+```
+
+- operators `==` and `!=` have same precedence
+
+  - associativity of both `==` and `!=` is left to right
+
+- The expression above is equivalent to
+
+```c
+((1 == 2) != 3)
+```
+
+- `(1 == 2)` executes first resulting into `0(false)`, then `(0 != 3)` executing resulting into `1(true)`
+
+### 27.3 Table (highest to lowest)
+
+![Operators Precedence Table - 1](images/operators_precedence_table_1.png)
+
+![Operators Precedence Table - 2](images/operators_precedence_table_2.png)
+
+## 28 Challenge of Operators: Converting minutes to years and days
+
+- In this challenge, you are to create a C program that converts the number of minutes to days and years
+
+- The program should ask the user to enter the number of minutes via the termnical
+
+- The program should display as output the minutes and then its equivalent in years and days
+
+- The program should create variables to store (should all be of type double)
+
+  - minutes (int)
+  - minutes in year
+  - Years
+  - Days
+
+- Need to perform a calculation and use arithmetic operators
+
+### 29 Challenge of Operators: Print the byte size of the basic data types
+
+- In this challenge, you are to create a C program that displays the byte size of basic data types supported in C
+
+  - The output varies depending on the system you are running the program
+
+- Display the byte size of the folloing types
+
+  - int
+  - char
+  - long
+  - long long
+  - double
+  - long double
+
+- You can use the %zd format specifier to format each size
+
+- Use the sizeof operator
+
+- Test on more than one computer to see the differences
+
+## 30 Control Flow Overview
+
+### 30.1 Overview
+
+- The statements inside your source file are generally executed from top to bottom, in the order that they appear.
+
+- Control flow statements, however, break up the flow of execution by employing decision making, looping, and branching, enabling your program to conditionally execute particular blocks of code
+  - Decision-making statements (if-then, if-then-else, switch, goto)
+  - Looping statements (for, while, do-while)
+  - Branching statements (break, continue, return)
+
+### 30.2 Decision Making
+
+- Structures require that the programmer specify one or more conditions to be evaluated or tested by the program
+  - If a condition is true then a statement or statement are executed
+  - If a condition is false then other statements are executed
+
+![if-else-statement](images/if_else_statement.jpeg)
+
+### 30.3 If Statements
+
+![if-statemetns](images/if_statements.png)
+
+### 30.4 Repeating Code
+
+- There may be a situation, when you need to execute a block of code serveral number of times
+
+  - The statements are executed sequentially: The first statement in a function is executed first, followed by the second, and so on.
+
+- A loop statement allows us to execute a statement or a group of statements multiple times
+
+- Loop control statements change execution from its normal sequence
+
+  - When execution leaves a scope, all automatic objects that were created in that scope are destroyed (`break` and `continue`)
+
+- A loop becomes infinite loop if a condition never becomes false
+  - The `for` loop is traditionally used for this purpose
+
+### 30.5 Loop Dataflow
+
+![Loop architecture](images/loop_architecture.jpeg)
+
+### 30.6 Loops
+
+![Loops Statements](/images/loops_statements.png)
+
+## 31 If Statements
+
+### 31.1 Overview
+
+- The C programming language provides a general decision-making capability in the form of a `if` statement
+
+```c
+if (expression)
+  program statement
+```
+
+- Translating a statement such as "if it is not raining, then I will go swimming" into the C language is easy
+
+```c
+if (it is not raining)
+  I will go swimming
+```
+
+- The `if` statement is used to stipulate execution of a program statements based upon specified conditions
+
+  - I will go swimming if it is no raining
+
+- The curly brackets are required for compound statements inside the `if` block
+
+### 31.2 If Statement (example)
+
+```c
+int score = 95;
+int big = 90;
+
+// simple statement if, no brackets
+
+if (score > big)
+  printf("Jackpot!\n");
+
+// compound statement if, brackets
+if (score > big)
+{
+  socre++;
+  printf("You win\n");
+}
+```
+
+### 31.3 If with an else
+
+- You can extend the `if` statement with a small addition that gives you a lot more flexibility
+
+**If** the rain today is worse than the rain yesterday,
+I will take my umbrella.
+**Else**
+I will take my jacket.
+Then I will go to work.
+
+- This is exactly the kind of decision making the `if-else` statement provides
+
+```c
+if (expression)
+  Statement1;
+else
+  Statement2;
+```
+
+### 31.4 If with an else (example)
+
+```c
+// Program to determine if a number is even or odd
+
+#include <stdio.h>
+
+int main()
+{
+  int number_to_test, remainder;
+
+  printf("Eneter your number to be tested: ");
+  scanf("%i", &number_to_test);
+
+  remainder = number_to_test % 2;
+
+  if (remainder == 0)
+    printf("The number is even.\n");
+
+  else
+    printf("The number is odd.\n");
+
+  return 0;
+}
+
+```
+
+### 31.5 `else if`
+
+- You can handle additional complex decision making by adding an `if` statement to your else clause
+
+```c
+if (expression 1)
+  program stateemnt 1
+else
+  if (expression 2)
+    program stateemnt 2
+  else
+    program stateemnt 3
+```
+
+- The above extends the `if` statement from a two-valued logic decision to a three-valued logic decision
+  - Formatted using teh `else if` construct
+
+```c
+if (expression 1)
+  program stateemnt 1
+else if (expression 2)
+  program stateemnt 2
+else
+  program stateemnt 3
+```
+
+### 31.6 `else if` example
+
+```c
+// Program to implement the sign funciton
+#include <stdio.h>
+
+int main(void)
+{
+    int number, sign;
+
+    printf("Please type in a number: ");
+    scanf("%i", &number);
+
+    if (number < 0)
+        sign = -1;
+    else if (number == 0)
+        sign = 0;
+    else // Must be positive
+        sign = 1;
+
+    printf("Sign = %i\n", sign);
+
+    return 0;
+}
+```
+
+### 31.7 Nested `if-else` statement
+
+- A nested `if-else` statements means you can use one if or else if statement inside another if or else if statement(s)
+
+```c
+if (boolean_expression 1)
+{
+  /* Executes when the boolean expression 1 is true */
+
+  if (boolean_expression 2)
+  {
+     /* Executes when the boolean expression 2 is true */
+  }
+
+}
+```
+
+### 31.8 Nested `if-else` statement (example)
+
+```c
+if (gameIsOver == 0)
+  if (playerToMove == YOU)
+    printf("You Move\n");
+
+  else
+    printf("My Move\n");
+else
+  printf("The game is over\n");
+
+```
+
+### 31.9 The conditional operator (ternary statement)
+
+- The conditional operator is unique operator
+
+  - unlike all other operators in C
+  - Most operators are either unary or binary operators
+  - Is a ternary operator (takes three operands)
+
+- The two symbols that are used to denote this operator are the question mark (?) and the colon (:)
+
+- The first operand is placed before the `?`, the second between `?` and the `:`, and the third after the `:`
+
+```c
+condition ? expression1 : expression2
+```
+
+- The conditional operator evaluates to one of two expressions, depending on whether a logical expression evaluates true or false
+
+- Notice how the operator is arranged in relation to the operands
+  - the `?` character follows the logical expression, condition
+  - on the right of `?` are two operands, expression1 and expression2, that represnet choices.
+  - the value that results from the operation will be the value of expression1 if condition evaluates to true, or the value of expression2 if condition evaluates to false
+
+### 31.10 Conditional operator (example)
+
+```c
+x = y > 7 25 : 50;
+```
+
+- results in x being set to 25 if y is greater than 7, or to 50 otherwise
+
+- An expression for the maximum or minimum of two varaibales can be written very simply using the conditional operator
+
+## 32 Switch Statement
+
+### 32.1 Overview
+
+- The conditional operator and the if else statements make it easy to write programs that choose between two alternatives
+
+- However, manty times a program needs to chooseone of serveral alternatives
+
+  - You can do this by using if else if...else
+  - tedious, prone to errors
+
+- When the value of a variable is successively compared against different values use the switch statement
+  - More convenient and efficient
+
+### 32.2 `switch` syntax
+
+```c
+switch (expression)
+{
+  case value_1:
+    program statement
+    ...
+    break;
+
+  case value_n;
+    program statement
+    program statement
+    ...
+    break;
+
+  default:
+    program statement
+    ...
+    break;
+}
+
+```
+
+### 32.3 `switch` statement details
+
+- The expression enclosed within parentheses is successively compared against the values: value_1, value_2, ..., value_n
+
+  - cases must be simple constants or constant expressions
+
+- If a case is found whose value is equal to expression then the statements that follow the case are executed
+
+  - When more than one statement is included, they do not have to enclosed within braces
+
+- The `break` statement signals the end of a particular case causes execution of the switch statement to be terminated
+
+  - include the `break` statement at the end of every case
+  - forgetting to do so for a particular case causes program execution to continue into the next case
+
+- The special optional case called default is executed if the value of expression does not match any of the case values
+  - Same as "fall through" else
+
+### 32.4 Switch case example
+
+```c
+enum Weekday {Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday};
+enum Weekday today = Monday;
+
+switch(today)
+{
+  case Sunday:
+    printf("Today is Sunday.\n");
+  break;
+  case Monday:
+    printf("Today is Monday.\n");
+  break;
+  case Tuesday:
+    printf("Today is Tuesday.\n");
+  break;
+  default
+    printf("Whatever!.\n");
+  break;
+}
+```
+
+## 33 Challenge of Control Flow: Determine amount of Pay
+
+- In this challenge, you are to create a C program that calculates your weekly pay.
+
+- The program should ask the use to enter the number of hours worked in a week via the keyboard
+
+- The program should display as output the gross pay, the taxes, and the net pay
+
+  - Basic pay rate = $12.00/hr
+  - Overtime (in excess of 40 hours) = time and a half
+  - Tax rate:
+    - 15% of the first $300
+    - 20% of the next $150
+    - 25% of the rest
+
+- You will need to utilize `if/else` statements
+
+## 34 For Loop
+
+### 34.1 Overview
+
+- Repeating Code:
+
+  - The C programming language has a few constructs specifically designed to handle these situations when you need to use some code repeatedly
+  - You can repeat a block of statements until some condition is met or a specific number of times
+  - Repeating code without a condition is a forever/infinite loop
+
+- The number of times that a loop is repeated can be controlled simply by a count
+
+  - Repeating the statement block a given number of time (counter controlled loop)
+
+- The number of times that a loop is repeated can depend on when a condition is met
+  - The user entering "quit"
+
+### 34.2 `for loop`
+
+- You typically use the `for loop` to execute a block of statements a given number of times
+
+- If you want to display the number from 1 to 10
+  - Instead of writing ten statements that can printf(), you would use a for loop
+
+```c
+for (int count = 1; count <= 10; ++count)
+{
+  printf(" %d", count);
+}
+```
+
+- The `for loop` operation is controlled by what appears between the parentheses that follow the keyword `for`
+
+  - The three control expression that are separated by semicolons control the operation of the loop
+
+- The action that you want to repeat each time the loop repeats is the block containing the statement that calls `printf()` (body of the loop)
+  - For single statements, you can omit the braces
+
+### 34.3 `for` syntax
+
+- The general pattern for the `for` loop is:
+
+```c
+for (starting_condition; continuation_condition; action_per_iteration)
+  loop_statement;
+```
+
+- The statement to be repeated is represented by `loop_statement`
+
+  - Cound equally well be a block of several statements enclosed between braces
+
+- The `start_condition` usually (but not always) sets an initial value to a loop control variable
+
+  - The loop control variable is typically a counter of some kind that tracks how often the loop has been repeated
+  - Can also declare and initialze several variables of the same type here with the declarations separated by commas
+  - Variables will be local to the loop and will not exist once the loop ends
+
+- The `continuation_condition` is a logical expression evaluating to true or false
+
+  - Determines whether the loop should conti to be executed
+  - As long as this condition has the value true, the loop will continues
+  - Typically checks the value of the loop control variable
+  - You can pu any logical or arithmetic expression here as long as you know what you are doing
+
+- The `continuation_condition` is tested at the beginning of the loop rather than at the end
+
+  - Means that the `loop_statement` will not executed at all if the `continuation_condition` starts out as false
+
+- The `action_per_iteration` is executed at the end of each loop iteration
+  - Usually an increment or decrement of one or more loop control variables
+  - Can modify several variables here, just need to use commas to separate
+
+![`for` loop syntax](./images/for_loop.png)
+
+### 34.4 Another Example
+
+```c
+for (int i = 1, j = 2; i <= 5; ++i, j = j+2)
+  printf(" %5d", i*j);
+```
+
+- The output produced by this fragment will be values 2, 8, 18, 32, and 50 on a single line
+
+### 34.5 `for` example (flexibility)
+
+```c
+unsigned long long sum = 0LL;   // Stores the sume of integers
+unsigned int count = 0;         // The number of integers to be summed
+
+// Read the number of integers to be sum
+printf("\nEnter the number of integers you want to sum: ");
+scanf(" %u", &count);
+
+// Sum integers from 1 to count
+for (unsigned int i = 1; i <= count; ++i)
+  sum += i;
+
+// OR
+for (unsigned int i = 1; i <= count; sum += i++)
+
+printf("\nTotal of the first %u number is %llu\n", count, sum);
+```
+
+### 34.6 Infinite loop
+
+- You have no obligation to put any parameters in the `for` loop statement
+
+```c
+for (;;)
+{
+  /* statements */
+}
+```
+
+- The condition for continuing the loop is absent, the loop will continue indefinitely
+  - Sometimes useful for monitoring data or listening for connections
+
+## 35 While and Do-While Loops
+
+### 35.1 While Loop
+
+- The mechanisom for repeating a set of statements allows execution to continue for as long as a specified logical expression evaluates to true
+
+- The general syntax for the `while` loop is as follows (one statement in body):
+
+```c
+while(expression)
+  statement1;
+```
+
+or
+
+```c
+while(expression)
+{
+  statement1;
+  statement2;
+}
+```
+
+- The condition for continuation of the while loop is tested at the start (top of the loop)
+
+  - pre-test loop
+
+- If expression starts out false, none of the loop statements will be executed
+
+- If the loop condition starts out as true, the loop body must contain a mechanism for changing this if the loop is to end
+
+### 35.2 Counter Controlled While loop Example
+
+```c
+int count = 1;
+
+while (count <= 5)
+{
+  printf("%i\n", count);
+  ++count;
+}
+```
+
+### 35.3 Logic Controlled While loop Example
+
+```c
+int num = 0;
+scanf("%d", &num);
+
+while (num != -1)
+{
+  /* loop actions */
+  scanf("%d", &num);
+}
+```
+
+### 35.4 `do-while` loop
+
+- In the `while` loop, the body is executed while the condition is true
+
+- The `do-while` loop is a loop where the body is executed for the first time unconditionally
+- Condition is at the bottom (post-test loop)
+
+- After initial execution, the body is only executed while the condition is true
+
+```c
+do
+  statement
+while (expression);
+```
+
+```c
+do
+{
+  prompt_for_password();
+  read_user_input();
+}
+while (input_not_equal_to_password());
+```
+
+### 35.5 `do-while` loop example
+
+```c
+do
+  scanf("%d", &number);
+while (number != 20);
+```
+
+**_Or counter controlled_**
+
+```c
+int number = 4;
+do
+{
+  printf("\nNumber = %d", number);
+  number++;
+}
+while (number < 4);
+```
+
+### 35.6 Which loop to use???
+
+- First, decide whether you need an pre or post test loop
+
+  - Usually will be a pre test loop (for or while), a bit better option in most cases
+  - It is better to look before you leap (or loop than) after
+  - Easier to read if the loop test is found at the beginning of the loop
+  - In manay uses, it is important that the loop to skipped entirelly if the test is not initially met
+
+- So, should you use a `for` or a `while`
+  - A matter of taste, because what you can do with one, you can do with the other
+  - To make a `for` loop like a `while`, you can omit the first and third expressions
+
+```c
+for ( ; test; )
+```
+
+**_is the same as_**
+
+```c
+while (test)
+```
+
+### 35.7 `do-while` loop example
+
+- To make a `while` like a `for`, preface it with an initialization and include update statements
+
+```c
+initialze;
+while(test)
+{
+  body;
+  update;
+}
+```
+
+**_is the same as_**
+
+```c
+for (initialize; test; update)
+  body;
+```
+
+- A `for` loop is appropriate when the loop involves initializing and updating a variable
+
+- A `while` loop is better when the conditions are otherwise
+
+- Recommendation:
+  - `while` loop - logic controlled loops
+  - `for` loop - counter controlled loops
+
+```c
+while (scanf("%i", &num) == 1)
+
+for (count = 1; count <= 100; count++)
+```
+
+## 36 Nested Loops, Break and Continue
+
+### 36.1 Nested Loops
+
+- Sometimes you may want to place one loop inside another
+
+- You might want to count the number of occupants in each house on a street
+
+  - Step from house to house, and for each hous you count the number of occupants
+
+- Going through all the houses could be an oouter loop, and for each iteration of the outer loop you would have an inner loop that counts the occupants
+
+### 36.2 Nested Loops Example (`for` inside a `for`)
+
+```c
+for (int i = 0; i <= count; i++)
+{
+  sum = 0;      // Initialize sum for the inner loop
+
+  // Calculate sum of integers from 1 to i
+  for (int j = 1; j <= i; ++j)
+    sum += j;
+
+    printf("\n%d\t%d", i, sum);     // Output sum of 1 to i
+}
+```
+
+### 36.3 Nested Loops Another Example (`while` inside a `for`)
+
+```c
+for (int i = 0; i <= count; i++)
+{
+  sum = 1;      // Initialize sum for the inner loop
+  j = 1;        // Initialize integer to be added
+  printf("\n1");
+
+  // Calculate sum of integers from 1 to i
+  while (j < i)
+  {
+    sum += ++j;
+    printf(" + %d", j);       // Output +j - on the some line
+  }
+
+  printf(" = %d", sum);       // Output = sum
+}
+```
+
+### 36.4 Contiune Statement
+
+- Sometimes a situation arises where you do not want to end a loop, but you want to skip the current iteration
+
+- The `continue` statement in the body of a loop does this
+
+  - All you need to do is use the keyword `continue` in the body of the loop
+
+- An advantage of using `continue` is that it can sometimes eliminate nesting or additional blocks of code
+
+  - Can enhance readbility when the statements are long or are deeply nested already
+
+- Don't use `continue` if it complicates rather than simplifies the code
+
+### 36.5 Contiune Example
+
+```c
+enum Day { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday };
+
+for (enum Day day = Monday; day <= Sunday; ++day)
+{
+  if (day == Wednesday)
+    continue;
+  printf("It's not Wednesday!\n");
+  /* Do something usefule with day */
+}
+```
+
+### 36.6 Break Statement
+
+- Normally, after the body of a loop has been entered, a program executes all the statements in the body before doing the next loop test
+
+  - We learned how continue works
+  - Another statement named `break` alters this behavior
+
+- The `break` statement causes the program to immediately exit from the loop it is executing
+
+  - Statements in the loop are skipped, and execution of the loop is terminated
+  - If the break statement is inside nested loops, it affects only the innermost loop containing it
+  - Use the keyword `break;`
+
+- `break` is often used to leave a loop when there are two separate reasons to leave
+
+- `break` is also used in `switch` statement
+
+### 36.7 Break Example
+
+```c
+while (p > 0)
+{
+  printf("%d\n", p);
+  scanf("%d", &q);
+  while (q > 0)
+  {
+    prinft("%d\n", p*q);
+    if (q > 100)
+      break;        // break from inner loop
+    scanf("%d\n", &q);
+  }
+
+  if (q > 100)
+    break;          // break from outer loop
+  scanf("%d\n", &p);
+}
+```
+
+## 37 Challenge of Control Flow: Guess the Number
+
+### 37.1 Requirements
+
+- Generate a random number from 0 to 20
+
+- Ask the use to guess it
+
+  - User should only be able to enter numbers from 0-20
+
+- The program will indicate to the user if each guess is too high or too low
+
+- The player wins the game if they can guess the number within five tries
+
+### 37.2 Generating a Random Number
+
+- To generate a random number from 0-20
+  - include the correct system libraries
+
+```c
+#include <stdlib.h>
+#include <time.h>
+```
+
+- Create a time variable
+
+```c
+time_t t;
+```
+
+- Initialize the random number generator
+
+```c
+srand((unsigned) time(&t));
+```
+
+- Get the random number (0-20) and store in an int variable
+
+```c
+int randomNumber = rand() % 21;
+```
+
+## 38 Arrays: Creating and using Arrays
+
+### 38.1 Arrays
+
+- It is very common to in a program to store many data values of a specified type
+
+  - In a sports program, you might want to store the scores for all grames or the scores for each player
+  - You could write a program that does this using a different variable for each score
+  - If there are a lot of grames to store then this is very tedious
+  - Using an array wil solve this problem
+
+- Arrays allows you to group values together under a single name
+
+  - You do not need separate variables for each item of data
+
+- An arrays is a fixed number of data items that are all of the same type
+
+### 38.2 Declaring an Array
+
+- The data items in an array are referred to as elements
+
+- The elements in an array have to be the same type (`int`, `long`, `double`, etc)
+
+  - You cannot "mix" data types, no such thing as a single array of ints and doubles
+
+- Declaring to use an array in a program is simliar to a normal variable that contains a single value
+  - Different is that you need a number between square brackeets `[]` following the name
+
+```c
+long numbers[10];
+```
+
+- The number between square brackets defines how many elements the array contains
+  - Called the size of the array or the array dimension
+
+### 38.3 Accessing an array's elements
+
+- Each of the data items stored in an array is accessed by the same name
+
+- You select a particular element by using an index (subscript) value between square brackets following the array name
+
+- index values are sequential integers that start from zero
+
+  - index values for elements in an array of size 10 would be from 0-9
+  - Arrays are zero based
+    - `0` is the index value for the first array element
+    - For an array of 10 elements, index value 9 refers to the last element
+
+- It is a very common mistake to assume that arrays start from one
+
+  - Referred to as the off-by-one error
+  - You can use a simple integer to explicitly reference the element that you want to access
+  - To access the fourth value in an array, you use the expression arrayName[3]
+
+- You can also specify an index for an array element by expression in the square brackets following the array name
+
+  - The expression must result in an integer value that corresponds to one of the possible index values
+
+- It is very common to use a loop to access each element in an array
+
+```c
+for (i = 0; i < 10; i++)
+  printf("Number is %d\n", numbers[i]);
+```
+
+![ Accessing an array's elements](images/%20Accessing%20an%20array's%20elements.png)
+
+### 38.4 Array out of bounds
+
+- If you use an expression or a variable for an index value that is outside the range for the array, your program may crash or the array can contain garbage data
+
+  - Referred to as an out of bounds error
+
+- The compiler cannot check for out of bounds errors so your program will still compile
+
+- Very important to ensure that your array inedxes are always within bounds
+
+### 38.5 Assigning values to an Array
+
+- A value can be stored in an element of an array simply by specifying the array element on the left side of a equal sign
+
+```c
+grades[100] = 95;
+```
+
+- The value 95 is stored in element number 100 of the grades array
+
+- Can also use variables to assign values to an array
+
+### 38.6 Example of using an array
+
+```c
+#include <stdio.h>
+
+int main(int argc, char **argv)
+{
+
+    int grades[10];         // Array storing 10 values
+    int count = 10;         // Number of values to be read
+    long sum = 0;           // Sum of the numbers
+    float average = 0.0f;   // Average of numbers
+
+    printf("\nEnter the 10 grades:\n");     // Prompt for the input
+
+    for (int i = 0; i < count; ++i)
+    {
+        printf("%2u>", (i + 1));
+        scanf("%d", &grades[i]);            // Read a grade
+        sum += grades[i];                   // Add it to sum
+    }
+
+    average = (float) sum / count;
+
+    printf("Sum of grades: %lu\n", sum);
+    printf("Average of grades: %.2f\n", average);
+
+    return 0;
+}
+```
+
+## 39 Array Initialization
+
+### 39.1 Initializing an Array
+
+- You will want to assign initial values for the elements of your array most of the time
+
+  - Defining initial values for array elements makes it easier to detect when things go wrong
+
+- Just as you can assign inital values to variables when they are declared, you can also assign inital values to an array's elements
+
+- To initialize an array's values, simply provide the values in a list
+  - Values in the list are separated by commas and the entire list is enclosed in a pair of braces
+
+```c
+int counters[5] = {0, 0, 0, 0, 0};
+```
+
+- Declares an array called counters to contain five integer values and initializes each of these elements to zero
+
+```c
+int integers[5] = {0, 1, 2, 3, 4};
+```
+
+- Declares an array named integers and sets the value of integers[0] to 0, integers[1] to 1, integers[2] to 2, and so on
+
+- It is not necessary toccompletely initialize an entire array
+
+- If fewer initial values are specified, only an equal number of elements are initialzed
+  - Remaining values in the array are set to zero
+
+```c
+float sample_data[500] = {100.0, 300.0, 500.5};
+```
+
+- Initialized the first values of `sample_data` to 100.0, 300.0, and 500.5, and sets the remaining 497 elements to zero
+
+### 39.2 Designeated Initializers
+
+- C99 added a feature called designated initializers
+
+  - Allows you to pick and choose which elements are initialized
+
+- By enclosing an element number in a pair of brackets, specific array elements can be initialized in any order
+
+```c
+float sample_data[500] = { [2]=500.5, [1]=300.0, [0]=100.0}
+```
+
+### 39.3 Example of traditional initialization
+
+```c
+#include <stdio.h>
+
+#define MONTHS 12
+
+int main()
+{
+
+  int days[MONTHS] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  int index;
+
+  for (index = 0; index < MONTHS; index++)
+    printf("Month %d has %2d days.\n", index+1, days[index]);
+
+  return 0;
+}
+```
+
+### 39.4 Example of designated initialization
+
+```c
+#include <stdio.h>
+
+#define MONTHS 12
+
+int main()
+{
+
+  // int days[MONTH] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+  int days[MONTHS] = {31, 28, [4] = 31,30,31, [1]=29};
+  int index;
+
+  for (index = 0; index < MONTHS; index++)
+    printf("Month %d has %2d days.\n", index+1, days[index]);
+
+  return 0;
+}
+```
+
+### 39.4 Repeating an initial value
+
+- C does not provide any shortcut mechnisoms for initializing array elements
+
+- No way to specify a repeat count
+
+- If it were desired to initially set all 500 values to sample_data to 1, all 500 would have to be explicitly assigned
+
+- To solve this problem, you will want to initialize the array inisde the program using a loop
+
+```c
+#include <stdio.h>
+
+int main(void)
+{
+  int array_values[10] = {0, 1, 4, 9, 16};
+  int index;
+
+  for (index = 5; index < 10; ++index)
+    array_values[index] = index*index;
+
+  for (index = 0, index<10; ++index)
+    printf("array_values[%i] = %i", index, array_values[index]);
+
+  return 0
+}
+```
+
+## 40 Multidimensional Arrays
+
+### 40.1 Overview
+
+- The types of arrays that you have been exposed to so far are all linear arrays
+
+  - A single dimension
+
+- The C language allows arrays of any dimension to be defined
+
+  - Two dimensional arrays are the most common
+
+- You can visualize a two-dimensional array as a rectangular arrangement like rows and columns in a spreadsheet
+
+- One of the most natural applications for a two-dimensional array arises in the case of a matrix
+
+- Two-dimensional arrays are declared the same way that one-dimensional arrays are
+
+```c
+int matrix[4][5]
+```
+
+- Delcares the array `matrix` to be a two-dimensional array consisting of 4 rows and 5 columns, for a total of 20 elements
+  - Note how each dimension is between its own pair of square brackets
+
+### 40.2 Initializing a two dimensional array
+
+- Two-dimensional arrays can be initialized in the same manner of a one-dimensional array
+
+- When listing elements for initialization, the values are listed by row
+  - The difference is that you put the initial values for each row between braces 0, {}, and then enclose all the rows between braces
+
+```c
+int numbers[3][4] = {
+  {10, 20, 30, 40},
+  {15, 25, 45, 45},
+  {17, 27, 37, 47 },
+};
+```
+
+- Commas are required after each braces that closes off a row, except in the case of the final row
+
+- The use of the inner pairs of braces is actually optional, but, should be used for readability
+
+### 40.3 Initializing a 2D array
+
+- As with one-dimensional arrays, it is not required that the entire array be initialized
+
+```c
+int matrix[4][5] = {
+  {1, 2, 3},
+  {4, 5, 6},
+  {7, 8, 9}
+};
+```
+
+- Only initializes the first three elements of each row of the matrix to be indicated values
+  - Remaining values are set to 0
+  - In thi case, the inner pairs of braces are requied to force the correct initialization
+
+### 40.4 Designated Initialer
+
+- subscripts can allos in the initialization list, in a like manner to single-dimensional arrays
+
+```c
+int matrix[4][3] = { [0][0]=1, [1][1] =5}
+```
+
+- Intializes the three indicated elements of matrix to be specified values
+  - Unspecified elements are set to zero by default
+  - Each set of values that initialzes the elements in a row is between braces
+  - The entire initializatio goes between another
+  - The values for a row are separated
+  - Each set of row values is separated from the next seet of a comma
+
+### 40.5 Other dimensions
+
+- Everything mentioned so far about two-dimensional arrays can be generated to three dimensional arrays and further
+
+- You can declare a three-dimensional array in this way
+
+```c
+int box[10][20][30]
+```
+
+- You can visualize to one-dimensional array as a row of data
+- You can visualize a one-dimensional array as a row data
+- You can visualize a three-dimensional array as a stack of dat;
+
+## 41 Variable Length Arrays
+
+- C99 intriduced variable-length arrays primarily to allow C to become a btter language for numerical computing
+  - VLAs make it easier to convert exsiting librairies of FORTRAN numerical calculation routines to C
+
+```c
+int n = 4;
+int m = 8;
+float a1[5];                    // yes
+float a2[5*2 + 1];              // yes
+float a3[sizeof(int) + 1];      // yes
+float a4[-4];                   // no, size musth be > 0
+float a5[0];                    // no, size musth be > 0
+float a6[2.5];                  // no, size must be an integer
+float a7[(int)2.5];             // yes
+float a8[n];                    // not allowed before C99, VLA
+float a9[m];                    // not allowed before C99, VLA
+```
+
+## 42 Challenge of Array: Generate Prime Numbers
+
+### 42.1 Requirements
+
+- Find the prime numbers from 3-100
+
+- There will be no input to the program
+
+- The output will be each prime number separated by a space on a single line
+
+- You will need to create an array that will store each prime number as it is generated
+
+- You can hard-code the first two prime number (2 and 3) in the primes array
+
+- You should uilize loops to only find prime numbers up to 100 and a loop to print out the primes array
+
+### 42.2 Hints
+
+- The criteria that can be used to identify a prime number is that a number is considered prime if it is not evenly divisible by any other previous numbers
+
+- Can use the following as an exit condition in the innermost loop
+
+  - `p / primes[i] >= primes[i]`
+  - a test to ensure that value of p does not exceed the square root of primes[i]
+
+- Your program can be more efficient by skipping any checks for even numbers
+
+## 43 Challenge of Arrays: Create a simple Weather Program
+
+### 43.1 Challenge
+
+- A two dimensional array in a weather program
+
+- This program will find the total rainfall for each year, the average yearly rain fill, and the average rainfall for each month
+
+- Input will be a 2D array with hard-coded values for rainfall amounts for the past 5 years
+  - The array should have 5 rows and 12 columns
+  - Rainfaill amounts can be floating point numbers
+
+### 43.2 Example output
+
+YEAR RAINFALL (inches)
+2020 32.5
+2011 37.9
+2012 49.8
+2013 44.0
+2014 32.9
+
+The yearly average is 39.4 inchees.
+
+MONTHLY AERAGES:
+Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+7.3 7.3 4.9 3.0 2.3 0.6 1.2 0.3 0.5 1.7 3.6 6.7
+
+### 43.3 Hints
+
+- Initialize your 2D array with hard-coded rainfall amounts
+
+- Remember, to iterate through 2 2D array you will need a nested loop
+
+- The key to this solution will be visualize a 2D array and understand how to iterate through how to iterate through one, via a nested loop
+
+- As you are iterating , you can keep a running total(outer loop literate by niang), inner loop
+
+- To get the average monthly rainfa, iterate though the 2D array by having the outer loop go through
+
+## 44 Challenge of Arrays: Create a Simple Weather Program
+
+### 44.1 Requirements
+
+- Uses a two-dimensional array in a weather program
+
+- This program will find the total rainfall for each year, the average yearly rainfall, and the average rainfall for each month
+
+- The input will be a 2D array with hard-coded values for rainfall amounts for the past 5 years
+
+  - The array should have 5 rows and 12 columns
+  - Rainfall amounts can be floating point numbers
+
+### 44.2 Example output
+
+YEAR RAINFALL (inches)
+2012 32.4
+2011 37.9
+2012 49.8
+2013 44.0
+2014 32.9
+
+The yearly average in 39.4 inches.
+
+MONTHLY AVERAGES:
+
+Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec
+7.3 7.3 4.9 3.0 2.3 0.6 1.2 0.3 0.5 1.7 3.6 6.7
+
+### 44.3 Hints
+
+- Initialize your 2D array with hard-coded rainfall amounts
+
+- To iterae through a 2D array you will need a nested loop
+
+- The key to this solution will be to visualize a 2D array and understand how to iterate through one, via a nested loop
+
+- As you are iterating, you can keep a running total (outer loop iterate by year, inner loop iterate by month) to get the total rainfall for all years
+
+- To get the average monthly rainfalls, iterate though the 2D array by having the outer loop go through each month and the inner loop go through each year
+
+## 45 FUnction Basics
+
+### 45.1 Overview
+
+- A function is a self-contained unit of program code designed to accomplish a particular task
+
+- Syntax rules define the structure of a function and how it can be used
+
+- A function in C is the same as subroutines or procedures in other programming languages
+
+- Some functions cause an action to take place
+
+  - `printf()` causes data to be printed on your screen
+
+- Some functions find a value for a program to use
+  - `strlen()` tells a program how long a certain string is
+
+### 45.2 Advantages
+
+- Allow for the divide and conquer strategy
+
+  - It is very difficult to write an entire program as a single large main function
+    - Difficult to test, debug and maintain
+
+- With divide and conquer, takes can be divided into serveral independent subtasks
+
+  - Reduces the overall complexity
+  - Separate functions are written for each subtask
+  - We can further divide each subtask into smaller subtask, further reducing the complexity
+
+- Reduce duplication of code
+
+  - Saves you time when writing, testing, and debugging code
+  - Reduces the size of the source code
+
+- If you have to do a certain task several times in a program, you only need to write an appropriate function once
+
+  - Program can then sue that function wherever needed
+  - You can also use the same function in different programs (`printf`)
+
+- Helps with readability
+
+  - Program is better organized
+  - Easier to read and easier to change or fix
+
+- The divide and conquer approach also allows the parts of a program to be developed, tested and debugged independently
+
+  - Reduces the overall development time
+
+- The functions developed for one program can be used in another program
+
+  - Software reuse
+
+- Many programmers like to thik a function as a "black box"
+
+  - Information that goes in (its input)
+  - The value or action it produces (its output)
+
+- Using this "black box" thinking helps you concertrate on the program's overall design rather that the details
+  - What the function should do and how it relates to the program as a whole before worrying about writting the code
+
+### 45.3 Examples
+
+- You have already used built-in functions such as `printf()` and `scanf()`
+
+- You shoud have noticed how to invoke these functions and pass data to them
+  - Argument between parentheses following the function name
+
+e.g.
+`printf()` - First argument is usually a string literal, and the succeeding arugments(of which there may none) are a series of variables or expressions whose value are to be displayed
+
+- You should have notice how you can receive information back from a function
+- The input is toredin in an argument
+- As a return value.
+
+### 45.4 Example
+
+```c
+#define SIZE 50
+int main(void)
+{
+  float list[SIZE];
+
+  readies(list, SIZE);
+  sort(list, SIZE);
+  average(list, SIZE);
+}
+```
+
+45.5 Implementing functions
+
+- Remember, just calling functions does not work unless we implement the function cod.
+
+- Always use descriptive function names to make it clear what the program does how its organized
+  - If you can make the functions gerneral enough, you can reuse them in other programs
