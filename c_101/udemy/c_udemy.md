@@ -2550,3 +2550,282 @@ int main(void)
 
 - Always use descriptive function names to make it clear what the program does how its organized
   - If you can make the functions gerneral enough, you can reuse them in other programs
+
+### 45.6 `main()` function
+
+- as a reminder, the `main()` is a specially recognized name in the C system
+  - indicates C programs must always have a main()
+  - all C programs must always have a main()
+  - can pass data to it (command line arguments)
+  - returaning data optional (error code)
+
+
+## 46 Defining Functions
+
+### 46.1 Overview
+
+- When you create a function, you specify the function header as the first line of the function definition
+  - Followed by a starting curly brace `{`
+  - The excutable code in between the starting and ending braces
+  - The ending curly brace `}`
+  - The block of code between braces following the function header is called the function body
+  
+- The function header defines the name of the function
+  - Parameters (which specify the number and types of values that are passed to the function when it's called)
+  - The type for the value that the functon returns
+
+- The function body contains the statements that are executed when the function is called
+  - Have access to any values that are passed as arguments to the function
+
+  ```c
+  Return_type Function_name( Parameters - separated by commas)
+  {
+    // Statements...
+  }
+  ```
+
+- The first line of a function definition tells the compiler (in order from left to right) three things about the function
+  - The type of value it returns
+  - Its name
+  - The arguments it takes
+
+- Choosing meaning function names is just as important as choosing meaningful variable names 
+  - Greatly affects the program's readability
+
+### 46.2 Example: Defining Functions
+
+```c
+void printMessage(void)
+{
+  printf("Programming is fun.\n");
+}
+```
+
+- The first line of the `printMessage()` function definition tells the compiler that the function returns to value: keyword `void`
+
+- Next is its name: `printMessage`
+
+- After that is that it takes no arguments (the second use the keyword `void`)
+
+
+### 46.3 Defining a Function
+
+- The statements in the function body can be absent, but the braces must be present
+
+- If three are no statements in the body of a function, the `return` type must be `void`, and the function will not do anything
+  - Defining a function with an empty body is often useful during the testing phase of a complicated program
+  - Allows you to run the program with only selected functions actually doing something
+  - You can then add the details for the function bodies step by step, testing at each stage, until the whole thing is implemented and fully tested
+
+
+  ### 46.4 Naming Functions
+
+  - The name of a function can be any legal name
+    - Not a reserved word (such as `int`, `double`, `sizeof`, and so on)
+    - Is not the same name as another funciton in your program
+    - Is not the same name as any of the standard library functions 
+      - Would prevent you from using hte library function
+
+  - A legal name has the same form as that of a variable
+    - A sequence of letters and digits
+    - First character must be a letter
+    - Underline character counts as a letter
+
+  - The name that you choose should be meaningful and relevant to what the function does
+
+  - You will often define function names (and variables, too) that consist of more that one word
+
+  - There are three common approaches you can adopt
+    - Separate each of the words in a function name with an underline character
+    - Capatialize the first letter of each word
+    - Capitalize words after the first (camelCase)
+
+### 46.5 Function Prototypes
+
+- A function prototype is a statement that defines a function
+  - Defines its name, its return value type, and the type of each of its parameters
+  - Provides all the external specifications for the function
+
+- You can write a prototype for a function exactly the same as the function header
+  - Only difference is that you add a semicolon at the end
+
+```c
+void printMessage(void);
+```
+
+- A function prototype enables the compiler to genenerate the appropriate instructions at each point where you call the function
+  - It also checks that you are using the funciton correctly in each invocation
+
+- When you include a standard header file in a program, the header file adds the funciton prototypes for that library to your program
+  - The header file `stdio.h` contains function prototyps for `printf()`, among others
+
+- Generally appera at the beginning of a source file prior to the implementations of any functions or in a header file
+
+- Allows any of the funcitons in the file to call any function regardless of where you have placed the implementation of functions
+
+- Parameter names do not have to be the same as those used in the function definition
+  - Not required to include the names of parameters in a funciton prototype
+
+- Its good practice to always include declarations for all the functions in a program source file, regardless of where are called
+  - Will help keep your programs more consistent in design
+  - Prevent any errors from occurring if, at any stage, you choose to call a funciton from another part of your programs
+
+### 46.6 Example: Function Prototypes
+
+```c
+#include <stdio.h>
+
+void add();
+
+int main()
+{
+    add();
+    return 0;
+}
+
+void add()
+{
+
+    add();
+    return 0;
+}
+```
+
+## 47 Functions Arguments and Parameters
+
+### 47.1 Overview
+
+- A parameter is a variable in a function declaration and function definition/implementation
+
+- When a function is called, the arguments are the data you pass into the funcitons parameters. 
+  - The actual value of variable that gets passed to the function
+
+- Funciton paramters are defined within the function header
+  - Are placeholders for the arguments that need to be specified when the function is called
+
+- The parameters for a funciton are a list of parameter names with their types
+  - Each parameter is separated by a comma
+  - Entire list of parameters is enclosed between the parentheses that follow the function name
+
+- A funciton can have no parameters, in which case you should put `void` between the parentheses
+
+- Parameters provide the means to pass data to a function
+  - Data passed from the calling function to the funciton that is called
+
+- The names of the parameters are local to the function
+  - They will asssume the values of the arauments that are passed when the function is called
+
+- The body of the function should use these parameters in its implementation
+
+- A function body may have additional locally defined variables that are needed by the functions' implementation
+
+- When passing an array an argument to a function
+  - You must also pass an additional argument specifying the size of the array
+  - The function has no means of knowing how many elements there are in the array
+
+### 47.1 Example
+
+- When the `printf()` function is called, you always supply one or more values as arguments
+  - First value being the format string
+  - The remaining values being any variables to displayed
+
+- Paramenters greatly increase the usefulness and flexibility of a funciton
+  - The `printf()` function displays whatever you tell it to display via the parameters and arguments passed
+
+- It is a good idea to add comments before each of your own function definitions
+  - Help explain waht the function does and how the arguments are to be used
+
+```c
+#include <stdio.h>
+
+void multiplyTwoNumbers(int x, int y)
+{
+  int result = x * y;
+  printf("The product of %d multiplied by %d is: %d\n", x, y, result);
+}
+
+int main(void)
+{
+  multiplyTwoNumbers(10, 20);
+  multiplyTwoNumbers(30, 40);
+  multiplyTwoNumbers(50, 60);
+
+  return 0;
+}
+```
+
+## 48 Returning Data from Functions
+
+### 48.1 Overview
+
+  ```c
+  Return_type Function_name( Parameters - separated by commas)
+  {
+    // Statements...
+  }
+  ```
+
+- The `Return_type` specifies the type of the value returned by the function
+
+- You can specify the type of value to be returned by a funciton as nay of the legal types in C
+  - Includes enumeration types and pointers
+
+- The return type can also be type `void` which means no value is returned
+
+### 48.2 The `return` statement
+
+- The `return` statement provides the means of exiting from a function
+
+```c
+return;
+```
+
+- This form of the `return` statement is used exclusively in a finction where the `return` type has been declared as `void`
+  - Does not return a value
+
+- The more general form of the `return` statement is:
+```c
+return expression;
+```
+
+- This form of the `return` statement must be used when the `return` value type has been declared as some type other than `void`
+
+- The value that is returned to the calling program is the value that results when expression is evaluated 
+  - Should be of the return type specified for the function
+
+
+### 48.3 Returning Data
+
+- A function that has statements in the function body but does not return a value must have the return type as `void`
+  - Will get an error message if you compile a program that contains a function with a `void` return type that tries toe return a value
+
+- A function that does not have a `void` return type must return a value of the specified return type 
+  - Will get an error message from the compiler if return type is different thant specifiied
+
+- If expression results in a value that's a different type from the return type in the funciton header, the compiler will insert a conversion from the type of expression to the one required
+  - If conversion is not possible then the compiler will produce an error message
+
+- There can be more than one return statement in a function
+  - Each return statement must supply a value that is convertible to the type specified in the function header for the return value
+
+### 48.4 Invoking a Funciton
+
+- You call a function by using the function named followed by the arguments to the funciton between parentheses
+
+- When you call the funciton, the values of the arguments that you specify in the call will be assigned to the parameters in the function
+
+- When the funciton executes, the computation proceeds using the values you supplied as arguments 
+
+- The arguments you specify when you call a funciton should agree in type, number, and sequence with the parameters in the funciton header
+
+### 48.5 Invoking a function and assigning data returned 
+
+- If the function is used as the right side of an assignment statement, the return value supplied by the funciton will be subsittuted for the funciton 
+  - Will also work with an expression
+
+```c
+int = myFuncitonCall();
+```
+
+- The caling function doesn't have to recognize or process the value returned from a called function
+  - Up to you how you use values from function calls
