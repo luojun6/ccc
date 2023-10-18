@@ -2829,3 +2829,70 @@ int = myFuncitonCall();
 
 - The caling function doesn't have to recognize or process the value returned from a called function
   - Up to you how you use values from function calls
+
+## 49 Local and Global Variables
+
+### 49.1 Local Variables
+
+- Variables defined inside a function are known as automatci local variables
+  - They are automatcially "created" each time the funciton is called
+  - Their values are local to the function
+
+- The value of a local variable can only be accessed by the function in which the variable is defined 
+  - Its value cannot be accessed by any other function
+
+- If an initial value is given to a variabel inside a function, that initial value is assigned to the variable each time the function is called
+
+- Can use the `auto` keyword to be more precise, but, not necessary, as the compiler adds this by default
+
+- Local variables ar ealso applicable to any code where the variable is created in a block (loops, if statements)
+
+### 49.2 Global Variables
+
+- The opposite of a local variable
+
+- Global variables value can be accessed by any function in the program
+
+- A global variable has the lifetime of the program
+
+- Global variabels ar edeclared ouside of any function
+  - Does not belong to any particular function
+
+- Any function in the program can change the value of a global variable
+
+- If there is a local variabel declared in a function with the same name, then wihtin that function the local variabel will mask the global variable
+
+### 49.3 Example
+
+```c
+int myGlobal = 0;         // global variabel
+
+int main()
+{
+  int myLocalMain = 0;    // local variable
+  // Can access myGlobal and myLocal
+  return 0;
+}
+
+void myFunction()
+{
+  int x;                  // local variabel
+}
+// Can access myGlobal and x, cannot access myLocal
+```
+
+### 49.4 Avoiding Using Global Variables
+
+- In general, global variables are a "bad" thing and should be avoided
+  - Promotes coupling between functions (dependencies)
+  - Hard to find the location of a bug in a program
+  - Hard to fix a bug once its found
+
+- Use parameters in functions instead
+  - If a lot of data, use a `struct`
+
+## 50 Challenge of Functions: Write some functions
+
+- We need to get some practice writing functions
+    - Better organized code
+    - Avoid duplication
