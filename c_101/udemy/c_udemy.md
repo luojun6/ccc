@@ -2896,3 +2896,17 @@ void myFunction()
 - We need to get some practice writing functions
     - Better organized code
     - Avoid duplication
+
+- Write three functions in a single program
+
+- Function 1: Find the greatest common divisor of two non-negative integer values and to return the result
+  - gcd, takes two ints as parameters
+![A gcd example](./images/GCD-or-HCF-of-two-numbers-1024x512.png)
+
+- Function 2: Calculate the absolute value of a number
+  - Should take as a parameter a float and return a float
+  - Test this function with ints and floats
+
+- Function 3: Compute the square root of a number
+  - If a negative argument is passed then a message is display and -1.0 should be returned
+  - Should use the absoluteValue function as implementated in the above step
