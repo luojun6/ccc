@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-int len(char * str)
+int len(const char * str)
 {
     int count = 0;
     while (str[count] != '\0')
@@ -12,7 +12,7 @@ int len(char * str)
     return count;
 }
 
-char * concat(char* str1, char* str2, char* result)
+char * concat(const char* str1, const char* str2, char* result)
 {
     int len1 = len(str1);
     int len2 = len(str2);
@@ -36,7 +36,7 @@ char * concat(char* str1, char* str2, char* result)
     return result;
 }
 
-bool cmp(char* str1, char* str2)
+bool cmp(const char* str1, const char* str2)
 {
     int len1 = len(str1);
     int len2 = len(str2);
@@ -55,11 +55,11 @@ bool cmp(char* str1, char* str2)
 
 int main(void)
 {
-    char * str = "Hello World!";
+    const char * str = "Hello World!";
     printf("Length of \"%s\": %d\n", str, len(str));
 
-    char * str1 = "Hello";
-    char * str2 = " World!";
+    const char * str1 = "Hello";
+    const char * str2 = " World!";
     char str3[100];
     char * result = concat(str1, str2, str3);
     printf("Result of concat: %s\n", result);

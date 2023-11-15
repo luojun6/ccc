@@ -3509,10 +3509,34 @@ char value_str[] = "98.4";
 double value = atof(value_str)
 ```
 
-```strtod()```: A value to type `double` is produced from the intial part tof the of the string. Specified by the first argument. The second argument is a pointer to a variable, `ptr` say, of type `char` * in which the function will store the address of the first character following the subsctring that was converted to the `double` value. If so string was found that could be conveted to type `double` value, if so string was found that could be converted to type `double`, the variable `prt` will contian the address passed as the first argument.
+```strtod()```: A value to type `double` is produced from the initial part tof the of the string. Specified by the first argument. The second argument is a pointer to a variable, `ptr` say, of type `char` * in which the function will store the address of the first character following the subsctring that was converted to the `double` value. If so string was found that could be conveted to type `double` value, if so string was found that could be converted to type `double`, the variable `prt` will contian the address passed as the first argument.
 
 ```strof()```: A value of type `float`, in all other respects it works as `strtod()`.
 
 ```strtold()```: A value of type `long double`.In all other respects it works as `stdtod`.
 
+
+## 58 Challenge of Strings: Common String Functions
+
+- Write a program that display a string in reverse order
+  - Should read input from the keyboard
+  - Need to use the `strlen` string function
+
+- Write a program that sorts the strings of an array using a bubble sort
+  - Need to use the `sctcmp` and `strcpy` functions
+
+```
+Input number of strings: 3
+Input string 3:
+zero
+one
+two
+
+Expected Output:
+
+The strings apperas after sorting:
+one
+two
+zero
+```
 
