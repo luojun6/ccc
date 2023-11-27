@@ -3540,3 +3540,195 @@ two
 zero
 ```
 
+## 59 Debugging
+
+### 59.1 Overview
+
+- Debugging is the process of finding and fixing errors in a program (usually logic errors, but, can also include compiler/syntax errors)
+  - For syntax errors, understand what the compiler is telling you 
+  - Always focus on fixing the first problem detected 
+
+- Can range in complexity from fixing simple errors to collecting large amounts of data for analysis
+
+- The ability to debug by a programmer is an essential skill (problem solving) that can saving you trememdous amounts of time (and money)
+
+- Maintenance phase is the most expensive phase of the software life cycle 
+
+- Understand that bugs are unavoidable
+
+### 59.2 Common Problems 
+
+- Logic Errors
+- Syntax Errors
+- Memory Corruption
+- Performance / Scalability
+- Lack of Cohesion
+- Tight Coupling (dependencies)
+
+### 59.3 Debugging Process
+
+- Understand the problem 
+
+- Reproduce the program
+  - Sometimes very difficult as problems can be intermittent or only happen in vary rare circumstances
+  - Parallel processes or threading problems
+
+- Simplify the problem / Divide and conquer / isolate the source
+  - Remove parts of the orignal test case
+  - Comment out code / back out changes
+  - Turn a large program into a lot of small programs (unit testing)
+
+- Identify origin of the problem
+  - Using Debugging Tools if neccessary
+
+- Solve the problem
+  - Experience and practice
+  - Sometimes includes redesign or refactor code 
+
+### 59.4 Techniques and Tools
+
+- Tracing / using print statements
+  - Output values of variable at certain points of a program
+  - Show the flow of execution
+  can help isolate the error
+
+- Debuggers - monitor the execution of a program,restart it, set the breakpoints and watch variables in memory
+
+- Log Files - can be used for analysis, add "goom"log state
+
+### 59.5 Common Debugging Tools
+
+- Exception Handing helps a great deal to identify catastrophic errors
+
+- Static Analyzers - analyze soure code for specific set of know problems 
+  - Semantic checker, does not analyze syntax
+  - Can detect things like uninitialized variables, memory leaks, unreachable code, deadlocks or race conditions
+
+- Test Suites - run a set of comprehensive system end-to-end tests
+
+- Debugging the program after it has crashed
+  - Analyze the call stack
+  - Analyze memory dump (core file)
+
+### 59.7 Preventing Errors
+
+- Write high quality code (follow good design principles and good programming practices)
+
+- Unit Tests - automatically executed when compiling
+  - Helps avoid regression
+  - Finds errors in new code before it is delivered 
+  - TDD (Test Driven Development)
+
+- Provide good documentation and proper planning (write down design on paper and untilize pseudocode)
+
+- Work in Steps and constantly test after each step
+  - Avoid too many changes at once
+  - When making changes, apply them incrementally. Add one change, then test thoroughly before starting the next step
+  - Helps reduce the possible sources of bugs, limits prolem set
+
+
+## 60 Understanding the Call Stack
+
+- A stack trace (call statck) is generated whenever your app craches because of a fatal error
+
+- A statck trace shows a list of the function calls that lead to error
+  - Includes the filenames and line numbers of the code that cause the exception or error to occur
+  - Top of the stack contains the last call that caused the error (nested calls)
+  - Bottom of the stack contains the first call that started the chain of calls to cause the error
+  - You need to find the call in your application that is causing the crash
+
+- A programmer can also dump the stack trace
+
+## 61 Common C Mistakes
+
+- missing a semicolon
+- confusing the operator `=` with the operator `==`
+- omitting prototype declarations
+```c
+result = squareRoot(2)
+```
+- failling to include the header file that includes the definition for a C-programing library function being used in the porgram
+- confusing a character constant and a character string 
+- using the wrong bounds of an array
+```c
+int a[100], i, sum=0;
+for (i = 1; i < 100; i++1)
+  sum += a[i];
+```
+- confusing the opeartor `->` with the operator when referencing structure members
+  - the operator `.` is used for structure varaibles
+  - the operator `->` is uesd for structure pointer variables
+
+- omitting the ampersand before nonpointer variable in a `scanf()` call
+- using a pointer variable before it's intialized
+```c
+char *char_pointer;
+*char_pointer = 'X';
+```
+- omitting the break statement at the end of a case in a switch statement
+- inserting a semicolon at the end of a preprocessor definition
+- omitting a closing parenthesis or closing quotation marks on any statement
+
+
+## 62 Understanding Compiler Errors and Warnings
+
+### 62.1 Overview
+
+- It is sometimes very hard to understand what the compiler is complaining about 
+  - Need to understand compiler errors in order to fix them
+  - It is sometimes difficult to identify the true reason behind a compiler error
+
+- The compiler makes decisions about how to translate the code that the programmer has not written in the code
+  - It is convenient because the programs can be written more succinctly (only expert programmers take advantage of this feature)
+
+- You should use an option for the compiler to notify all cases where there are implicit decisions
+  - This option is `-Wall`
+
+- The compiler shows two types of problems
+  - errors
+    - A condition that prevents the creation of a final program
+    - No executable is obtained until all the errors have been corrected
+    - The first errors shown are the most reliable because the translation is finished but thre are some errors that may derive from previous ones
+    - Fix the first errors are first, it is recommended to compile again and see if othe rlater errors also disappeared.
+
+  - warings
+    - Messages that the compiler shows about 'special" situations in which an anomaly has been detected 
+    - Non-fatal errors
+    - The final executable program may be obtained with any number of warning
+
+  - Compile always with the `-Wall` option and do not consider the program correct until all warning been eliminated 
+
+  ### 62.2 Most Common Compiler Messages
+
+- `variable undeclared` (first use in this funciton) 
+  - This is one of the most common and easier to detect 
+  - The symbol shown at the beginning of the message is used but has not been declared
+
+- `warning: implicit declaration of function`
+  - This waring appears when the compiler finds a function used in the code but no previous information has been given about it
+  - Need to declare a function prototype
+
+- `warning: control reaches end of non-void function`
+  - This warning appears when a function has been defined as returining a result but no return statement has been included ti return this result
+  - Either the funciton is incorrectly defined or the statement is missing
+
+- `warning: unused variable ...`
+  - This warning is printed by the compiler when a variable is declared but not used in the code 
+  - Message disappears if the declaration is removed
+
+- `undefined reference to ... `
+  - Appears when there is a function invoked in the code that has not been defined anywhere
+  - Compiler is telling us that there is a reference to a function with no definition
+  - Check which function is missing and make sure its definition is compiled
+
+- `error: conflicting types for ...`
+  - Two definitions of a function prototype have been found
+  - One is the prototype, the other is the definition with function body
+
+
+### 62.3 Runtime Errors
+
+- The execution of C programs may terminate abruptly (crash) when a run-time error is detected 
+  - C programs only print the succint message Segmentation fault
+  - Usually result in a code file depending on the signal that has been thrown
+  - Can analyze the core and the call stack
