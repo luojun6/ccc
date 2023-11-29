@@ -3732,3 +3732,166 @@ char *char_pointer;
   - C programs only print the succint message Segmentation fault
   - Usually result in a code file depending on the signal that has been thrown
   - Can analyze the core and the call stack
+
+
+## 63 Pointers Started
+
+### 63.1 Indirection
+
+- Pointers are very similar to the concept of indirection that you employ in your everyday life
+- Suppose you need to buy a new ink catridge for your printer
+- All purchases are handled by the purchasing department
+  - You call Joe in purchasing and ask him to order the new cartridge for you
+  - Joe then calls the local supply store to order the cartridge
+- You are note ordering the cartridge directly from the supply store yourself (indirection)
+
+- In programming languages, indirection is the ability to reference something using a name, reference, or container, instead of the value itself
+
+- The most common form of indirection is the act of manipulating a value through its memory address
+
+- A pointer provides an indirection is the act of manipulating a value through its memory address
+
+- A pointer provides an indirect means of accessing the value of a particular data item 
+  - A variable whose value is a memory address
+  - Its value is the address of another location in memory that can contain a value
+
+### 63.2 Overview
+
+- Just as there are reasons why it makes sense to go through the purchasing department to order new cartridge
+  (you don't have to know which particular store the cartridges are being ordered from)
+  - There are good reasons why it makes sense to use pointers in C
+
+- Using pointers in your program is one of the most powerfule tools available in the C language
+
+- Pointers are also one of the most confusing concepts of the C language
+  - It is important you get this concept figured out in the beginning and maintain a clear idea of what is happening as you dig deeper
+
+- The compiler must know the type of data stored in the variable to which it points
+  - Need to know how much memory is occupied or how to handle the contents of the memory to which it points
+  - Every pointer will be associated with a specific variable type
+  - It can be used only to point to variables of that type
+
+- Pointers of type "pointer to int" can point only to variables of type int
+
+![pointer_overview](./images/pointer_overview.png)
+
+- The value of `&number` is the address where number is located 
+  - This value is used t oinitialized `pnumber` in the second statement
+
+### 63.3 Why use pointers?
+
+- Accessing dat aby means of only variables is very limiting
+  - With pointers, you can access location (you can treat any position of memory as a variable for example) and perform arithmetic with pointers
+
+- Pointers in C make it easier to use arrays and strings
+
+- Pointers allow you to refer to the same space in memory from multiple locations
+  - Means that you can update memory in one location and the change can be seen from another location in your program
+  - Can also save space by being able to share components in your data structures
+
+- Pointers allow functions to modify data passed to them as variables
+  - Pass by reference - passing arguments to function in way they can be changed by function
+
+- Can also be used to optimze a program to run faster or use less memory that in would otherwise
+
+- Pointers allow us to get multiple values from the function
+  - A function can return only one value by passing arguments as pointers we can get more than one values from the pointer
+
+- With pointers dynamic memory can be created according to the program use 
+  - We can save memory from static (compile time) declarations
+
+- Pointer allow us to design and develop complex data structures like a stack, queue, or linked list
+
+- Pointers provide direct memory access
+
+## 64 Defining Pointers
+
+### 64.1 Declaring Pointers
+
+- Pointers are not declared like normal variables
+
+```c
+pointer ptr;  // not the way to declare a pointer
+```
+
+- It is not enough to say that a variable is a pointer
+  - You also have to specify the kind of variable of which the pointer points
+  - Different variable types take up different amounts of storage
+  - Some pointer operations require knowledge of that storage size
+
+- You declare a pointer to a variable of type `int` with:
+
+```c
+int * pnumber;
+```
+
+- The type of the variable with the name `pnumber` is `int*`
+  - Can store the addres of any variable of type `int`
+
+```c
+int * pi;       // pi is a pointer to an integer variable
+char * pc;      // pc is a pointer to an character variable
+float * pf, pg;      // pf, pg are a pointer to float variables
+```
+
+- The space between the `*` and the pointer name is optional
+
+- The value of a pointer is an address, and it is represented internally as an unsigned integer on most systems
+  - However, you shouldn't think of a pointer as an integer type
+  - Things you can do with integers that you can not do with pointers, and vice versa
+  - You can multiply one integer by another, but you can not multiply one pointer by another
+
+- A pointer really is a new type, not an integer type
+  - `%p` represents the format specifier for pointers
+
+- The previous declarations creates the varibale but does not initialized it
+  - Dangerous when not initialized
+  - You should always initialized a pointer when you declare it
+
+
+### 64.2 NULL Pointers
+
+- You can initialize a pointer so that it does not point to anything:
+
+```c
+int *pnumber = NULL;
+```
+
+- `NULL` is a constant that is defined in the standard library
+
+- `NULL` is a value that is guaranteed not to point to any location in memory
+  - Means that it implicitly prevents the accicental overwriting of memory by using a pointer that does not point to anything specific
+
+- Add an `#include` directive for `stddef.h` to your source file
+
+### 64.3 Address of Operator
+
+- If you want to initialize your variable with the address of a variable you have already declared
+  - Use the address of operator, `&`
+
+```c
+int number = 99;
+int *pnumber = $number;
+```
+
+- The initial value of `pnumber ` is the address of the variable number
+  - The declaration of number must precede the declaration of the pointer that stores its address
+  - Compiler must have alrady allocated space and thus an address of number to use it to initialize `pnumber`
+
+### 64.4 Be Careful
+
+- There is nothing special about the declaration of a pointer
+  - Can declare regular variables and pointers in the same statement
+
+```c
+double value, *pVal, fnum;
+```
+- Only the second variable `pVal` is a pointer
+
+```c
+int *p, q;
+```
+- The above declares a pointer, `p` of type `int*`, and a variable, q, that is of type int 
+  - A common mistake to think that both `p` and `q` are pointers
+
+- Also, it is a good idea to use names beginning with `p` as a pointer names
