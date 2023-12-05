@@ -3185,7 +3185,7 @@ const char message[] = "The end of the world is nigh.";
   - Any attempt to do so will result in an error message from the compiler
 
 - This technique for defining standard messages is particular usefule if they are used in many place
-  - Prevents accidental modification of such constants in other parts of the program
+  - Prevents accidental modification of such constants in other parts of the program 
 
 
 ## 55 Common String Functions
@@ -3895,3 +3895,113 @@ int *p, q;
   - A common mistake to think that both `p` and `q` are pointers
 
 - Also, it is a good idea to use names beginning with `p` as a pointer names
+
+## 65 Accessing Pointers
+
+### 65.1 Accessing Pointer Values
+
+- You use the indirection operator `*` to access the value of the variable pointed to by a pointer 
+  - Alos referred to as the dereference operator because you use it to "dereference" a pointer
+
+```c
+int number = 15;
+int *pointer = &number;
+int result = 0;
+```
+
+- The pointer variable contains the address of the variable number
+  - You can use this in an expression to calculate a new value for result
+
+  ```c
+  result = *pointer + 5;
+  ```
+
+- The expression *pointer will evaluate to the value stored at the address contained in the pointer 
+  - The value stored in number, `15`, so result will be set to `15 + 5`, which is `20`
+
+- The indirection operator `*`, is also the symbol for multiplication, and it is used to specify pointer types
+  - Depending on where the asterisk apperas, the compiler will understand whether it should interpret it as an indirection operator, as multiplication sign, or as part of a type specification
+  - Context determines what it means in any instance
+
+```c
+int main(void)
+{
+  int count = 10, x;
+  int *int_pointer;
+
+  int_pointer = &count;
+  x = *int_pointer;
+
+  printf("count = %i, x = %i\n", count, x);
+
+  return 0;
+}
+```
+
+### 65.2 Displaying Pointers Value
+
+- To output the address of a variable, you use the output format specifier `%p`
+  - Outputs a pointer value as a memory address in hexadecimal form
+
+  ```c
+  int number = 0; // A variable of type int initizalized to 0
+  int *pnumber = NULL; // A pointer that can point to type int
+
+  number = 10;
+  pnumber = &number;
+  printf("pnumber's value: %p\n", pnumber); // Output the value (an address)
+  ```
+
+  - Pointers occupy 8 bytes and the address have 16 hexadecimal digits 
+    - If a machine has 64-bit operating system and my compiler supports 64-bit address
+    - Some compilers only support 32-bit address, in which cas addresses will be 32bit address
+
+### 65.3 Displaying Pointers Address
+
+```c
+printf("number's address: %p\n, &number");
+printf("number's address:%p\n", (void*)&pnumber); // Output address
+```
+
+- Remembera pointer itself has address, just like any other variable
+  - You use `%p` as the conversion specifier to display an address
+
+- You use the `&` (address of) operator to reference the address that the number variable occupies
+
+- The cast to `void*` is to prevent a possible warning from the compiler
+  - The `*p` spcification expects the value to be some kind pointer type, but the type of `&number` is pointer to pointer to `int`
+
+### 65.4 Displaying the number of bytes a pointer is using
+
+- You use the `sizeof` operator to obtain the number of bytes a pointer occupies
+  - A memory address on my machine is 64 bits
+  - A memory address on my machine is 64 bits
+
+- You may get a compiler warning when using sizeof this way
+  - `size_t` is an implementation-defined integer type
+  - To prevent the warning, you could cast the argument to type int like this:
+```c
+printf("pnumber's size: %d bytes\n", (int)sizeof(pnumber)); // Output the size
+```
+
+### 65.5 Example
+
+```c
+int main(void)
+{
+  int number = 0; // A variable of type int initialized to 0
+  int *pnumber = NULL;   // A pointer that can point to type int
+
+  number = 10;
+  printf("number's address: %p\n, &number");
+  printf("value's address: %p\n, &value"); 
+
+  pnumber = &number;  // Store the address of number in pnumber
+
+  printf("pnumber's address": (void*)&pnumber);  //Output the address
+  printf("pnumber's size: %zd byptes\n, sizeof(pnumber));
+  printf("pnumber's address: %p\n", (void *)pnumber);
+  printf("pnumber's value: %p\n", pnumber);
+  printf()
+}
+```
