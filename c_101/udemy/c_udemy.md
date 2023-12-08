@@ -3999,9 +3999,141 @@ int main(void)
   pnumber = &number;  // Store the address of number in pnumber
 
   printf("pnumber's address": (void*)&pnumber);  //Output the address
-  printf("pnumber's size: %zd byptes\n, sizeof(pnumber));
+  printf("pnumber's size: %zd byptes\n", sizeof(pnumber));
   printf("pnumber's address: %p\n", (void *)pnumber);
   printf("pnumber's value: %p\n", pnumber);
-  printf()
+  printf("pnumber's address: %p\n", (void*)&pnumber);
+  printf("pnumber's value: %p\n", pnumber);
+  printf("pnumber's value: pnumber");
+  printf("value pointed to: %d\n");
 }
 ```
+
+## 66 Using Pointers
+
+### 66.1 Overview
+
+- C offers several basic operations you can perform on pointers
+
+- You can assign an address to a pointer
+  - Assigned value can be an array name, a variable preceded by address operator (&), or another second pointer
+
+- You can dereference a pointer 
+  - The `*` opertor tells you where the pointer itself is stored 
+
+- You can take a pointer address
+  - The `&` operater tells you where the pointer itself is stored 
+
+- You can perform pointe rarithmetic
+  - Use the `+` operator to add an integer to a pointe or a pointer to an integer (integer is multiplied by the number of bytes in the pointed-to type and added to the orignal address)
+  - Increment a pointer by one (useful in arrays when moving to the next element)
+  - Use the `-` operator to subtract an integer from a pointer (integer is multiplied by the number pointed-to type and subtracted from the orignal address)
+  - Decrementig a pointer by one (useful in arrays when going back to the previous element)
+
+- You can find the difference between two pointers
+  - You do this for two pointers to elements that are in the same array to find out how far apart the elements are
+
+- You can use the relational operators to compare the values of two pointer 
+  - Pointers must be the same type
+
+- Remember, there are two forms of subtraction
+  - You can subtract one pointer from another to get an integer
+  - You can subtract an integer from a pointer and get a pointer
+
+- Be careful when incrementing or decrementing pointers and causing an array "out of bounds" error
+  - Computer does not keep track of whether a pointer still points to an array element
+
+  ### 66.2 Pointers used in expressions
+
+  - The value referenced by a pointer can be used in an arithmetic expressions
+    - If a variable is defined to be of type "pointer to pointer" then it is evaluated using the rules of integer arithmetic
+
+```c
+int number = 0; // A variable of type int intialized to 0
+int *pnumber = NULL; // A pointer that can point to type int
+number = 10;
+pnumber = &number; // Store the address of number in pnumber
+*pnumber += 25;
+```
+
+- Increments the value of the number variable by 25
+- Indicates you are accessing the contents to which the variable called pnumber is pointing to 
+
+- If a pointer points to a variable x
+   - That pointer has been defined to be a pointer to the same data type as is x
+  - Use of `*pointer` in an expression is identical to the use of x in the same expression
+
+- A variable defined as a "pointer to int" can store the address of any variable of type `int`
+
+```c
+int value = 999;
+pnumber = &value;
+*pnumber += 25;
+```
+
+- The statement will operate with the new variable, value
+  - The new contents of value will be 1024
+
+- A pointer can contain the address of any variable of the appropriate type
+  - You can use one pointer variable to change the values of many different variables
+  - As long as they are of a type compatible with the pointer type
+
+### 66.3 When Receiving Input
+
+- When we have used `scanf()` to input values, we hvae used the `&` operator to obtain the address of a variable
+  - On the variable that is to store the input (second argument)
+
+- When you have a pointer that already contains an address, you can use the pointer name as an argument for `scanf()`
+
+```c
+int value = 0;
+int *pvalue = &value;   // Set pointer to refer to value
+
+printf("Input an integer:");
+scanf("%d", pvalue);    // Read into value via the pointer
+
+printf("You entered %d.\n", value);
+```
+
+### 66.4 Testing for NULL
+
+- There is one rule you should burn into your memory
+  - Do not dereference an uninitialized pointer
+
+  ```c
+  int *pt;  // An uninitialized pointer
+  *pt = 5;  // A terriable error
+  ```
+
+- Second line means store that value in the location to which `pt` pointer
+  - `pt` has a random value, there is no knowing where the 5 will be placed
+
+- It might go somewhere harmless, it might overwrite data or code, or it might cause the program to crash
+
+- Creating a pointer only allocates memory to store the pointer itself
+  - It does not allocate memory to store data
+  -  Before you use pointer, it should be assigned a memoty location that has already been allocated
+    - Assign the address of an existing variable to the pointer
+    - Or you can use the `malloc()` function to allocate war memory first
+
+- We already know that when declaring a pointer that does not pointer to anythoing, we shold intialize it to `NULL`
+
+```c
+int *pvalue = NULL;
+```
+- `NULL` is a special symbol in C that represents the pointer equivalent to 0 with ordinary numbers 
+  - The below also sets a pointer to null using 0
+
+```c
+int *pvalue = 0;
+```
+
+- Because `NULL` is the equivalent of zero, if you want to test whether pvalue is `NULL`, you can do this:
+  - Or you can do it explicitly by using `==NULL`
+
+```c
+if(!pvalue)
+```
+
+- You want to check for `NULL` before you dereference 3 pointer
+  - Ofter when pointers are passed to functions
