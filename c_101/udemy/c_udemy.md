@@ -4137,3 +4137,197 @@ if(!pvalue)
 
 - You want to check for `NULL` before you dereference 3 pointer
   - Ofter when pointers are passed to functions
+
+## 67 Ponters and Const
+
+### 67.1 Overview
+
+- When we use the `const` modifier on a variable or an array, it tells the compiler that the contents of the variable/array will not be changed by the program
+
+- With pointers, we have to consider two things when using the const modifier
+  - Whether the pointer will be changed
+  - Whether the value that the pointer points to will be changed
+
+- You can use the `const` keyword when you declare a pointer to indicate that the value pointed to must not be changed 
+
+```c
+long value = 9999L;
+const long *pvalue = &value;  // defines a pointer to a constant
+```
+
+- You have declared the value pointed to by `pvalue` to be const
+  - The compiler will check for any statements that attempt to modify the value pointed to by `pvalue` and flag such statement as an error
+
+```c
+*pvalue = 8888L;  // Error - attemp to change const location
+```
+
+### 67.2 Pointers to Constants
+
+- You can still modify `value` (you have only applied `const` to the pointer)
+
+```c
+value = 7777L;
+```
+- The `value` pointed to has changed, but you did not use the pointer to make the change
+
+- The pointer itself is not constant, so you can still change what it points to:
+
+```c
+long number = 8888L;
+pvalue = &number; // OK - changing the address in pvalue
+```
+
+- Will change the address stored in `pvalue` to point to number
+  - Still canot use the pointer to change the value that is stored
+  - You can change the address stored in the pointer as much as like
+  - Using the pointer to change the value pointer to is not allowed, even after you have the changed the address stored in the pointer
+
+```c
+*pvalue = 6666L;  // Error again - attemp to change const location
+```
+
+### 67.3 Constant Pointers
+
+- You might also want to ensure that the address stored in pointer cannot be changed 
+
+- You can do this by using the `const` keyword in the declaration of the pointer 
+
+```c
+int count = 43;
+int *const pcount = &count; // Defines a const pointer
+```
+
+- The above ensures that a pointer always points to the same thing
+  - Indicates that the address stored must not be changed
+  - Compiler will check that you do not inadvertently attempt to change what the pointer points to elsewhere in your code
+
+```c
+int item = 34;
+pcount = &item; // Error - attempt to change a constant pointer
+```
+
+- It is all about where you place the `const` keyword, either before type or after the type
+```c
+const int * pointToConstant // Value can not be changed
+int * const constantPointer // Pointer address cannot be changed
+```
+
+- You can still change the value that `pcount` points to
+
+```c
+*pcount = 345;   // OK - changes the value of count
+```
+
+- References the value stored in count through the pointer and changes its value to 345
+
+```c
+int item = 25;
+const int *const pitem = &item;
+```
+- The `pitem` is a constant pointer to a constant so everything is fixed
+  - Cannot change the address stored in `pitem`
+  - Cannot use `pitem` to modify what it points to
+
+- You can still change the value of item directly
+  - If you wanted to make everything not change, you could specify item as const as well
+
+
+## 68 Void Pointers
+
+### 68.1 Overview 
+
+- The type name `void` means absense of any type
+- A pointer of type `void*` can contain the address of a data item  of any type
+- `void*` is often used as a parameter type of return value type with functions that deal with data in a type-indpendent way
+- Any kind of pointer can be passed around as a value of type `void*`
+  - The void pointer does not know what type of object it is pointing to, so, it cannnot be dereferenced directly
+  - The `void` pointer must first be explicitly cast to another pointer type before it is dereference
+
+- The address of a variable of type `int` cna be stored in a pointer variable of type `void*`
+
+- When you want to access the integer value at the address stored in the `void*` pointer must first cast pointerto type `int*`
+
+### 68.2 Example
+
+```c
+int i = 10;
+float f = 2.34;
+char ch = 'k';
+
+void *vptr;
+
+vptr = &i;
+printf("Value of i = %d\n", *(int*)vptr);
+
+vptr = &f;
+printf("Value of f = %d\n", *(float*)vptr);
+
+vptr = &ch;
+printf("Value of ch = %d\n", *(char*)vptr);
+```
+
+## 69 Pointers and Arrays
+
+### 69.1 Overview
+
+- An array is a collection of objects of the same type that you can refer to using a single name
+
+- A pointer is variable that has as its value a memory address that can reference another variable or constant of a given type
+  - You can use a pointer to hold the address of different variables at different times (must be same type)
+
+- Arrays and pointers seem quite different, but, they are very closely related and can sometimes be used interchageably
+
+- One of the most common uses of pointers in C is as pointers to arrays
+
+- The main reasons of using pointers arrays are ones of national convenience and of program efficiency
+
+- Pointers to arrays generally result in code that uses less memory and executes faster
+
+### Arrays and Pointers
+
+- If you have array of 100 integers
+
+```c
+int values[100];
+```
+
+- You can define a pointer called valuePtr, which can be used to access the integers contained this array
+
+```c
+int *valuesPtr;
+```
+
+- When you defined a pointer that is used to point to the elements of an array, you do not designed the pointer as type `*pointer` to array
+  - You designate the pointer as pointing to the type of element taht is contained in the array
+
+  - To set `valuePtr` to point to the first element in the values array, you write
+  ```c
+  valuesPtr = values;
+  ```
+
+- The address operator is not used
+  - The C compiler treats the appearance of an array name without a subscript as a pointer to the array
+  - Specifying values without a subscript has the effect of producing a pointer to the first element of values
+
+- An equivalent way of producing a pointer to the start of values is to apply the address operator to the first element of the array
+```c
+valuePtr = &values[0];
+```
+
+### 69.3 Summary
+
+- The two expressions `ar[i]` and *`(ar+i)` are equivalent in meaning
+  - Both work if `ar` is the name of an array, and both work if `ar` is a pointer variable
+  - Using an expression such as `ar++` only works if `ar` is a pointer variable
+
+
+## 70 Pointer Arithmetic
+
+### 70 Pointer Arithmetic
+
+- The real power of using pointers to arrays comes into play when you want to sequence through the element of an array
+
+```c
+*valuePtr //
+```
