@@ -2559,7 +2559,6 @@ int main(void)
   - can pass data to it (command line arguments)
   - returaning data optional (error code)
 
-
 ## 46 Defining Functions
 
 ### 46.1 Overview
@@ -2569,12 +2568,13 @@ int main(void)
   - The excutable code in between the starting and ending braces
   - The ending curly brace `}`
   - The block of code between braces following the function header is called the function body
-  
 - The function header defines the name of the function
+
   - Parameters (which specify the number and types of values that are passed to the function when it's called)
   - The type for the value that the functon returns
 
 - The function body contains the statements that are executed when the function is called
+
   - Have access to any values that are passed as arguments to the function
 
   ```c
@@ -2585,11 +2585,12 @@ int main(void)
   ```
 
 - The first line of a function definition tells the compiler (in order from left to right) three things about the function
+
   - The type of value it returns
   - Its name
   - The arguments it takes
 
-- Choosing meaning function names is just as important as choosing meaningful variable names 
+- Choosing meaning function names is just as important as choosing meaningful variable names
   - Greatly affects the program's readability
 
 ### 46.2 Example: Defining Functions
@@ -2607,26 +2608,27 @@ void printMessage(void)
 
 - After that is that it takes no arguments (the second use the keyword `void`)
 
-
 ### 46.3 Defining a Function
 
 - The statements in the function body can be absent, but the braces must be present
 
 - If three are no statements in the body of a function, the `return` type must be `void`, and the function will not do anything
+
   - Defining a function with an empty body is often useful during the testing phase of a complicated program
   - Allows you to run the program with only selected functions actually doing something
   - You can then add the details for the function bodies step by step, testing at each stage, until the whole thing is implemented and fully tested
 
-
   ### 46.4 Naming Functions
 
   - The name of a function can be any legal name
+
     - Not a reserved word (such as `int`, `double`, `sizeof`, and so on)
     - Is not the same name as another funciton in your program
-    - Is not the same name as any of the standard library functions 
+    - Is not the same name as any of the standard library functions
       - Would prevent you from using hte library function
 
   - A legal name has the same form as that of a variable
+
     - A sequence of letters and digits
     - First character must be a letter
     - Underline character counts as a letter
@@ -2643,6 +2645,7 @@ void printMessage(void)
 ### 46.5 Function Prototypes
 
 - A function prototype is a statement that defines a function
+
   - Defines its name, its return value type, and the type of each of its parameters
   - Provides all the external specifications for the function
 
@@ -2654,9 +2657,11 @@ void printMessage(void);
 ```
 
 - A function prototype enables the compiler to genenerate the appropriate instructions at each point where you call the function
+
   - It also checks that you are using the funciton correctly in each invocation
 
 - When you include a standard header file in a program, the header file adds the funciton prototypes for that library to your program
+
   - The header file `stdio.h` contains function prototyps for `printf()`, among others
 
 - Generally appera at the beginning of a source file prior to the implementations of any functions or in a header file
@@ -2664,6 +2669,7 @@ void printMessage(void);
 - Allows any of the funcitons in the file to call any function regardless of where you have placed the implementation of functions
 
 - Parameter names do not have to be the same as those used in the function definition
+
   - Not required to include the names of parameters in a funciton prototype
 
 - Its good practice to always include declarations for all the functions in a program source file, regardless of where are called
@@ -2697,22 +2703,27 @@ void add()
 
 - A parameter is a variable in a function declaration and function definition/implementation
 
-- When a function is called, the arguments are the data you pass into the funcitons parameters. 
+- When a function is called, the arguments are the data you pass into the funcitons parameters.
+
   - The actual value of variable that gets passed to the function
 
 - Funciton paramters are defined within the function header
+
   - Are placeholders for the arguments that need to be specified when the function is called
 
 - The parameters for a funciton are a list of parameter names with their types
+
   - Each parameter is separated by a comma
   - Entire list of parameters is enclosed between the parentheses that follow the function name
 
 - A funciton can have no parameters, in which case you should put `void` between the parentheses
 
 - Parameters provide the means to pass data to a function
+
   - Data passed from the calling function to the funciton that is called
 
 - The names of the parameters are local to the function
+
   - They will asssume the values of the arauments that are passed when the function is called
 
 - The body of the function should use these parameters in its implementation
@@ -2726,10 +2737,12 @@ void add()
 ### 47.1 Example
 
 - When the `printf()` function is called, you always supply one or more values as arguments
+
   - First value being the format string
   - The remaining values being any variables to displayed
 
 - Paramenters greatly increase the usefulness and flexibility of a funciton
+
   - The `printf()` function displays whatever you tell it to display via the parameters and arguments passed
 
 - It is a good idea to add comments before each of your own function definitions
@@ -2758,16 +2771,17 @@ int main(void)
 
 ### 48.1 Overview
 
-  ```c
-  Return_type Function_name( Parameters - separated by commas)
-  {
-    // Statements...
-  }
-  ```
+```c
+Return_type Function_name( Parameters - separated by commas)
+{
+  // Statements...
+}
+```
 
 - The `Return_type` specifies the type of the value returned by the function
 
 - You can specify the type of value to be returned by a funciton as nay of the legal types in C
+
   - Includes enumeration types and pointers
 
 - The return type can also be type `void` which means no value is returned
@@ -2781,28 +2795,32 @@ return;
 ```
 
 - This form of the `return` statement is used exclusively in a finction where the `return` type has been declared as `void`
+
   - Does not return a value
 
 - The more general form of the `return` statement is:
+
 ```c
 return expression;
 ```
 
 - This form of the `return` statement must be used when the `return` value type has been declared as some type other than `void`
 
-- The value that is returned to the calling program is the value that results when expression is evaluated 
+- The value that is returned to the calling program is the value that results when expression is evaluated
   - Should be of the return type specified for the function
-
 
 ### 48.3 Returning Data
 
 - A function that has statements in the function body but does not return a value must have the return type as `void`
+
   - Will get an error message if you compile a program that contains a function with a `void` return type that tries toe return a value
 
-- A function that does not have a `void` return type must return a value of the specified return type 
+- A function that does not have a `void` return type must return a value of the specified return type
+
   - Will get an error message from the compiler if return type is different thant specifiied
 
 - If expression results in a value that's a different type from the return type in the funciton header, the compiler will insert a conversion from the type of expression to the one required
+
   - If conversion is not possible then the compiler will produce an error message
 
 - There can be more than one return statement in a function
@@ -2814,13 +2832,13 @@ return expression;
 
 - When you call the funciton, the values of the arguments that you specify in the call will be assigned to the parameters in the function
 
-- When the funciton executes, the computation proceeds using the values you supplied as arguments 
+- When the funciton executes, the computation proceeds using the values you supplied as arguments
 
 - The arguments you specify when you call a funciton should agree in type, number, and sequence with the parameters in the funciton header
 
-### 48.5 Invoking a function and assigning data returned 
+### 48.5 Invoking a function and assigning data returned
 
-- If the function is used as the right side of an assignment statement, the return value supplied by the funciton will be subsittuted for the funciton 
+- If the function is used as the right side of an assignment statement, the return value supplied by the funciton will be subsittuted for the funciton
   - Will also work with an expression
 
 ```c
@@ -2835,10 +2853,12 @@ int = myFuncitonCall();
 ### 49.1 Local Variables
 
 - Variables defined inside a function are known as automatci local variables
+
   - They are automatcially "created" each time the funciton is called
   - Their values are local to the function
 
-- The value of a local variable can only be accessed by the function in which the variable is defined 
+- The value of a local variable can only be accessed by the function in which the variable is defined
+
   - Its value cannot be accessed by any other function
 
 - If an initial value is given to a variabel inside a function, that initial value is assigned to the variable each time the function is called
@@ -2856,6 +2876,7 @@ int = myFuncitonCall();
 - A global variable has the lifetime of the program
 
 - Global variabels ar edeclared ouside of any function
+
   - Does not belong to any particular function
 
 - Any function in the program can change the value of a global variable
@@ -2884,6 +2905,7 @@ void myFunction()
 ### 49.4 Avoiding Using Global Variables
 
 - In general, global variables are a "bad" thing and should be avoided
+
   - Promotes coupling between functions (dependencies)
   - Hard to find the location of a bug in a program
   - Hard to fix a bug once its found
@@ -2894,16 +2916,19 @@ void myFunction()
 ## 50 Challenge of Functions: Write some functions
 
 - We need to get some practice writing functions
-    - Better organized code
-    - Avoid duplication
+
+  - Better organized code
+  - Avoid duplication
 
 - Write three functions in a single program
 
 - Function 1: Find the greatest common divisor of two non-negative integer values and to return the result
+
   - gcd, takes two ints as parameters
-![A gcd example](./images/GCD-or-HCF-of-two-numbers-1024x512.png)
+    ![A gcd example](./images/GCD-or-HCF-of-two-numbers-1024x512.png)
 
 - Function 2: Calculate the absolute value of a number
+
   - Should take as a parameter a float and return a float
   - Test this function with ints and floats
 
@@ -2913,13 +2938,15 @@ void myFunction()
 
 ## 51 Challenge of Functions & Arrays: Tic Tac Toe
 
-- Game is played on a 3x3 grid the game is played by two players, who take turns 
+- Game is played on a 3x3 grid the game is played by two players, who take turns
 
 - You should create an array to represent the board
+
   - Can be of type char and consist of 10 elements (do not use zero)
   - Each element represents a coordinate on the board that the user can select
 
 - Some functions that you should probably create
+
   - `checkForWin` - checks to see if a player has won or the game is a draw
   - `drawboard` - redraws the board for each player turn
   - `markBoard` - sets the char array with a selection and check for an invalid selection
@@ -2937,11 +2964,13 @@ void myFunction()
   ```
 
   - There is a distinction made between the single quoation and double quotation marks
+
   ```c
   plusSign = "+"; // incorrect if plusSign is a char
   ```
 
 - A string constant or string is a sequence of characters or symbols between a pair of double quoted characters
+
   - Anything between a pair of double quotes is interpreted by the compiler as a string
   - Includes any special characters and embedded spaces
 
@@ -2954,26 +2983,28 @@ printf("For \" you write \\\".");
 ```
 
 - Understand the difference between single quotation and double quotation marks
+
   - Both are used to create two different types of constants in C
 
 - For the third example above, you must specify a double quote within a string as the excape sequence `\"`
+
   - The compiler will interpret an explicit double quote without a preceding backslash as a string delimeter
 
 - Also, you must also use the excape sequence `\\` when you want to include a backslash in a string
   - A backslash in a string always signals the start of an escape sequence of the compiler
 
-
 ### 52.2 Strings in Memory
 
 ![strings_in_memory](./images/strings_in_memory.png)
 
-
 ### 52.3 Null Character
 
 - A special character with the code value 0 is added to the end of each string to mark where it ends
+
   - This character is known as the null character and you write it as `\0`
 
 - Don't confuse the null character with `NULL` (keyword)
+
   - null character is a string terminator
   - `NULL` is a symbol that represents a memory address that doesn't reference anything
 
@@ -2991,24 +3022,28 @@ int main(void)
 ```
 
 - If you compile and run this program, you'll get this output:
+
 ```
 The character
 ```
-  - Only the first part of the string has been displayed
-  - Output ends after the first two words because the function stops outputting the string when it reaches the first null character
-  - The second `\0` atthe end of string will never be reached
 
-- The first `\0` that's found in a character sequence always marks the end of the string 
+- Only the first part of the string has been displayed
+- Output ends after the first two words because the function stops outputting the string when it reaches the first null character
+- The second `\0` atthe end of string will never be reached
+
+- The first `\0` that's found in a character sequence always marks the end of the string
 
 ## 53 Defining a String
 
 ### 53.1 Character Strings
 
 - C has no special variable type for strings
+
   - Tihs means thre are no special operators in the language for processing strings
   - The standard library provides an extensive range of functions to handle strings
 
 - Strings in C are stored in an array of type char
+
   - Characters in a stirng are stored in adjacent memory cells, one character per cell
 
 - To declare a string in C, simply use the `char` type and the brackets to indicate the size
@@ -3018,12 +3053,13 @@ char myString[20];
 ```
 
 - This variable can accommondate a string that contains up to 19 characters
+
   - You must allow one element for the termination character (null character)
 
 - When you specify the dimemsion of an array that you intend to use to store a string, it must be at least one than the number of characters in the string that you want to store
   - The compiler automatically adds `\0` to the end of every string constant
 
-### 53.2  Initializing a String
+### 53.2 Initializing a String
 
 - You can initialize a string variable when you declare it
 
@@ -3032,6 +3068,7 @@ char word[] = {'H', 'e', 'l', 'l', 'o', '!'};
 ```
 
 - To initialize a string, it is the same as any other array initialization
+
   - In the absence of a particualr array size, the C compiler automatically computes the number of elements in the array
     - Based upon the number of initializers
     - This statement reserves space in memory for exactly seven characters
@@ -3059,12 +3096,12 @@ char str[40] = "To be";
   - str[5] will contain the null character `'\0'`
   - Space is allocated for all elements of the array
 
-
 ### 53.3 Assigning a value to a string after initializing
 
 - Since you can not assign arrays in C, you can not assign strings either
 
-- ***The folowing is an error:***
+- **_The folowing is an error:_**
+
 ```c
 s = "hello"; // Initialize - DOESN'T WORK ("lvalue required" error)
 ```
@@ -3086,7 +3123,6 @@ printf("\nThe message is: %s", message);
 
 - The `printf()` function assumes when it encounters the `%s` format characters that the corresponding argument is a character string that is terminiated by a null character
 
-
 ### 53.5 Inputting a String
 
 - To input a string via the keyboard, use the scanf function
@@ -3096,27 +3132,28 @@ char input[10];
 printf("Please input your name: ");
 scanf("%s", input);
 ```
+
 - The `%s` format specifier is for inputing string
 
 - No need to use the & (address of operator) on a string
-
 
 ### 53.6 Testing if two strings are equal
 
 - You cannot directly test two strings to see if they are equal with a statement such as `if (string1 == string2)`
 
 - The equality operator can only be applied to simple variable types, sucha as floats, ints, or chars
+
   - Does not work on sttructuress or arrays
 
 - To determine if two strings are equal, you must explicitly compare the two character strings character by character
   - We will discuss as easier way with the `strcmp()` function
 
 **Reminder:**
-  - The string constant `"x"` is not the same as the character constant `'x'`
-  - `'x'` is a basic type(char)
-  - `"x"` is a derived type, an array of char
-  - `"x"` really consists of two characters, `'x'` and `'\0'` - the null character
 
+- The string constant `"x"` is not the same as the character constant `'x'`
+- `'x'` is a basic type(char)
+- `"x"` is a derived type, an array of char
+- `"x"` really consists of two characters, `'x'` and `'\0'` - the null character
 
 ## 54 Constant Strings
 
@@ -3129,21 +3166,27 @@ scanf("%s", input);
 ```
 
 - When your program is compiled, the value 0.015 will be substituted everywhere you have used `TAXRATE`
+
   - Compile-time substitution
 
 - A define name is not a variable
+
   - You cannot assign a value to it
 
 - Notice that the `#define` statement has a special syntax
+
   - No equal sign used to assign the value `0.015` to `TAXRATE`
   - No semicolon
 
 - `#define` statements can appear anywhere in a program
+
   - No such thing as a local define
   - Most programmers group their `#define` statements at the beginning of the program (or inside an include file)
+
     - Where they can be quickly referenced and shared by more than one source file
 
   - The `#define` statement helps to make programs more portable
+
     - It might be necessary to use constant values that are related to the particular computer on which the program running
 
   - The `#define` statement can be used for character and string constants
@@ -3165,14 +3208,17 @@ const int MONTHS = 12;
 ```
 
 - `const` makes `MONTHS` into a read-only value
+
   - You can display `MONTHS` and use it in calculations
   - You cannot alter the value of `MONTHS`
 
 - `const` is a newer approach and is more flexible than using `#define`
+
   - It lets you declare a type
   - It allows better control over wihch parts of a program can use the constant
 
 - C has yet a third way to create symbolic constants
+
   - `enums`
 
 - Intializing a char array and declaring it as constant is a good way of handling standard message
@@ -3182,11 +3228,11 @@ const char message[] = "The end of the world is nigh.";
 ```
 
 - Because you declare message as `const`, it's protected from being modified explicitly within the program
+
   - Any attempt to do so will result in an error message from the compiler
 
 - This technique for defining standard messages is particular usefule if they are used in many place
-  - Prevents accidental modification of such constants in other parts of the program 
-
+  - Prevents accidental modification of such constants in other parts of the program
 
 ## 55 Common String Functions
 
@@ -3197,7 +3243,6 @@ const char message[] = "The end of the world is nigh.";
   - Copying one character string to another: `strcpy()` and `strncpy()`
   - Combining two character strings together (concatenation): `strcat()` and `strncat()`
   - Determining if two character strings are equal: `strcmp()` and `strncmp()`
-  
 - The C library suppliers these string-handling function prototypes in the `string.h` header file
 
 ### 55.2 Getting the length of string
@@ -3220,14 +3265,13 @@ int main()
 ```
 
 - This function does change the string
-  - The function header does not use `const` in declaring the format parameter string 
-
+  - The function header does not use `const` in declaring the format parameter string
 
 ### 55.3 Copying Strings
 
 - Since you can not assign arrays in C, you can not assign strings either
 
-- You can use the `strcpy()` function to copy a string to an existing string 
+- You can use the `strcpy()` function to copy a string to an existing string
   - The string equivalent of the assignment operator
 
 ```c
@@ -3236,7 +3280,9 @@ char src[50], dest[50];
 strcpy(src, "This is source");
 strcpy(dest, "This is destination");
 ```
+
 - The `strcpy()` function does not check to see whether the source string actually fits in the target string
+
   - Safter way to copy strings is to use `strncpy()`
 
 - `strncpy()` takes a third argument
@@ -3252,6 +3298,7 @@ strncpy(dest, src, 10);
 ### 55.4 String Concatenation
 
 - The `strcat()` funciton takes two string for arguments
+
   - A copy of the second string is tacked onto the end of the first
   - This combined version becomes the new first string
   - The second string is not altered
@@ -3271,9 +3318,11 @@ printf("%s\n", strcat(inpyt, myString));
 ```
 
 - The `strcat()` funciton does not check to see whether the second string will fit in the first array
+
   - If you fail to allocate enought space for the first array, you will run into problems as excess characters overflow into adjacent locations
 
 - Use strncat() instead
+
   - Takes a second argument indicating the maximum number of characters to add
 
 - For example, `strncat(bugs, addon, 13)` will add the contents of the addon string to bugs, stopping when it reaches 13 additional characters or the null character, whichever comes first
@@ -3291,23 +3340,28 @@ printf("Final destination string: [%s]\n", dest);
 ### 55.5 Comparing Strings
 
 - Suppose you want to compare someone response to a stored string
+
   - Cannot use `==`, will only check to see if the string has the same address
 
 - There is a function that compares string contents, not string addresses
+
   - It is the `strcmp()` (for string comparison) function
   - Does not compare arrays, so it can used to compare strings stored in arrays of different sizes
   - Does not compare characters
     - You can use arguments such "apples" and "A", but you cannot use character arguments as 'A'
 
 - This function does for strings what relational operators do for numbers
+
   - It returns 0 if its two string arguments are the same and nonzero otherwise
   - If return value < 0, then it indicates str1 is less than str2
   - If return value > 0, then it indicates str2 is less than str2
 
-- The `strcmp()` function compares strings until it finds corresponding characters that differ 
+- The `strcmp()` function compares strings until it finds corresponding characters that differ
+
   - Cound take the search to the end of one of the strings
 
 - The `strcmp()` function compares the strings until they differ or until it has compared a number of characters specified by a third argument
+
   - If you wanted to search for strings that begin with "astro", you could limit search to the first five characters
 
   ```c
@@ -3318,16 +3372,17 @@ printf("Final destination string: [%s]\n", dest);
     printf("Found astounding");
   ```
 
-
 ## 56 Searching, Tokenizing and Analyzing Strings
 
 ### 56.1 Overview
 
 - Searching a string
+
   - The `string.h` header file declares several string-searching functions for finding a single character or a substring
   - `strchr()` and `strstr()`
 
 - Tokenizing a string
+
   - A token is a sequence of characters within a string that is bounded by a delimiter (space, comma, period, etc)
   - Breaking a sentence into words is called `tokenizing`
   - `strtok()`
@@ -3350,6 +3405,7 @@ int *pNumber = &Number;
 - Above, we declare a variable, Number, with the value 25
 
 - We declared a pointer, pNumber, which contains the address of Number
+
   - asterisk used in declaring a pointer
 
 - To get the value of variable pNumber, you can use the asterisk to dereference the pointer
@@ -3364,18 +3420,19 @@ int *pNumber = &Number;
 ### 56.3 Searching a String for a Character
 
 - The `strchr()` funciton searches a given string for a specified character
+
   - First argument to the function is the string to be searched (whicl will be the address of a char array)
   - Second argument is the character that you are looking for
 
 - The function will search the string starting at the beginning and return a pointer to the first position in the string where the character is found
-  -  The address of this position in memory
+
+  - The address of this position in memory
   - Is of type `char*` described as the "pointer to char".
 
 - To store the value that's returned, you must create a variable that can store the address of a charater
 
 - If the character is not found, the function returns a speicial value `NULL`
-   - `NULL` is the equivalent of 0 for a pointer and represents a pointer that does not point to anything
-
+  - `NULL` is the equivalent of 0 for a pointer and represents a pointer that does not point to anything
 
 ### 56.4 `strchr()`
 
@@ -3397,6 +3454,7 @@ pGot_char = strchr(str. ch);      // Stores address where ch is found
 ### 56.5 Searching for a Substring
 
 - The `strstr()` funciton is probably the most useful of all the searching functions
+
   - Searches one string for the first occurrence of a substring
   - Returns a pointer to the position in the first string where the substring is found
   - If no match, returns `NULL`
@@ -3410,6 +3468,7 @@ char word[] = "dog";
 char *pFound = NULL;
 pFound = strstr(text, word);
 ```
+
 - Searches `text` for the first occurrence of the string stored in `word`
   - The string "dog" appears starting at the seventh character in text
   - `pFound` will be set to the address `text` + 6 ("dog has his day")
@@ -3420,6 +3479,7 @@ pFound = strstr(text, word);
 - A token is a sequence of characters within a string that is bound by delimiter
 
 - A delimiter can be anything, but, should be unique to the string
+
   - Spaces, commas, and a period are good examples
 
 - Breaking a sentence into words is called tokenizing
@@ -3445,10 +3505,10 @@ isxdigit()      // Hexadecimal digit ('0' to '9', 'A' to 'F', 'a' to 'f')
 isblank()       // Standard blank characters (space, '\t')
 isspace()       // Whitespace character (space, '\n', '\t', '\v', '\r', '\f')
 isspunct()      // Printing character for which isspcae and isalnum() return false
-``` 
+```
 
 - The argument to each of these functons is the character to be tested
-- All these functions return a nonzero value of type `int` if the character is within the set that's being tested for 
+- All these functions return a nonzero value of type `int` if the character is within the set that's being tested for
 - These return values convert to true and false, respectively, so you can use them as `Boolean` values
 
 ## 57 Converting Strings
@@ -3456,6 +3516,7 @@ isspunct()      // Printing character for which isspcae and isalnum() return fal
 ### 57.1 Overview
 
 - It is very common to convert character case
+
   - To all upper case or all lower case
 
 - The `toupper()` function converts from lowercase to uppercase
@@ -3464,10 +3525,13 @@ isspunct()      // Printing character for which isspcae and isalnum() return fal
 - Both functions return either the converted character or the same character for characters that are already in the correct case or are not convertible such as punctuation characters
 
 - Tis is how you convert a string to uppercase
+
 ```c
 for (int i = 0; (buf[i] = (char)toupper(buf[i]))!='\0'; ++i);
 ```
+
 - This loop will convert the entire string in the buf array to uppercase by stepping through the string one character at a time
+
   - Loop stops when it reaches the string termination character '\0'
   - The case to type char is there because toupper() returns type int
 
@@ -3493,13 +3557,13 @@ printf("The second %found in the first.\n" ((strstr(text, substring) == NULL) ? 
 
 ### 57.3 Converting Strings to Numbers
 
-***The stdlib.h header declares functions that you can use to convert a string to a numerical value***
+**_The stdlib.h header declares functions that you can use to convert a string to a numerical value_**
 
 ```c
 atof();
 atoi();
 atol();
-atoll(); 
+atoll();
 ```
 
 - For all functions, leading whitespace is ignored
@@ -3509,16 +3573,16 @@ char value_str[] = "98.4";
 double value = atof(value_str)
 ```
 
-```strtod()```: A value to type `double` is produced from the initial part tof the of the string. Specified by the first argument. The second argument is a pointer to a variable, `ptr` say, of type `char` * in which the function will store the address of the first character following the subsctring that was converted to the `double` value. If so string was found that could be conveted to type `double` value, if so string was found that could be converted to type `double`, the variable `prt` will contian the address passed as the first argument.
+`strtod()`: A value to type `double` is produced from the initial part tof the of the string. Specified by the first argument. The second argument is a pointer to a variable, `ptr` say, of type `char` \* in which the function will store the address of the first character following the subsctring that was converted to the `double` value. If so string was found that could be conveted to type `double` value, if so string was found that could be converted to type `double`, the variable `prt` will contian the address passed as the first argument.
 
-```strof()```: A value of type `float`, in all other respects it works as `strtod()`.
+`strof()`: A value of type `float`, in all other respects it works as `strtod()`.
 
-```strtold()```: A value of type `long double`.In all other respects it works as `stdtod`.
-
+`strtold()`: A value of type `long double`.In all other respects it works as `stdtod`.
 
 ## 58 Challenge of Strings: Common String Functions
 
 - Write a program that display a string in reverse order
+
   - Should read input from the keyboard
   - Need to use the `strlen` string function
 
@@ -3545,18 +3609,19 @@ zero
 ### 59.1 Overview
 
 - Debugging is the process of finding and fixing errors in a program (usually logic errors, but, can also include compiler/syntax errors)
-  - For syntax errors, understand what the compiler is telling you 
-  - Always focus on fixing the first problem detected 
+
+  - For syntax errors, understand what the compiler is telling you
+  - Always focus on fixing the first problem detected
 
 - Can range in complexity from fixing simple errors to collecting large amounts of data for analysis
 
 - The ability to debug by a programmer is an essential skill (problem solving) that can saving you trememdous amounts of time (and money)
 
-- Maintenance phase is the most expensive phase of the software life cycle 
+- Maintenance phase is the most expensive phase of the software life cycle
 
 - Understand that bugs are unavoidable
 
-### 59.2 Common Problems 
+### 59.2 Common Problems
 
 - Logic Errors
 - Syntax Errors
@@ -3567,30 +3632,34 @@ zero
 
 ### 59.3 Debugging Process
 
-- Understand the problem 
+- Understand the problem
 
 - Reproduce the program
+
   - Sometimes very difficult as problems can be intermittent or only happen in vary rare circumstances
   - Parallel processes or threading problems
 
 - Simplify the problem / Divide and conquer / isolate the source
+
   - Remove parts of the orignal test case
   - Comment out code / back out changes
   - Turn a large program into a lot of small programs (unit testing)
 
 - Identify origin of the problem
+
   - Using Debugging Tools if neccessary
 
 - Solve the problem
   - Experience and practice
-  - Sometimes includes redesign or refactor code 
+  - Sometimes includes redesign or refactor code
 
 ### 59.4 Techniques and Tools
 
 - Tracing / using print statements
+
   - Output values of variable at certain points of a program
   - Show the flow of execution
-  can help isolate the error
+    can help isolate the error
 
 - Debuggers - monitor the execution of a program,restart it, set the breakpoints and watch variables in memory
 
@@ -3600,7 +3669,8 @@ zero
 
 - Exception Handing helps a great deal to identify catastrophic errors
 
-- Static Analyzers - analyze soure code for specific set of know problems 
+- Static Analyzers - analyze soure code for specific set of know problems
+
   - Semantic checker, does not analyze syntax
   - Can detect things like uninitialized variables, memory leaks, unreachable code, deadlocks or race conditions
 
@@ -3615,8 +3685,9 @@ zero
 - Write high quality code (follow good design principles and good programming practices)
 
 - Unit Tests - automatically executed when compiling
+
   - Helps avoid regression
-  - Finds errors in new code before it is delivered 
+  - Finds errors in new code before it is delivered
   - TDD (Test Driven Development)
 
 - Provide good documentation and proper planning (write down design on paper and untilize pseudocode)
@@ -3626,12 +3697,12 @@ zero
   - When making changes, apply them incrementally. Add one change, then test thoroughly before starting the next step
   - Helps reduce the possible sources of bugs, limits prolem set
 
-
 ## 60 Understanding the Call Stack
 
 - A stack trace (call statck) is generated whenever your app craches because of a fatal error
 
 - A statck trace shows a list of the function calls that lead to error
+
   - Includes the filenames and line numbers of the code that cause the exception or error to occur
   - Top of the stack contains the last call that caused the error (nested calls)
   - Bottom of the stack contains the first call that started the chain of calls to cause the error
@@ -3644,79 +3715,96 @@ zero
 - missing a semicolon
 - confusing the operator `=` with the operator `==`
 - omitting prototype declarations
+
 ```c
 result = squareRoot(2)
 ```
+
 - failling to include the header file that includes the definition for a C-programing library function being used in the porgram
-- confusing a character constant and a character string 
+- confusing a character constant and a character string
 - using the wrong bounds of an array
+
 ```c
 int a[100], i, sum=0;
 for (i = 1; i < 100; i++1)
   sum += a[i];
 ```
+
 - confusing the opeartor `->` with the operator when referencing structure members
+
   - the operator `.` is used for structure varaibles
   - the operator `->` is uesd for structure pointer variables
 
 - omitting the ampersand before nonpointer variable in a `scanf()` call
 - using a pointer variable before it's intialized
+
 ```c
 char *char_pointer;
 *char_pointer = 'X';
 ```
+
 - omitting the break statement at the end of a case in a switch statement
 - inserting a semicolon at the end of a preprocessor definition
 - omitting a closing parenthesis or closing quotation marks on any statement
-
 
 ## 62 Understanding Compiler Errors and Warnings
 
 ### 62.1 Overview
 
-- It is sometimes very hard to understand what the compiler is complaining about 
+- It is sometimes very hard to understand what the compiler is complaining about
+
   - Need to understand compiler errors in order to fix them
   - It is sometimes difficult to identify the true reason behind a compiler error
 
 - The compiler makes decisions about how to translate the code that the programmer has not written in the code
+
   - It is convenient because the programs can be written more succinctly (only expert programmers take advantage of this feature)
 
 - You should use an option for the compiler to notify all cases where there are implicit decisions
+
   - This option is `-Wall`
 
 - The compiler shows two types of problems
+
   - errors
+
     - A condition that prevents the creation of a final program
     - No executable is obtained until all the errors have been corrected
     - The first errors shown are the most reliable because the translation is finished but thre are some errors that may derive from previous ones
     - Fix the first errors are first, it is recommended to compile again and see if othe rlater errors also disappeared.
 
   - warings
-    - Messages that the compiler shows about 'special" situations in which an anomaly has been detected 
+
+    - Messages that the compiler shows about 'special" situations in which an anomaly has been detected
     - Non-fatal errors
     - The final executable program may be obtained with any number of warning
 
-  - Compile always with the `-Wall` option and do not consider the program correct until all warning been eliminated 
+  - Compile always with the `-Wall` option and do not consider the program correct until all warning been eliminated
 
   ### 62.2 Most Common Compiler Messages
 
-- `variable undeclared` (first use in this funciton) 
-  - This is one of the most common and easier to detect 
+- `variable undeclared` (first use in this funciton)
+
+  - This is one of the most common and easier to detect
   - The symbol shown at the beginning of the message is used but has not been declared
 
 - `warning: implicit declaration of function`
+
   - This waring appears when the compiler finds a function used in the code but no previous information has been given about it
   - Need to declare a function prototype
 
 - `warning: control reaches end of non-void function`
+
   - This warning appears when a function has been defined as returining a result but no return statement has been included ti return this result
   - Either the funciton is incorrectly defined or the statement is missing
 
 - `warning: unused variable ...`
-  - This warning is printed by the compiler when a variable is declared but not used in the code 
+
+  - This warning is printed by the compiler when a variable is declared but not used in the code
   - Message disappears if the declaration is removed
 
 - `undefined reference to ... `
+
   - Appears when there is a function invoked in the code that has not been defined anywhere
   - Compiler is telling us that there is a reference to a function with no definition
   - Check which function is missing and make sure its definition is compiled
@@ -3725,14 +3813,12 @@ char *char_pointer;
   - Two definitions of a function prototype have been found
   - One is the prototype, the other is the definition with function body
 
-
 ### 62.3 Runtime Errors
 
-- The execution of C programs may terminate abruptly (crash) when a run-time error is detected 
+- The execution of C programs may terminate abruptly (crash) when a run-time error is detected
   - C programs only print the succint message Segmentation fault
   - Usually result in a code file depending on the signal that has been thrown
   - Can analyze the core and the call stack
-
 
 ## 63 Pointers Started
 
@@ -3751,7 +3837,7 @@ char *char_pointer;
 
 - A pointer provides an indirection is the act of manipulating a value through its memory address
 
-- A pointer provides an indirect means of accessing the value of a particular data item 
+- A pointer provides an indirect means of accessing the value of a particular data item
   - A variable whose value is a memory address
   - Its value is the address of another location in memory that can contain a value
 
@@ -3759,14 +3845,17 @@ char *char_pointer;
 
 - Just as there are reasons why it makes sense to go through the purchasing department to order new cartridge
   (you don't have to know which particular store the cartridges are being ordered from)
+
   - There are good reasons why it makes sense to use pointers in C
 
 - Using pointers in your program is one of the most powerfule tools available in the C language
 
 - Pointers are also one of the most confusing concepts of the C language
+
   - It is important you get this concept figured out in the beginning and maintain a clear idea of what is happening as you dig deeper
 
 - The compiler must know the type of data stored in the variable to which it points
+
   - Need to know how much memory is occupied or how to handle the contents of the memory to which it points
   - Every pointer will be associated with a specific variable type
   - It can be used only to point to variables of that type
@@ -3775,29 +3864,34 @@ char *char_pointer;
 
 ![pointer_overview](./images/pointer_overview.png)
 
-- The value of `&number` is the address where number is located 
+- The value of `&number` is the address where number is located
   - This value is used t oinitialized `pnumber` in the second statement
 
 ### 63.3 Why use pointers?
 
 - Accessing dat aby means of only variables is very limiting
+
   - With pointers, you can access location (you can treat any position of memory as a variable for example) and perform arithmetic with pointers
 
 - Pointers in C make it easier to use arrays and strings
 
 - Pointers allow you to refer to the same space in memory from multiple locations
+
   - Means that you can update memory in one location and the change can be seen from another location in your program
   - Can also save space by being able to share components in your data structures
 
 - Pointers allow functions to modify data passed to them as variables
+
   - Pass by reference - passing arguments to function in way they can be changed by function
 
 - Can also be used to optimze a program to run faster or use less memory that in would otherwise
 
 - Pointers allow us to get multiple values from the function
+
   - A function can return only one value by passing arguments as pointers we can get more than one values from the pointer
 
-- With pointers dynamic memory can be created according to the program use 
+- With pointers dynamic memory can be created according to the program use
+
   - We can save memory from static (compile time) declarations
 
 - Pointer allow us to design and develop complex data structures like a stack, queue, or linked list
@@ -3815,6 +3909,7 @@ pointer ptr;  // not the way to declare a pointer
 ```
 
 - It is not enough to say that a variable is a pointer
+
   - You also have to specify the kind of variable of which the pointer points
   - Different variable types take up different amounts of storage
   - Some pointer operations require knowledge of that storage size
@@ -3837,17 +3932,18 @@ float * pf, pg;      // pf, pg are a pointer to float variables
 - The space between the `*` and the pointer name is optional
 
 - The value of a pointer is an address, and it is represented internally as an unsigned integer on most systems
+
   - However, you shouldn't think of a pointer as an integer type
   - Things you can do with integers that you can not do with pointers, and vice versa
   - You can multiply one integer by another, but you can not multiply one pointer by another
 
 - A pointer really is a new type, not an integer type
+
   - `%p` represents the format specifier for pointers
 
 - The previous declarations creates the varibale but does not initialized it
   - Dangerous when not initialized
   - You should always initialized a pointer when you declare it
-
 
 ### 64.2 NULL Pointers
 
@@ -3860,6 +3956,7 @@ int *pnumber = NULL;
 - `NULL` is a constant that is defined in the standard library
 
 - `NULL` is a value that is guaranteed not to point to any location in memory
+
   - Means that it implicitly prevents the accicental overwriting of memory by using a pointer that does not point to anything specific
 
 - Add an `#include` directive for `stddef.h` to your source file
@@ -3886,12 +3983,15 @@ int *pnumber = $number;
 ```c
 double value, *pVal, fnum;
 ```
+
 - Only the second variable `pVal` is a pointer
 
 ```c
 int *p, q;
 ```
-- The above declares a pointer, `p` of type `int*`, and a variable, q, that is of type int 
+
+- The above declares a pointer, `p` of type `int*`, and a variable, q, that is of type int
+
   - A common mistake to think that both `p` and `q` are pointers
 
 - Also, it is a good idea to use names beginning with `p` as a pointer names
@@ -3900,7 +4000,7 @@ int *p, q;
 
 ### 65.1 Accessing Pointer Values
 
-- You use the indirection operator `*` to access the value of the variable pointed to by a pointer 
+- You use the indirection operator `*` to access the value of the variable pointed to by a pointer
   - Alos referred to as the dereference operator because you use it to "dereference" a pointer
 
 ```c
@@ -3910,13 +4010,15 @@ int result = 0;
 ```
 
 - The pointer variable contains the address of the variable number
+
   - You can use this in an expression to calculate a new value for result
 
   ```c
   result = *pointer + 5;
   ```
 
-- The expression *pointer will evaluate to the value stored at the address contained in the pointer 
+- The expression \*pointer will evaluate to the value stored at the address contained in the pointer
+
   - The value stored in number, `15`, so result will be set to `15 + 5`, which is `20`
 
 - The indirection operator `*`, is also the symbol for multiplication, and it is used to specify pointer types
@@ -3941,6 +4043,7 @@ int main(void)
 ### 65.2 Displaying Pointers Value
 
 - To output the address of a variable, you use the output format specifier `%p`
+
   - Outputs a pointer value as a memory address in hexadecimal form
 
   ```c
@@ -3952,7 +4055,7 @@ int main(void)
   printf("pnumber's value: %p\n", pnumber); // Output the value (an address)
   ```
 
-  - Pointers occupy 8 bytes and the address have 16 hexadecimal digits 
+  - Pointers occupy 8 bytes and the address have 16 hexadecimal digits
     - If a machine has 64-bit operating system and my compiler supports 64-bit address
     - Some compilers only support 32-bit address, in which cas addresses will be 32bit address
 
@@ -3964,6 +4067,7 @@ printf("number's address:%p\n", (void*)&pnumber); // Output address
 ```
 
 - Remembera pointer itself has address, just like any other variable
+
   - You use `%p` as the conversion specifier to display an address
 
 - You use the `&` (address of) operator to reference the address that the number variable occupies
@@ -3974,12 +4078,14 @@ printf("number's address:%p\n", (void*)&pnumber); // Output address
 ### 65.4 Displaying the number of bytes a pointer is using
 
 - You use the `sizeof` operator to obtain the number of bytes a pointer occupies
+
   - A memory address on my machine is 64 bits
   - A memory address on my machine is 64 bits
 
 - You may get a compiler warning when using sizeof this way
   - `size_t` is an implementation-defined integer type
   - To prevent the warning, you could cast the argument to type int like this:
+
 ```c
 printf("pnumber's size: %d bytes\n", (int)sizeof(pnumber)); // Output the size
 ```
@@ -3994,7 +4100,7 @@ int main(void)
 
   number = 10;
   printf("number's address: %p\n, &number");
-  printf("value's address: %p\n, &value"); 
+  printf("value's address: %p\n, &value");
 
   pnumber = &number;  // Store the address of number in pnumber
 
@@ -4016,31 +4122,39 @@ int main(void)
 - C offers several basic operations you can perform on pointers
 
 - You can assign an address to a pointer
+
   - Assigned value can be an array name, a variable preceded by address operator (&), or another second pointer
 
-- You can dereference a pointer 
-  - The `*` opertor tells you where the pointer itself is stored 
+- You can dereference a pointer
+
+  - The `*` opertor tells you where the pointer itself is stored
 
 - You can take a pointer address
-  - The `&` operater tells you where the pointer itself is stored 
+
+  - The `&` operater tells you where the pointer itself is stored
 
 - You can perform pointe rarithmetic
+
   - Use the `+` operator to add an integer to a pointe or a pointer to an integer (integer is multiplied by the number of bytes in the pointed-to type and added to the orignal address)
   - Increment a pointer by one (useful in arrays when moving to the next element)
   - Use the `-` operator to subtract an integer from a pointer (integer is multiplied by the number pointed-to type and subtracted from the orignal address)
   - Decrementig a pointer by one (useful in arrays when going back to the previous element)
 
 - You can find the difference between two pointers
+
   - You do this for two pointers to elements that are in the same array to find out how far apart the elements are
 
-- You can use the relational operators to compare the values of two pointer 
+- You can use the relational operators to compare the values of two pointer
+
   - Pointers must be the same type
 
 - Remember, there are two forms of subtraction
+
   - You can subtract one pointer from another to get an integer
   - You can subtract an integer from a pointer and get a pointer
 
 - Be careful when incrementing or decrementing pointers and causing an array "out of bounds" error
+
   - Computer does not keep track of whether a pointer still points to an array element
 
   ### 66.2 Pointers used in expressions
@@ -4057,10 +4171,11 @@ pnumber = &number; // Store the address of number in pnumber
 ```
 
 - Increments the value of the number variable by 25
-- Indicates you are accessing the contents to which the variable called pnumber is pointing to 
+- Indicates you are accessing the contents to which the variable called pnumber is pointing to
 
 - If a pointer points to a variable x
-   - That pointer has been defined to be a pointer to the same data type as is x
+
+  - That pointer has been defined to be a pointer to the same data type as is x
   - Use of `*pointer` in an expression is identical to the use of x in the same expression
 
 - A variable defined as a "pointer to int" can store the address of any variable of type `int`
@@ -4072,6 +4187,7 @@ pnumber = &value;
 ```
 
 - The statement will operate with the new variable, value
+
   - The new contents of value will be 1024
 
 - A pointer can contain the address of any variable of the appropriate type
@@ -4081,6 +4197,7 @@ pnumber = &value;
 ### 66.3 When Receiving Input
 
 - When we have used `scanf()` to input values, we hvae used the `&` operator to obtain the address of a variable
+
   - On the variable that is to store the input (second argument)
 
 - When you have a pointer that already contains an address, you can use the pointer name as an argument for `scanf()`
@@ -4098,6 +4215,7 @@ printf("You entered %d.\n", value);
 ### 66.4 Testing for NULL
 
 - There is one rule you should burn into your memory
+
   - Do not dereference an uninitialized pointer
 
   ```c
@@ -4106,22 +4224,25 @@ printf("You entered %d.\n", value);
   ```
 
 - Second line means store that value in the location to which `pt` pointer
+
   - `pt` has a random value, there is no knowing where the 5 will be placed
 
 - It might go somewhere harmless, it might overwrite data or code, or it might cause the program to crash
 
 - Creating a pointer only allocates memory to store the pointer itself
+
   - It does not allocate memory to store data
-  -  Before you use pointer, it should be assigned a memoty location that has already been allocated
-    - Assign the address of an existing variable to the pointer
-    - Or you can use the `malloc()` function to allocate war memory first
+  - Before you use pointer, it should be assigned a memoty location that has already been allocated
+  - Assign the address of an existing variable to the pointer
+  - Or you can use the `malloc()` function to allocate war memory first
 
 - We already know that when declaring a pointer that does not pointer to anythoing, we shold intialize it to `NULL`
 
 ```c
 int *pvalue = NULL;
 ```
-- `NULL` is a special symbol in C that represents the pointer equivalent to 0 with ordinary numbers 
+
+- `NULL` is a special symbol in C that represents the pointer equivalent to 0 with ordinary numbers
   - The below also sets a pointer to null using 0
 
 ```c
@@ -4145,10 +4266,11 @@ if(!pvalue)
 - When we use the `const` modifier on a variable or an array, it tells the compiler that the contents of the variable/array will not be changed by the program
 
 - With pointers, we have to consider two things when using the const modifier
+
   - Whether the pointer will be changed
   - Whether the value that the pointer points to will be changed
 
-- You can use the `const` keyword when you declare a pointer to indicate that the value pointed to must not be changed 
+- You can use the `const` keyword when you declare a pointer to indicate that the value pointed to must not be changed
 
 ```c
 long value = 9999L;
@@ -4169,6 +4291,7 @@ const long *pvalue = &value;  // defines a pointer to a constant
 ```c
 value = 7777L;
 ```
+
 - The `value` pointed to has changed, but you did not use the pointer to make the change
 
 - The pointer itself is not constant, so you can still change what it points to:
@@ -4189,9 +4312,9 @@ pvalue = &number; // OK - changing the address in pvalue
 
 ### 67.3 Constant Pointers
 
-- You might also want to ensure that the address stored in pointer cannot be changed 
+- You might also want to ensure that the address stored in pointer cannot be changed
 
-- You can do this by using the `const` keyword in the declaration of the pointer 
+- You can do this by using the `const` keyword in the declaration of the pointer
 
 ```c
 int count = 43;
@@ -4208,6 +4331,7 @@ pcount = &item; // Error - attempt to change a constant pointer
 ```
 
 - It is all about where you place the `const` keyword, either before type or after the type
+
 ```c
 const int * pointToConstant // Value can not be changed
 int * const constantPointer // Pointer address cannot be changed
@@ -4225,22 +4349,24 @@ int * const constantPointer // Pointer address cannot be changed
 int item = 25;
 const int *const pitem = &item;
 ```
+
 - The `pitem` is a constant pointer to a constant so everything is fixed
+
   - Cannot change the address stored in `pitem`
   - Cannot use `pitem` to modify what it points to
 
 - You can still change the value of item directly
   - If you wanted to make everything not change, you could specify item as const as well
 
-
 ## 68 Void Pointers
 
-### 68.1 Overview 
+### 68.1 Overview
 
 - The type name `void` means absense of any type
-- A pointer of type `void*` can contain the address of a data item  of any type
+- A pointer of type `void*` can contain the address of a data item of any type
 - `void*` is often used as a parameter type of return value type with functions that deal with data in a type-indpendent way
 - Any kind of pointer can be passed around as a value of type `void*`
+
   - The void pointer does not know what type of object it is pointing to, so, it cannnot be dereferenced directly
   - The `void` pointer must first be explicitly cast to another pointer type before it is dereference
 
@@ -4274,6 +4400,7 @@ printf("Value of ch = %d\n", *(char*)vptr);
 - An array is a collection of objects of the same type that you can refer to using a single name
 
 - A pointer is variable that has as its value a memory address that can reference another variable or constant of a given type
+
   - You can use a pointer to hold the address of different variables at different times (must be same type)
 
 - Arrays and pointers seem quite different, but, they are very closely related and can sometimes be used interchageably
@@ -4299,35 +4426,232 @@ int *valuesPtr;
 ```
 
 - When you defined a pointer that is used to point to the elements of an array, you do not designed the pointer as type `*pointer` to array
+
   - You designate the pointer as pointing to the type of element taht is contained in the array
 
   - To set `valuePtr` to point to the first element in the values array, you write
+
   ```c
   valuesPtr = values;
   ```
 
 - The address operator is not used
+
   - The C compiler treats the appearance of an array name without a subscript as a pointer to the array
   - Specifying values without a subscript has the effect of producing a pointer to the first element of values
 
 - An equivalent way of producing a pointer to the start of values is to apply the address operator to the first element of the array
+
 ```c
 valuePtr = &values[0];
 ```
 
 ### 69.3 Summary
 
-- The two expressions `ar[i]` and *`(ar+i)` are equivalent in meaning
+- The two expressions `ar[i]` and \*`(ar+i)` are equivalent in meaning
   - Both work if `ar` is the name of an array, and both work if `ar` is a pointer variable
   - Using an expression such as `ar++` only works if `ar` is a pointer variable
 
-
 ## 70 Pointer Arithmetic
 
-### 70 Pointer Arithmetic
+### 70.1 Pointer Arithmetic
 
 - The real power of using pointers to arrays comes into play when you want to sequence through the element of an array
 
 ```c
-*valuePtr //
+*valuePtr // can be used to access the first integer of the values array, that is, values[0]
 ```
+
+- To reference values[3] through the `valuesPtr` variable, you can add 3 to `valuesPtr` and then apply the indrection operator
+
+```c
+*(valuesPtr + 3)
+```
+
+- The expresiion, `*(valuesPtr + i)` can be used to access the value contained in `values[i]`
+
+```c
+values[10] = 27;
+```
+
+- or, using `valuesPtr`, you could
+
+```c
+*(valuesPtr + 10) = 27;
+```
+
+- To set `valuesPtr` to point to the second element of the values array, you can apply the address operator to `values[1]` and assign the result to `valuesPtr`
+
+```c
+valuesPtr = &values[1]
+```
+
+- If `valuesPtr` points to `values[0]`, you can set it to point to values[1] by simply adding 1 to the value of `valuesPtr`
+
+```c
+valuesPtr + 1;
+```
+
+- This is a perfectly valid expression in C and can be used for pointers to any data type
+
+- The increment and decrement operators `++` and `--` are particularly useful when dealing with pointers
+
+```c
+++valuesPtr;
+```
+
+- Sets `valuesPtr` pointing to the next integer in the values array (values[1])
+
+```c
+--textPtr;
+```
+
+- Sets `valuesPtr` pointing to the previous integer in the values array, assuming the `valuesPtr` was not pointing to the begening of the values array
+
+### 70.2 Example
+
+```c
+#include <stdio.h>
+
+int arraySum(int array[], const int n)
+{
+    int sum = 0, *ptr;
+    int * const arrayEnd = array + n;
+
+    for ( ptr = array; ptr < arrayEnd; ++ptr)
+        sum += *ptr;
+
+    return sum;
+}
+
+void main(void)
+{
+    int arraySum(int array[], const int n);
+    int values[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    printf("The sume is %i\n", arraySum(values, 10));
+}
+```
+
+- To pass an arry to a funciton, you simply specify the name of the array
+- To produce a pointer to an array, you need only specify the name of the array
+
+- This implies that in the call to the `arraySum()` function, what was passed to the function was actually a pointer to the array values
+
+  - Explains why you are able to change the elements of an array from within a function
+
+- So, you might wonder why the formal parameter inside the function is not declared to be a pointer
+
+```c
+int arraySum(int *array, const int n)
+```
+
+- The above is perfectly valid
+
+  - Pointers and arrays are intimately related in C
+  - This is why you can declare array to be of type "array of ints" inside the `arraySum` function or to be of type "pointer to int"
+
+- If you are going to be using index numbers to reference the elements of an array that is passed to a function, declare the corresponding formal parameter to be an arry
+
+  - More correctly reflects the use of the array by the function
+
+- If you ar eusing the argument as a pointer to the array, declare it to be of type pointer
+
+### 70.3 Example with Pointer Notation
+
+```c
+#include <stdio.h>
+
+// int arraySum(int array[], const int n)
+int arraySum(int *array, const int n)
+{
+    int sum = 0;
+    int * const arrayEnd = array + n;
+
+    for ( ; array < arrayEnd; ++array)
+        sum += *array;
+
+    return sum;
+}
+
+void main(void)
+{
+    // int arraySum(int array[], const int n);
+    int values[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+
+    printf("The sume is %i\n", arraySum(values, 10));
+}
+```
+
+### 70.4 Summary
+
+```c
+int urn[3];
+int * ptr1, * ptr2;
+```
+
+| **Valid**          | **Invalid**           |
+| ------------------ | --------------------- |
+| `ptr1++;`          | `urn++;`              |
+| `ptr2 = ptr1 + 2;` | `ptr2 = ptr2 + ptr1;` |
+| `ptr2 = urn + 1;`  | `ptr2 = urn + ptr1;`  |
+
+- Functions that process arrays actually use pointers as argument
+
+- You have a choice between array notation and pointer notation for writing array-processing functions
+
+- Using array notation makes it more obvious that the funciton is working with arrays
+
+  - Array notation has a more familiar look to programmers versed in `FORTRAN`, `PASCAL`, `Modula-2`, or `BASIC`
+
+- Other programmers might be more accustomed to working with pointers and might find the pointer notation more natural
+  - Closer to machine language and ,with some compiliers, leads to more efficient code
+
+## 71 Pointers and Strings
+
+### 71.1 Overview
+
+- One of the most common applications of using a pointer to an array is as a pointer to a character string
+  - The reasons are one notational convenience and efficiency
+  - Using a variable of type pointer to `char` to reference a `string` gives you a lot of flexibility
+
+### 71.2 Example - array paramter vs char \* parameter
+
+```c
+void copyString(char to[], char from[])
+{
+  int i;
+  for (i = 0; from[i] != '\0'; ++i)
+    to[i] = from[i];
+  to[i] = '\0';
+}
+
+void copyString(char *to, char *from)
+{
+  for (; *from != '\0'; ++from, ++to)
+    *to = *from;
+  *to = '\0';
+}
+```
+
+### 71.3 char arrays as pointers
+
+- If you have an array of characters called text, ycould similarly define a pointer to be used to point to elements in text
+
+```c
+char *textPtr;
+```
+
+- If `textPtr` is set pointing to the beginning of an array of chars called text
+
+```c
+++textPtr;
+```
+
+- The above sets `textPtr` pointing to the next character in text, which is `text[1]`
+
+```c
+--textPtr;
+```
+
+- The above sets `textPtr` pointing to the previous character in text, assuming that `textPtr` was not pointing to the beginning of text prior to the execution of this statement
