@@ -4615,7 +4615,7 @@ int * ptr1, * ptr2;
   - The reasons are one notational convenience and efficiency
   - Using a variable of type pointer to `char` to reference a `string` gives you a lot of flexibility
 
-### 71.2 Example - array paramter vs char \* parameter
+### 71.2 Example - array paramter vs char parameter
 
 ```c
 void copyString(char to[], char from[])
@@ -4655,3 +4655,372 @@ char *textPtr;
 ```
 
 - The above sets `textPtr` pointing to the previous character in text, assuming that `textPtr` was not pointing to the beginning of text prior to the execution of this statement
+
+## 72 Pass by Reference
+
+### 72.1 Pass by Value
+
+- There are a few different ways you can pass data to a function
+
+  - Pass by value
+  - Pass by reference
+
+- Pass by value is when a function copies the actual value of an argument into the formal parameter of the function
+
+  - Changes made to the parameter inside the function have no effect on the argument
+
+- C programming uses call by value to pass arguments
+  - Means the code within a funciton cannot alter the arguments used to call the function
+  - There are no changes in the values, though they had been changed inside the function
+
+### 72.2 Passing data using copies of pointers
+
+- Pointers and functions get along quite well together
+
+  - You can pass a pointer as an argument to a funciton and you can also have a function return a pointer as its result
+
+- Pass by reference copies the address of an argument into the formal parameter
+
+  - The address is used to access the actual argument used in the call
+  - Means the changes made to the parameter affect the passed argument
+
+- To pass a value by reference, argument pointers are passed to the functions just like any other value
+  - You need to declare the function parameters as pointers types
+  - Changes inside the function are reflected outside the function as well
+  - Unlike call by value where the changes do not reflect outside the function
+
+### 72.3 Example of Swap Integers
+
+```c
+#include <stdio.h>
+
+void swap(int *x, int *y)
+{
+    int temp;
+    temp = *x;  /* save the value at address x in temp*/
+    *x = *y;    /* put y to x */
+    *y = temp;  /* put temp to y */
+
+    return;
+}
+
+int main()
+{
+    /* local variable definition */
+    int a = 100;
+    int b = 200;
+
+    printf("Before swap, value of a: %d\n", a);
+    printf("Before swap, value of b: %d\n", b);
+
+    swap(&a, &b);
+
+    printf("Aftere swap, value of a: %d\n", a);
+    printf("After swap, value of b: %d\n", b);
+
+    return 0;
+}
+```
+
+### 72.4 Summary of Syntax
+
+- You can communicate two kinds of information about a variable to a function
+
+```c
+function1(x);
+```
+
+- You transmit the value of `x` and the function must be declared with the same type as `x`
+
+```c
+int function1(int num)
+```
+
+- You transmit the address of x and requires the function definition to include a pointer to the correct type
+
+```c
+function2(&x);
+int function2(int *ptr);
+```
+
+### 72.5 Const Pointer Parameters
+
+- You can qualify a function parameter using the `const` keyword
+
+  - Indicates that the function will treat the argument that is passed for the parameter as a constant
+  - Only usefule when the parameter is a pointer
+
+- You apply the `const` keyword to a parameter that is a pointer to specify that a function will not change the value to which the argument points
+
+```c
+bool sendMessage(const char* pmessage)
+{
+  // Code to send the message
+  return true;
+}
+```
+
+- The typf of the parameter, is a pointer to a `const char`
+
+  - It is the `char` value that's const, not its address
+  - You could specify the pointer itself as `const` too, but this makes the little sense because the address is passed by value
+    - You cannot change the original pointer in the calling function
+
+- The compiler knows that an argument that is a pointer to constant data will be safe
+
+- If you pass a pointer to constant data as the argument for a parameter then the parameter must be a use athe above
+
+### 72.6 Returning Pointers from a Function
+
+- Returning a pointer from a function is a particularly powerful capability
+
+  - It provides a way for you to return not just a single value, but a whole set of values
+
+- You would have to declare a function returning a pointer
+
+```c
+int *myFunction()
+{
+  ...
+  ...
+  ...
+}
+```
+
+- Be carefule though, there are specific hazards related to returning a pointer
+  - Use local variables to avoid interfering with the variable that the argument points to
+
+## 73 Dynamic Memory Allocation
+
+### 73.1 Overview
+
+- Whenever you define a variable in C, the compiler automatically allocates the correct amount of storage for you based on the data type
+
+- It is frequently desirable to be able to dynamically allocate to storage while a program is running
+
+- If you have a program that is designed to read in a set of data from a file into an array in memory, you have three choices
+  - Define the array to contian the maximum number of possible elements at compile time
+  - Use a variable-length aray to dimension the size of the array at runtime
+  - Allocate the array dynamically using one of C's memory allocation routines
+
+### 73.2 Dynamic Memory Allocation
+
+- With the first approach, you have to define your array to contain the maximum number of elements that would be read into the array
+
+```c
+int dataArray[1000];
+```
+
+- The data file cannot contain more that 1000 elenenbts, if it does, your program will not work
+
+  - If it is larger than 1000 you must go back to the program, change the size to be larger and recompile it
+  - No matter what value you select, you always have the chances of running into the same problem aain in the future
+
+- Using the dynamic memory allocation functions, you can get storage as you need it
+
+  - This approach enables you to allocate memory as the program is executing
+
+- Dynamic memory allocation depends on the concept of a pointer and provides a strong incentive to use pointers in you code
+
+- Dynamic memory allocation allows memory for storing data to be allocated dynamically when your program executes
+
+  - Allocating memory dynamically is possible only because you have pointers available
+
+- The majority of production programs will use dynamic memory allocation
+
+- Allocating data dynamic allows you to create pointers at runtime that are just large enough to hold the amount of data you require for the task
+
+### 73.3 Heap vs. Stack
+
+- Dynamic memory allocation reserves space in memory area called the heap
+
+- The stack is another place where memory is allocated
+
+  - Function arguments and local variables in a function are store here
+  - When the execution of a functions ends, the space allocated store arugments and local variables is freed
+
+- The memory in the heap is different in that it is controlled by you
+  - When you allocate memory on the heap, it is up to you to keep track of when the memory you have allocated is no longer required
+  - You must free the space you have allocated to allow it to be reused
+
+### 73.4 `malloc`
+
+- The simplest standard library function that allocates memory at runtime a called `malloc()`
+  - Need to include the `stdlib.h` header file
+  - You specify the number of bytes that you want allocated as the argument
+  - Returns the address of the first byte of memory that it allocated
+  - Because you get an address returned, a pointer is the only place to put it
+
+```c
+int *pNumber = (int*)malloc(100);
+```
+
+- In the above you have requested 100 bytes of memory and assigned the address of this memory block to `pNumber`
+- Can hold 25 `int` values on my computer, because require 4 bytes each
+- Assumes that type `int` requires 4 bytes
+
+- It would be better to remove the assumption that `ints` are 4 bytes
+
+```c
+int *pNumber = (int*)malloc(25*sizeof(int));
+```
+
+- The argument to `malloc()` above is clearly indicating that sufficient bytes for accommodating 25 values of type `int` should be made available
+
+- Alos notice the cast `(int*)` wihich converts the address returned by the function to the type pointer to `int`
+
+  - `malloc` returns a pointer of type pointer to `void`, so you have to cast
+
+- You can request any number of bytes
+
+- If the memory that you requested can not be allocated for any reason
+  - `malloc` returns a pointer with the value `NULL`
+  - It is always a good idea to check any dynamic memory request immediately using an `if` statement to make sure the memory is actually there before you try to use it
+
+```c
+int *pNumber = (int*)malloc(25*sizeof(int));
+
+if(!pNumber)
+{
+  // code to deal with memory allocation failure...
+}
+```
+
+- You can at least display a message and terminate the program
+  - Much better than allowing the program to continue and crash when it uses a `NULL` address to store something
+
+### 73.5 Releasing Memory
+
+- When you allocate memory dynamically, you should always release the memory when it is no longer required
+
+- Memory that you allocate on the heap will be automatically releae when your program ends
+
+  - Better to explicitly release the memory when you are done with it, even if it's just before you exit from the program
+
+- A memory leaks occurs when you allocate some memory dynamically and you do not retian the reference to it, so you are unable to release the memory
+
+  - Often occurs within a loop
+  - Because you do not release the memroy when it is no longer required, your program consums more and omre of the available memory on each loop iteration and eventually may occupy it
+
+- To free memory that you have allocate dynamically, you must still have access to address that references the block of memory
+
+- To release the memory for a block dynamially allocated memory whose address you have stored in a pointer
+
+```c
+free(pNumber);
+pNumber = NULL;
+```
+
+- The `free()` function has a formal parameter of type `void*`
+
+  - You can pass a pointer of any type as the argument
+
+- As long as `pNumber` contians the address that was returned when the memory was allocated, the entire block of memory will be freed for further use
+
+- You should always set the pointer to `NULL` after the memory that it points to has been free
+
+### 73.6 `calloc`
+
+- The `calloc()` function offers a coupe of advantages ove `malloc()`
+
+  - It allocates memory as a number of elements of a given size
+  - It initializes the memory that is allocated so that all bytes are zero
+
+- `calloc()` function requires two argument values
+
+  - Number of data items for which space is required
+  - Size of each data item
+
+- Is declared in the `stdlib.h` header
+
+```c
+int *pNumber = (int*)calloc(75, sizeof(int));
+```
+
+- The return value will be `NULL` if it was not possible to allocate the memory requested
+  - Very similar to using `malloc()`, but the big plus is that you know the memory area will be initialize to 0
+
+### 73.7 `realloc`
+
+- The `realloc()` function enables you to reuse or extend memory that you previously allocated using `malloc()` or `calloc()`
+
+- Expects two argument values
+
+  - A pointer containing an address that was previously returned by a call to `malloc()`, `calloc()`
+  - The size in bytes of the new memory that you want to allocated
+
+- Allocates the amount of memory you specify by the second argument
+
+  - Transfer the contents of the previously allocated memory referenced by the pointer that you supply as the first argument to the newly allocated memory
+  - Returns a `void*` pointer to the new memory or `NULL` if the operation fails for some reason
+
+  - The most important feature of this operation is that `realloc()` preserves the contents of the original memory area
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int main()
+{
+    char *str = NULL;
+
+    /* Inital memroy allocation */
+
+    str = (char*)malloc(15);
+    strcpy(str, "Jason");
+    printf("String = %s, Address = %p\n", str, str);
+
+    /* Reallocating memory */
+    str = (char*)realloc(str, 25);
+    strcat(str, ".com");
+    printf("String = %s, Address = %p\n", str, str);
+
+    free(str);
+
+    return(0);
+}
+```
+
+### 73.8 Guidelines
+
+- Avoid allocating lots of small amounts of memory
+
+  - Allocating memory on the heap carries some overhead with it
+  - Allocating mamy small blocks of memory will carry much more overhead allocating fewer larger blocks
+
+- Only hang on to the memory as long as you need it
+
+  - As soon as you are finished with a block memory on the heap, release the memory
+
+- Always ensure that you provide for releasing memory that you have allocated
+
+  - Decide where in your code you will release the memory when you write the code that allocate
+
+- Make sure you do not inadvertently overwrite the address of memory you have allocated on the heap before you have release it
+  - Will cause a memory leak
+  - Be especially careful when allocating memory within a loop
+
+## 74 Creating and Using Structures
+
+### 74.1 Overview
+
+- Structures in C provide another tool for grouping elements together
+
+  - A powerful concept that you will use in many C programs that you develop
+
+- Suppose you want to store a date inside a program
+
+  - We could create variables for month, day, and year to store the date
+
+  ```c
+  int month = 9, day = 25, year = 2015;
+  ```
+
+- Suppose your program also needs to store the date of purchase of a particular item
+
+  - You must keep track of three separate variables for each date that you use in the program
+  - These variables are logically related and should be grouped together
+
+- It would be much better if you could somehow group these sets of three variables
+  - This is precisely what the structure in C allows you to do
