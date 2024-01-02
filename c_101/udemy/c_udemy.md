@@ -5024,3 +5024,171 @@ int main()
 
 - It would be much better if you could somehow group these sets of three variables
   - This is precisely what the structure in C allows you to do
+
+### 74.2 Creating a Structure
+
+- A structure declaration describes how a structure is put together
+
+  - What elements are inside the structure
+
+- The `struct` keyword enables you to define a collection of variables of various types called a structure you can treat as single unit
+
+```c
+struct date
+{
+  int month;
+  int day;
+  int year;
+}
+```
+
+- The above statement defines what a date structure looks like to the C compiler
+
+  - There is no memory allocation for this declaration
+
+- The variable names within the date structure, `momth`, `day` and `year`, are called members or fields
+  - Members of the structure appear between the braces that follow the `struct` tag name `date`
+
+### 74.3 Using a Structure
+
+- The definition of date defines a new type in the language
+  - Variables can now be declared to be of type struct date
+
+```c
+struct date today;
+```
+
+- You can now declare more variables of type struct date
+
+```c
+struct date purchaseDate;
+```
+
+- The above statement declares a variable to be of type struct date
+
+  - Memory is now allocated for the variables above
+  - Memory is allocated for three integer values for each variable
+
+- Be certain you understand the difference between defining a structure and declaring variables of the particular structure type
+
+### 74.4 Accessing Members in a Struct
+
+- A structure variable name is not a pointer
+
+  - You need a special syntax to access the member
+
+- You refer a member of a structure by writing the variable followed by a period, followed by the member
+
+  - The period between the structure variable name and the member name is called the member selection operation
+  - There are no spaces permitted between the variable name, the period, and the member name
+
+- To set the value of day in the variable today to 25:
+
+```c
+today.day = 25;
+today.year = 2015;
+```
+
+- To test the value of month to see if it is equal to 12
+
+```c
+if (today.momth == 12)
+  nextMonth = 1;
+```
+
+### 74.5 Structures in Expressions
+
+- WHen it comes to the evaluation of expressions, structure members follow the same ordinary variables do
+  - Division of an integer structure member by another integer is performed as an integer devision
+
+```c
+century = today.year / 100 + 1;
+```
+
+### 74.6 Defining the Structure and Variable at the Same Time
+
+- You do have some flexibility in defining a structure
+  - It is valid to declare a variable to be of a particular structure type at the same time that the structure is defined
+  - Include the variable name (or names) before the terminating semicolon of the structure definition
+  - You can also assign initial values to the variables in the normal fashion
+
+```c
+strcut date
+{
+  int month;
+  int day;
+  int year;
+} today;
+```
+
+- In the above, an instance of the structure, called today, is declared at the same time that the structure is defined
+  - Today is a variable of type date
+
+### 74.7 Un-named Structures
+
+- You also do not have to give a structure a tag name
+
+  - If all of the variables of a particular structure type are defined when the structure is define, the structure name can be ommited
+
+  ```c
+  struct
+  {
+    int day;
+    int year;
+    int momth;
+  } today;
+  ```
+
+  - A disadvantage of the above is that you can no longer define further instances of the structure in another statement
+    - All the variables of this structure type that you want to in your program must be defined in the one statement
+
+### 74.8 Initializing Structures
+
+- Initializing structures is similar to initializing arrays
+
+  - The elements are listed inside a pair of braces, with each element separatednu
+
+```c
+struct date today = { 7, 2, 2015 };
+```
+
+- Just like an array initialization, fewer values might be listed than are contianed in the structure
+
+```c
+struct date date1 = { 12, 10 };
+```
+
+- Sets date1.momth t0 12 and date1.day to 10 but gives no initial value to date.year
+
+- You can also specify the member names in the initialization list
+  - enables you to initialize the members in any order, or to only initialize specification
+    `.member - value`
+
+```c
+struct date date1 = {.month = 12, day = 10 };
+```
+
+- Set just the year member of the date structure variable today to 2015 = `{.year = 25};`
+
+### 74.9 Assignment with Compoud Literals
+
+- You can assign one or more values to a structure a single statement using what is known literals
+
+```c
+today = (struct date) { 9, 25, 2015 };
+```
+
+- This statement can appear anywhere in the program
+
+  - It is not a declaration statement
+  - The type cast operator is used to tell the compiler the type of the expression
+  - The list of values follows the cast and are to be assigned to the members of the structure
+  - Listed in the same way as if you were initializing a structure variable
+
+- You can also specify values using the `.member` notation
+
+```c
+today = (struct date){.month = 9, .day = 25, .year = 2015};
+```
+
+- The advantage of using this approach is that the arguments an appear in any order
