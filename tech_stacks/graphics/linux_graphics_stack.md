@@ -203,3 +203,34 @@ In this diagram, we have a **Wayland Compositor** running on top of **KMS**, and
 The **Wayland Clients** and the **Wayland Compositor** interacts with each **Wayland Protocols** which are specified.
 
 ### Wayland Compositor
+
+- Reference implementation: Weston
+- Mutter(GNOME), Kwin(KDE), wlroots(sway, cage)
+
+**Weston** is usable but not really usable for desktop use cases so you have different **Wayland Compositor** if you look into your machines, so if you use gnome you might have mutter as a compositor, with KDE you have K1 or there are various compositors on wlroots like sway and cage, so there all implementations of **Wayland Compositor**.
+
+### Weston Overview
+
+![Weston Overview](./images/weston_overview.png)
+
+We have **DRM** and **KMS** in the button like wit **kmscube**, we have the **Wayland Compositor Weston** running on **KMS**, some **Wayland Client** the `simple-egl` application runing as well as interacting with
+the **Wayland Compositor Weston** with the **Wayland Protocol**.
+
+### Debugging Weston
+
+```sh
+weston --debug
+weston-debug backend-drm
+```
+
+For example one debugging stream is back in **DRM** which is exactly the implementation or the component of Western that **KMS** so if you look at this stream you will see what **Weston** does with the planes that color pixel formats it sets on the planes.
+
+And in general how **Wester** interacts with **KMS**, so if there is something strange on the display and you expecting that the **Weston** is doing something wrong by look at the debugging stream.
+
+```sh
+wayland-info
+WAYLADN_DEBUG=1 simple-egl
+Weston-debug proto
+```
+
+There are further tools for debugging **Wayland Info** is a client application that connects to your **Wayland Compositor**, and shows which Protocols are supported in which versions so you can use this to get information about your **Wayland Compositor** and what can be used in your application of the compositor here.
