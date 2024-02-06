@@ -234,3 +234,33 @@ Weston-debug proto
 ```
 
 There are further tools for debugging **Wayland Info** is a client application that connects to your **Wayland Compositor**, and shows which Protocols are supported in which versions so you can use this to get information about your **Wayland Compositor** and what can be used in your application of the compositor here.
+
+This `proto` are quite important for because the applications are using it to talk to the compositor, to look into what the application sends to the compositor and receives as responses.
+
+You might set this wayland debug environment variable so you get all the messages that are sent between the client and the server, and see if something surprising there.
+
+Thatis for debugging the client side so what the client is seeing you have as well a compositor which has to interact with clients as well via the protocols for debuging the server. The compositor perspective of the **Wayland Protocol**, you might use `weston-debug` again with the `proto` stream which shows you all the protocol messages that the compositor seeing. So that's useful for debugging the interaction between a **Wayland Client** and a **Wayland Server**.
+
+### Wayland Client and EGL
+
+![Wayland Client and EGL](./images/wayland_client_and_egl.png)
+
+We want applications to draw into **pixel buffer** as well, these are not **frame buffers** that are directly sent to the display, but are sent to the **Wayland Compositor** for compositing. So we have different pixel buffers that are later composited.
+
+Now let's start on top, so we have a **simple-egl** which uses **OpenGL** that's the same as with **kmscube**, and the difference is that the buffers are abstracted as **EGL images** and **DRI**, but here we don't have the **DRM platform**, but now we have a **Wayland platform** on the client side.
+
+And this **Wayland platform** instead of using **frame buffers** from **KMS** it, ut uses buffers that sent via **Wayland Protocols** to the display composer to the **Wayland Compositor**.
+
+But for the application it almost looks the same, so everything happens down here in **mesa**, which detects you are not running on **KMS** but running as a **Wayland Client**.
+
+### Wayland Summary
+
+![Wayland Summary](./images/wayland_summary.png)
+
+- **OpenGL**: the abstraction for using **GPUs**.
+- **EGL**: to provide buffers to **OpenGL** and into which we can render.
+- **DRI**: all of these is part of the direct rendering infrastructure which is overall term.
+- **Wayland**: for passing buffers that are allocated from by the clients to some **Wayland Compositor** for composing it into a final buffer.
+- **DRM**: as the kernel component that is the driver or current component of the **DRI** infrastructure.
+- **KMS**: the display -> the part of the API that drives the display as part of **DRM**.
+- **FB**: frame buffers which are the buffers that we can pass through **DRM** to a display.
