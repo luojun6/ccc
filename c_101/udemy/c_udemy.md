@@ -5691,3 +5691,278 @@ struct Date my_fun(void);
 - Programmers use structure pointers as function arguments for reasons of efficiency and use `const` when neccessary
 
 - Passing structures by value is most often done for structure that are small
+
+## 79 File Input and Output
+
+### 79.1 Overview
+
+- Up until this point, all data that our program accesses is via memory
+
+  - Scope and variety of applications you can create is limited
+
+- All serious business applications require more data than would fit into main memory
+
+  - Also depend on the ability to process data that i persistent and stored on an external device such as a disk drive
+
+- C provides many functions in the header file `stdio.h` for writing to and reading from external devices
+
+  - The externel device you would use for storing and retrieving data is typically a disk drive
+  - However, the library will work with virtually any external storage device
+
+- With all the examples up to now, any data that the user enters is lost once the program ends
+  - If the user wants to run the program with the same data, he or she must enter it again each time
+  - Very inconvenient and limits programming
+  - Referred to as volatile memory
+
+### 79.2 Files
+
+- Programs need to store data on permanent storage
+  - Non-volatile
+  - Continues to be maintained after your computer is turned off
+- A file can stored non-volatile data and is usually stored on a disk or a solid-state device
+  - A named section of storage
+  - `stdio.h` is a file containing useful information
+- C views a file as a continous sequence of bytes
+  - Each byte can be read individually
+  - Corresponds to the file structure in the Unix environment
+
+![File Bytes](./images/file_bytes.png)
+
+- A file has a beginning and an end a current position (defined as so many bytes from the beginning)
+
+- The current position is where any file action (read/write) will take place
+  - You can move the current position to any point in the file (even the end)
+
+### 79.3 Text and Binary Files
+
+- There are two ways of writing data to a stream that represents a file
+
+  - text
+  - binary
+
+- Text data is written as a sequence of characters organized as lines (each line ends with a newline)
+
+- Binary data is written as a series of bytes exactly as they appear in memory
+
+  - image data, music encoding - not readable
+
+- You can write any data you like to a file
+
+  - Once a file has been written, it just consists of a series of bytes
+
+- You have to understand the format of the file in order to read it
+  - A sequence of 12 bytes in a binary file could be 12 characters, 12 8-bit signed integers, 12 8-bit unsigned integers, etc.
+  - In binary mode, each and every byte of the file is accessible
+
+### 79.4 Streams
+
+- C programs automatically open three files on your behalf
+
+  - Standard input - the normal input device for your system, usually your keyboard
+  - Standard output - usually your display screen
+  - Standard error - usually your display screen
+
+- Standard input is the file that is read by `getchar()` and `scanf()`
+- Standard output is used by `puthcar()`, `puts()`, and `printf()`
+
+  - Redirection causes other files to be recongnized as the standard input or standard output.
+
+- The purpose of the standard error output file is to provide a logically distinct place to send error messages
+
+- A stream is an abstract representation of any external soure or destination for data
+  - The keyboard, the commmand line on your display, and files on a disk are all examples of things you can work with as streams
+  - The C library provides functions for reading and writing to or form data streams
+    - You use the same input/output functions for reading and writing any external device that is mapped to a stream
+
+## 80 Accessing Files
+
+### 80.1 Overvieww
+
+- Files on disk have a name and the rules for naming files are determined by your operating system
+
+  - You may have to adjust the names depending on what OS your program is running
+
+- A program references a file through a file pointer (or stream pointer, since it works on more than a file)
+
+  - You associate a file pointer with a file programmatially when the program is run
+  - Pointers can be reused to point to different files on different occasions
+
+- A file pointer points to a struct of type `FILE` that represents a stream
+
+  - Contains infomraiton about the file
+    - Whether you want to read or write or update the file
+    - The address of the buffer in memory to be used for data
+    - A pointer to the currnet position in the file for the next operation
+  - The above is all set via input/output file operations
+
+- If you want to use several files simultaneously in a program, you need a separate file poiter for each file
+  - There is a limit to the number of files you can have open at one time
+    - Defined as `FOPEN_MAX` in `stdio.h`
+
+### 80.2 Opening a File
+
+- You associate a specific external file name with an internal file pointer variable through a process referred to as opening a file
+
+  - Via the `fopen()` function
+    - Returns the file pointer for a speiific external file
+
+- The `fopen()` function is defined in `stdio.h`
+
+```c
+FILE *fopen(const char* restrict name, const char * restrict mode);
+```
+
+- The first argument to the function is a pointer to a string that is the name of the external file you want to process
+
+  - You can specify the name explicitly or use a char pointer that contains the address of the character string that defines the file name
+  - You can obtain the file name through the command line, as input from the user, or defined as a constant in your program
+
+- The second argument to the `fopen()` function is a character string that represents the file mode
+
+  - Specifies what you want to do with the file
+  - A file mode speficication is a character string between double quotes
+
+- Assuming the call to `fopen()` is successful, the function returns a pointer of type `FILE*` that you can use to reference the file in further
+
+- If the file cannot be opened for some reason, `fopen()` returns `NULL`
+
+### 80.3 File Modes (only apply to text files)
+
+| Mode | Description                                                                                                                                       |
+| ---- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "w"  | Open a text file for write operations. if the file exists, its current cotents are discarded.                                                     |
+| "a"  | Open a text file for append operations. All writes are to the end of the file.                                                                    |
+| "r"  | Open a text file for read operations.                                                                                                             |
+|      |                                                                                                                                                   |
+| "w+" | Open a text file for update (reading and writing), first truncating the file to zero lenght if it exists or creating the file if it does not exit |
+| "a+" | Open a text file for update (reading and writing) appending to the end of the existing file, or creating the file if it does not yet exist        |
+| "r+" | Open a text file for update (for both reading and writing)                                                                                        |
+
+### 80.4 Write Mode
+
+- If you want to write to an existing text file with the name `myfile.txt`
+
+```c
+FILE *pfile = NULL;
+char *filename = "myfile.txt";
+pfile = fopen(filename, "w"); // Open myfile.txt to write it
+if(pfile != NULL)
+  printf("Failed to ioen %s.\n", filename);
+```
+
+- Opens the file and associate the file with name `myfile.txt` with your file pointer file
+
+  - The mode as "w" means you can only write to the file
+  - You cannot read it
+
+- If a file with the name `myfile.txt` does not exist, the call to `fopen()` will create a new file with this name
+
+- If you a only provide the file name without any path specification, the file is assumed to be in the current directory
+
+  - You can also specify a string that is the full path and name for the file
+
+- On opening a file for writing, the file length is truncated to zero and the position will be at the beginning of any existing data for the first operation
+  - Any data that was previously written to the file will be lost and overwritten by any write operations.
+
+### 80.5 Append Mode
+
+- If you want to add to an existing text file rather than overwrite it
+
+  - Specify mode "a"
+  - The append mode of operation
+
+- This positions the file at the end of any previously written data
+  - If the file does not exist, a new file will be created
+
+```c
+pFile = fopen("myfile.txt", "a"); // Open myfile.txt to add to it
+```
+
+- Do not forget that you should test the return value for null each time
+
+- When you open a file in append mode
+  - All write operations will be at the end of the data in the file on each write operation
+  - All write operations append data to the file and you cannot update the existing contents in this mode
+
+### 80.6 Read Mode
+
+- If you want to read a file
+  - Open it with mode arguments as "r"
+  - You can not write to this file
+
+```c
+pFile = fopen("myfile.txt", "r");
+```
+
+- This positions the file to the beginning of the data
+- If you are going to read the file
+
+  - It must already exist
+
+- If you try to open a file for reading that does not exist, `fopen()` will return a file pointer of `NULL`
+
+- You always want to check the value returned from `fopen`
+
+### 80.7 Renaming a File
+
+- Renaming a file is very easy
+  - Use the `rename()` function
+
+```c
+int rename(const char *oldname, const char *newname);
+```
+
+- The integer that is returned wlll be 0 if the name change was successful and nonzero otherwise
+
+- The file must not be open when you call `rename()`, otherwise the operation will fail
+
+```c
+if(rename("myfile.txt", "myfile_copy.txt"))
+  printf("Failed to rename file.");
+else
+  printf("File renamed successfully.");
+```
+
+### 80.8 Closing a File
+
+- When you have finished with a file, you need to tell the operating system so that it can free up the file
+
+  - You can do this by calling `fclose()` function
+
+- `fclose()` accepts a file pointer as an argument
+  - returns `EOF (int)` if an error occurs
+  - Defined in `stdio.h` as a negtative that is usually euqivalent to the value `-1`
+  - 0 if successful
+
+```c
+fclose(pfile);
+pfile = NULL;
+```
+
+- The result of calling `fclose()` is that the connection between pointer, `pfile`, and teh physical file is broken
+
+  - `pfile` can no longer be used to access the file
+
+- If the file was being written, the current contents of the output buffer are written to the file to ensure that data is not lost
+
+- It is good programming practice to close a file as sson as you have finished with it
+
+  - Protects against output data loss
+
+- You must also cloee a file before attempting to rename it or remove it
+
+### 80.9 Deleting a File
+
+- You can delete a file by invoking the `remove()` function
+  - Declared in `stdio.h`
+
+```c
+remove("myfile.txt");
+```
+
+- Will delete the file that has the name `myfile.txt` from the current directory
+
+- The file cannot be oeen when you try to delete it
+
+- You should always double check with operations that delete files
+  - You could wreck your system if you do not
