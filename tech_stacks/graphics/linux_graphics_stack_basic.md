@@ -1,4 +1,4 @@
-# Linux Graphics Stack
+# Linux Graphics Stack Basic
 
 ## Bring a Pixel Buffer onto the Display
 
