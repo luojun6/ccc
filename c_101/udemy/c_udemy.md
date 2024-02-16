@@ -5966,3 +5966,466 @@ remove("myfile.txt");
 
 - You should always double check with operations that delete files
   - You could wreck your system if you do not
+
+## 81 Reading from a File
+
+### 81.1 Reading characters from a text file
+
+- The `fgetc()` function reads a character from a text file that has been opened for reading
+
+- Takes a file pointer as its only argument and returns the character read as type int
+
+```c
+// Reads a character into mchar with pfile a File pointer
+int mchar = fgetc(pfile);
+```
+
+- The mchar is type `int` because `EOF` will be returned if the end of the file has been reached
+
+- The function `getc()`, which is equivalent to `fgetc()`, is also available
+
+  - Requires an argument of type `FILE*` and returns the character read as type `int`
+  - Virtually identical to `fgetc()`
+  - Only different between them is that `getc()` may be implemented as a `macro`, whereas `fgetc()` is a function
+
+- You can read the contents of a file again when necessary
+  - The `rewind()` function positions the file that is specified by the file pointer argument at the beginning
+
+```c
+rewind(pfile);
+```
+
+### 81.2 Example of `fgetc()`
+
+```c
+#include <stdio.h>
+
+int main()
+{
+  FILE *fp;
+  int c;
+
+  fp = fopen("file.txt", "r");
+
+  if (fp == NULL)
+  {
+    perror("Error in opening file");
+    return(-1);
+  }
+
+  // Read a single char
+  while((c = fgetc(fp) != EOF))
+    printf("%c", c);
+
+  fclose(fp);
+  fp = NULL;
+
+  return 0;
+}
+```
+
+### 81.3 Reading a string from a text file
+
+- You can use the `fgets()` function to read from any file or stream
+
+```c
+char *fgets(char *str, int nchars, FILE *stream)
+```
+
+- The function reads a string into the memory area pointed to by `str`, from the file specified by stream
+  - Characters are read until either a `\n` is read or `nchars-1` characters have been read from the stream, whichever occurs first
+  - If a newline character is read, it's retaining in the string
+    - A `'\0'` character will be appended to the end of the string
+  - If there is no error, `fgets()` returns the pointer, `str`
+  - If there is an error, `NULL` is returned
+  - Reading `EOF` causes `NULL` to be returned
+
+### 81.4 Example of `fgets()`
+
+```c
+#include <stdio.h>
+
+int main()
+{
+  FILE *fp;
+  char str[60];
+
+  fp = fopen("file.txt", "r");
+
+  if (fp == NULL)
+  {
+    perror("Error in opening file");
+    return(-1);
+  }
+
+  if (fgets(str, 60, fp) != NULL)
+  {
+    /* Writing content to stdout */
+    printf("%s", str);
+  }
+
+  fclose(fp);
+  fp = NULL;
+
+  return 0;
+}
+```
+
+### 81.5 Reading formatted input from a file
+
+- You can get formatted input from a file by using the standard `fscanf()` function
+
+```c
+int fscanf(FILE *stream, const char *format, ...)
+```
+
+- The first argument to this function is the pointer to a `FILE` object that identifies the stream
+
+- The second argument to this function is the format
+
+  - A C string that contians one or more of the following items
+    - Whitespace character
+    - Non-whitespace character
+    - Format specifiers
+    - Usage is similar to `scanf()`, but from a file
+
+- Function returns the number of input items successfully matched and assigned
+
+### 81.6 Example of `fscanf()`
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    char str1[10], str2[10], str3[10];
+    int year;
+    FILE *fp;
+
+    fp = fopen("file.txt", "w+");
+    if (fp != NULL)
+        fputs("Hello how are you", fp);
+
+    rewind(fp);
+    fscanf(fp, "%s %s %s %d", str1, str2, str3, &year);
+
+    printf("Reading string1 |%s|\n", str1);
+    printf("Reading string2 |%s|\n", str2);
+    printf("Reading string3 |%s|\n", str3);
+    printf("Reading integer |%d|\n", year);
+
+    fclose(fp);
+
+    return 0;
+}
+```
+
+## 82 Writing to a File
+
+### 82.1 Writing characters to a text file
+
+- The simplest write operation is provided by the functon `fputc()`
+  - Writes a single character to a text file
+
+```c
+int fputc(int ch, FILE *pfile);
+```
+
+- The function writes the character specified by the first argument to the file identified by the second argument (file pointer)
+
+  - Returns the character that was writtent if successful
+  - Return `EOF` if failure
+
+- In practice, characters are not usually written to a physical file one by one
+
+  - Extremely inefficient
+
+- The `putc()` function is equivalet to `fputc()`
+  - Requires the same arguments and the return type is the same
+  - Different between them is that `putc()` may be implemented in the standard library as a macro, whereas `fputc()` is a function
+
+### 82.2 Example of `fputc`
+
+```c
+#include <stdio.h>
+
+int main()
+{
+  FILE *fp;
+  int ch;
+
+  fp = fopen("file.txt", "w+");
+
+  for (ch = 33; ch <= 100; ch++)
+  {
+    fputc(ch, fp);
+  }
+
+  fclose(fp);
+  return 0;
+}
+```
+
+### 82.3 Writing a string to a text file
+
+- You can use `fputs()` function to write to any file or stream
+
+```c
+int fputs(const char *str, FILE *pfile);
+```
+
+- The first argument is a pointer to the character string that is to be written to the file
+
+- The second argument is the file pointer
+
+- This function will write characters from a string until it reaches a `'\0'` character
+  - Does not write the null terminator character to the file
+    - Can complicate reading back variable-length strings from a file that have been written by `fputs()`
+    - Expecting to write a line of text that has a newline character at the end
+
+### 82.4 Example of `fputs()`
+
+```c
+#include <stdio.h>
+
+int main()
+{
+  FILE *fp;
+
+  fp = fopen("file.txt", "w+");
+
+  fputs("This is c programming.", fp);
+  fputs("This is a system programming language.", fp);
+
+  fclose(fp);
+
+  return 0;
+}
+```
+
+### 82.5 Writing formatted output to a file
+
+- You can get formatted input from a file by using the standard `fprintf()` function
+
+```c
+int fprintf(FILE *stream, const char *format, ...)
+```
+
+- The first argument to this function is the pointer to a `FILE` object that identifies the stream
+
+- The second argument to this function is the format
+
+  - A C string that contians one or more of the following items
+    - Whitespace character
+    - Non-whitespace character
+    - Format specifiers
+    - Usage is similar to `printf()`, but from a file
+
+- If successful, the total number of characters written is returned otherwise, a negative number is returned
+
+### 82.6 Example of `fprintf()`
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+  FILE *fp = NULL;
+
+  fp = fopen("file.txt", "w+");
+  fprintf(fp, "%s %s %s %s %d", "Hello", "my", "number", "is", 888);
+
+  fclose(fp);
+  return 0;
+}
+
+```
+
+## 83 Finding the Postion in Your File
+
+### 83.1 File Positioning
+
+- For many applications, you need to be able to access data in a file other than sequential orer
+
+- There are various functions that you can use to access data in random sequence
+
+- There are two aspects to file positioning
+
+  - Finding out where you are in a file
+  - Moving to a given point in a file
+
+- You can access a file at a random position regardless of whether you opened the file
+
+### 83.2 Finding out where you are
+
+- You have two functions to tell you where you are in a file
+  - `ftell()`
+  - `fgetpos()`
+
+```c
+long ftell(FILE *pfile);
+```
+
+- This function accepts a file pointer as an argument and returns a long integer value that specifies the current posistion in the file
+
+```c
+long fpos = ftell(pfile);
+```
+
+- The `fpos` variable now holds the current position in the file and you can use this to return to this position at any subsquenct time
+  - Value is the offset in bytes from the beginning of the file
+
+### 83.3 Example of `ftell()`
+
+```c
+FILE *fp;
+int len;
+
+fp = fopen("file.txt", "r");
+if (fp == NULL)
+{
+  perror("Error opening file");
+  return(-1);
+}
+
+fseek(fp, 0, SEEK_END); // Go to the end of file
+
+len = ftell(fp);
+fclose(fp);
+
+printf("Total size of file.txt = %d bytes\n.", len);
+```
+
+### 83.4 `fgetpos()`
+
+```c
+int fgetpos(FILE *pfile, fpos_t *position);
+```
+
+- The first parameter is a file pointer
+- The second parameter is a pointer to a type that is defined in `stdio.h`
+
+  - `fpos_t` is a type that is able to record every position within a file
+
+- The `fgetpos()` function is designed to be used with the positioning function `fsetpos()`
+
+- The `fgetpos()` function stores the current position and file state information for the file in position and returns 0 if the operation is successful
+  - Returns a nonzero integer value for failure
+
+```c
+fpos_t here;
+fgetpos(pfile, &here);
+```
+
+- The above records the current file position in the variable here
+
+- You must declare a variable of type `fpos_t`
+  - Cannot declare a pointer of type `fpos_t*` because there will not be any memory allocated to store the position data
+
+### 83.5 Example of `fgetpos()`
+
+```c
+FILE *fp;
+fpos_t position;
+
+fp = fopen("file.txt", "w+");
+fgetpos(fp, &position);
+fputs("Hello, World!", fp);
+
+fclose(fp);
+```
+
+### 83.6 Setting a position in a file
+
+- As a complement to `ftell()`, you have the `fseek()` function
+
+```c
+int fseek(FILE *pfile, long offset, int origin);
+```
+
+- The first parameter is a pointer to the file you are repositioning
+
+- The second and third parameters define where you want to go in the file
+
+  - Second parameter is an offset from a reference point specified by the third parameter
+  - Reference point can be one of three values are specified by the predefined names
+
+    - `SEEK_SET` - defines the beginning of the file
+    - `SEEK_CUR` - defines the current position in the file
+    - `SEEK_END` - defines the end of the file
+
+  - For a text mode file, the second argument must be a value returned by `ftell()`
+
+  - The third argument for text mode files must be `SEEK_SET`
+    - For text files, all operations with `fseek()` are performed with reference to the beginning of the file
+    - For binary file, the offset argument is simply a relative byte count
+      - Can therefore supply position or negative values for the offset when the reference point is specified as `SEEK_CUR`
+
+### 83.7 Example of `fseek()`
+
+```c
+#include <stdio.h>
+
+int main()
+{
+    FILE *fp = NULL;
+
+    fp = fopen("file.txt", "w+");
+    fputs("This is JunLuo.", fp);
+
+    fseek(fp, 8, SEEK_SET);
+    fputs("Hello how are you", fp);
+
+    fclose(fp);
+
+    return(0);
+}
+```
+
+### 83.8 `fsetpos()`
+
+- You have the `fsetpos()` function to go with `fgetpos()`
+
+```c
+int fsetpos(FILE *pfile, const fpos_t *position);
+```
+
+- The first parameter is a pointer to the open file
+- The second is a pointer of the `fpos_t` type
+  - The position that is stored at the address was obtained by calling `fgetpos()`
+
+```c
+fsetpos(pfile, &here);
+```
+
+- The variable here was previously set by a call to `fgetpos()`
+
+- The `fsetpos()` returns a nonzero value on error or 0 when it succeeds
+
+- This function is designed to work with a value that is returned by `fgetpos()`
+  - You can only use it to get a place in a file that you have been before
+  - `fseek()` allows you to go to any position just by specifying the appropriate offset
+
+### 83.9 Example of `fgetpos()`
+
+```c
+#include <stdio.h>
+
+int main()
+{
+    FILE *fp;
+    fpos_t position;
+
+    fp = fopen("file.txt", "w+");
+    fgetpos(fp, &position);
+    fputs("Hello, world!", fp);
+
+    fsetpos(fp, &position);
+    fputs("This is going to override previous contnet.", fp);
+    fclose(fp);
+
+    return 0;
+}
+```
