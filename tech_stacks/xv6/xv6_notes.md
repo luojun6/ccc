@@ -180,7 +180,7 @@ But with xv6 and the multiple cores it's sort of **Round-Robin** within each cor
 
 ### 2.6 Locking
 
-- Spin Locks
+- **Spin Locks**
   - Two functions they're called _`acquire()`_ and _`release()`_.
   - There's a single word i memory, that word is 0 if the lock is free or unheld, it is 1 if the lock is busy or locked or held.
   - What _`acquire()`_ will do is just basically in a tight loop wait for that word to become 0 unlocked. And then when it finds that it's unlocked it will set it to 1.
@@ -193,7 +193,49 @@ But with xv6 and the multiple cores it's sort of **Round-Robin** within each cor
   - Later some other process will execute the _`wakeup()`_ function and wake up one or more processes or zero or more processes.
   - If our processes happens to get woken up, then it will be changed back from a status of sleeping or blocked to runnable, and it will get timeslice after that.
 
-- Selection disabling of interrupts
+- **Selected disabling of interrupts**
+
   - There is also a third technique that is sometimes used and that is the selective disabling of interrupts.
-  - Each core has a status of control word, there is a bit that control word that can be either set or cleared, which either enables and allows interrupts or disables and prevents interrupts by disabling interrupts a thread running on one core can prevent being interrupted.
+  - Each core has a status of control word, there is a bit that control word that can be either set or cleared, which either enables and allows interrupts or disables and prevents interrupts, by disabling interrupts a thread running on one core can prevent being interrupted.
   - When a timer interrupt goes of or when an I/O device calls for an interrupt. We can use this technique on one core to prevent being interrupt by another thread on that same core.
+  - We can use this technique on one core to prevent being interrupted by another thread on that same core.
+  - However, xv6 is a multi-core system and disabling interrupts on one core has no impacts on other cores. So a thread on another core can be modifying memory simultaneously.
+
+- **Fixed Limits**
+
+  - Defined in _`param.h`_, for example the number of processes is just a fixed number.
+    - _`#define processes`_
+    - Review as above, the **READY QUEUE** is stored in an array, and that array is allocated with a fixed size.
+    - _`#define openfiles`_
+
+- **Several Arrays**
+  - The Kernel tends to use array and not linked-lists so much.
+  - In several situations we are running through these arrays with a linear search.
+  - For example _`kill(pid)`_ function is passed the process id, and what it does is a linear search of the array of processes.
+  - Actually the **READY QUEUE** here is not a separate data structure, there is a single array of processes, and some of them are marked as runnable, and some of them are not runnable. So when we want to find a process that is runnable we basically just go through the process array and looking for one that has a status of runnable.
+
+## 2.7 Virtual User Address Space
+
+![User Address Space](./res/user_address_space.png)
+
+This is the virtual address space that a user mode program sees. Here is showing the address starting at location (buttom) zero going up to the maximum virtual address.
+
+The kernel will allocate this address space in units of pages, each one of these is a 4K page.
+
+When the exact SystemCall is used, the kernel will go out to the file system, and find the executable file which is in **ELF** format, and it will allocate several pages (an integral number of pages) in **[Data and Code]** region.
+
+It will read in the data and code into the **[Data and Code]** region of memory. those pages will then be marked read, write and executable by the kernel.
+
+We also have a page allocated for the **stack**, notice that the **stack** only gets one page - 4kB of memory. And so xv6 is somewhat limited in this aspect. A process that wants to grow in its **stack** beyond this volume will not be able to, the kernel will simply abort it happen and terminate the process.
+
+The way the kernel does that is kind of clever, it allocates what is called a **gaurd page** under the stack page. This **gaurd page** is not readable and not writable in fact. It's not accessible in user mode.
+
+So if the user mode code tries to access this page for virtual address space, it will immediately cause an exception and the process will be thrown out and termiated.
+
+The **heap** starts after the stack and grows in units of pages. As the user code allocates things on its heap, the **brk** (break) will be moved up. The kernel will be invoked to allocate more pages and the **brk** point will be moved up and will consume some of the unused spacce. And the allocated page will be marked read and write.
+
+In a typical Linux or Unix system, the stack is usually put out in high memory and it grous down.
+
+There are two pages up at the very top of the virtual memory space. These are used during trap and exception processing. The **trampoline page** contans code, so it's executable. When an exception or interrupt occurs, we're going to be executing code in the **trampoline page**.
+
+The **trap frame** is readable and writeable, ii's where the regier will be srave, when a trap that is when an exception or an interrupt occurs, the register the entire state of this user process will be saved in the **trap frame**.
