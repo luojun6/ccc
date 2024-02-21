@@ -239,3 +239,21 @@ In a typical Linux or Unix system, the stack is usually put out in high memory a
 There are two pages up at the very top of the virtual memory space. These are used during trap and exception processing. The **trampoline page** contans code, so it's executable. When an exception or interrupt occurs, we're going to be executing code in the **trampoline page**.
 
 The **trap frame** is readable and writeable, ii's where the regier will be srave, when a trap that is when an exception or an interrupt occurs, the register the entire state of this user process will be saved in the **trap frame**.
+
+Each virtual address space has its own **trap frame** page, they're all mapped to the same location, but they are different physical memory pages, so each process has its own **trap frame**.
+
+The **trampoline page** is shared by all of the processes, the exact same page of physical memory is mapped into this same spot in all of the virtual address pages.
+
+Again the kernel doesn't have a very sophisticated memory allocation system, it just has pages and they are kept in a free list and so all allocations are in units of one page of 4kB.
+
+However, we accommodate **HEAP**s for the user mode programs, so a user mode program is free to implement _`malloc()`_ with and allocate things on the **HEAP**. In fact it's free to implement whatever complex garbarge collection algorithm it wants to, but it just has thie **HEAP** memory that can be grown.
+
+### 2.8 Stack
+
+Main function which takes a counple of arguments _`argc`_ and _`argv`_, and these point to the arguments that are passed into the program when it begins executing. How does that happen?
+
+When an exact system call its _`main()`_, the kernel in the kernel will set up the virtual address space here, and among other things it will allocate a page for the **stack** and it push onto the stack the arguments.
+
+Then the kernel will allocate these arguments on the **stack** essentially pushing them onto the stack, and moving them into the registers. So the first instruction of the user program is executed, it will already find several things on the stack, it will find its the arguments on the stack.
+
+### RISC-V Virtual Address
