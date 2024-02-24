@@ -2,6 +2,7 @@
 output
 bin
 .vscode
+.DS_Store
 
 *.iso
 
