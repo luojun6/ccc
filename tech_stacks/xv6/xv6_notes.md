@@ -257,3 +257,17 @@ When an exact system call its _`main()`_, the kernel in the kernel will set up t
 Then the kernel will allocate these arguments on the **stack** essentially pushing them onto the stack, and moving them into the registers. So the first instruction of the user program is executed, it will already find several things on the stack, it will find its the arguments on the stack.
 
 ### RISC-V Virtual Address
+
+RISC-V is a pretty complex architecture and there is several different options for pages tables:
+
+- Sv32 -> 2 level pages table scheme
+- Sv39 (xv6) -> 3 level pages table scheme
+- Sv48 -> 4 level pages table scheme
+
+xv6 with the particular 3 level scheme, virtual address are 39 bits.
+
+=> 2^39 = 512GB = 0x80.0000.0000
+=> We could access 512GB.
+
+Actually xv6 uses only 38 bits for virtual address.
+=>2^38 = 256GB = 0x40.0000.0000 = MAXVA > (Max Address: 0x3F.FFFF.FFFF)
