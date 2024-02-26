@@ -289,6 +289,34 @@ The samller the opening gets, there's going to be more the effect of the bending
 
 So then the question is, what is the ideal size of the pinhole?
 
+![ideal_pinhole_size_formula.png](./figures/ideal_pinhole_size_formula.png)
+
+#### 1.2.14 What about Exposure Time?
+
+One of the interesting things you notice is that the iamge is pretty much focused everywhere. So pinhole cameras, well-designed pinhole cameras tend to create these sort of all-focused, focused everywhere images.
+
+![flatiron_building_in_NY.png](./flatiron_building_in_NY.png)
+
+Since a plinhole captures very little ligt, it lets very little light through. As a result of that, the exposure times tend to be much longer. So the detector that you're using to capture the image has enough photons that arrive on it. So Pinhole pass less light and hence require **long exposures** to capture bright images.
+
+And so you can image that almost for any real application of computer vision, waiting for 12 seconds to capture a single frame is just not going to work. And that's why we use lenses.
+
+### 1.3 Using Lenses
+
+#### 1.3.1 Lenses
+
+Now let's take a look at how you form an image using a lens. The lens performs the same projection as pinhole, which is perspective excpet that it gathers a lot more light.
+
+![lens_00.png](./figures/lens_00.png)
+
+You see a lens here. And let's consider this point in the scene $P_{0}$. All the rays of light received by the lens from the point $P_{0}$, are refracted or bent by the lens to converge at the point $P_{i}$.
+
+So $P_{i}$ is where the point $P_{0}$ is going be focused behind the lens. And the bending power of the lens is defined by its focal length.
+
+Now if you compare these with a pinhole camera, in the case of a pinhole camera the only ray of light that would have made it through is this orange ray which passes through the center of the lens.
+
+![lens_01.png](./figures/lens_01.png)
+
 ## 2 Features: Edges, Boundaries, SIFT, Applications
 
 ## 3 Reconstruction 1: Shading, Focus, Active Illumination
