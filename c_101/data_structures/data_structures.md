@@ -65,7 +65,7 @@ int main()
 {
     int numbers[4] = {};
 
-    //  O(2)
+    //  O(2) -> O(1)
     log(numbers);
     log(numbers);
 
@@ -77,4 +77,78 @@ Well, what about we duplicate the _`printf()`_, and both operations run in const
 
 Now when talking about the runtime complexity. We don't really care about the number of operations, we just want to know how much algorithm slows down as the input grouws larger.
 
-So in this example, whether we have one or one million items, our method runs in constant time.
+So in this example, whether we have one or one million items, our method runs in constant time. So we can simplify by writing down **O(1)**, meaning **<span style="color:#2874A6">constant time</span>**.
+
+### O(n)
+
+Here we have a slightly more complex example. Have a loop. So we are iterating over the items this array, and printing each item.
+
+```c
+#include <stdio.h>
+
+void logArray(int *parray, int size)
+{
+    // O(n)
+    for (int i = 0; i < size; i++)
+    {
+        printf("%d\n", *(parray + i));
+    }
+}
+
+int main()
+{
+    int numbers[4] = {0, 1, 2, 3};
+
+    logArray(numbers, 4);
+
+    return 0;
+}
+```
+
+If you have million items (_`size`_ equals a million), obviously you're going to have a million _`printf()`_ operations.
+
+So the cost of this algorithm grows linearly, and in direct correlation to the _`size`_ of the input. So we represent the runtime complexity of this method using **O(n)**.
+
+The **O(n)**, where **n** represents the _`size`_ of the input. So as **n** grows, the cost of this algrithm also grows linearly, now it doesn't matter what kind of loop we use to iterate over this array.
+
+Now what if we have a _`printf()`_ statement before and after our loop.
+
+```c
+void logArray(int *parray, int size)
+{
+
+    printf("Before the loop");       // O(1)
+    for (int i = 0; i < size; i++)   // O(n)
+    {
+        printf("%d\n", *(parray + i));
+    }
+    printf("After the loop");        // O(1)
+}
+```
+
+You saw that these single operations run in constant time, so here we have the **O(1)**, so the runting operation complexity of this method is **O(1 + n +n)**. However, when using the Big O notation, we drop these constant **O(1)**s because they don't really matter.
+
+Here is the reason, if our array has one million inputs (_`size`_ equalis a million), adding 2 extra operations doesn't rally have a significant increase on the cost of our algorithm.
+
+The cost of our algorithm still increases linearly, so we can simplify this by dropping the constant **O(1 + n +n)**, what matters is that the cost of algorithm increases linearly and in direct proportion to the _`size`_ of our input.
+
+Then what if you had two loops here.
+
+```c
+void logArray(int *parray, int size, int length)
+{
+    // O(n) + O(m)
+
+    for (int i = 0; i < size; i++)   // O(n)
+    {
+        printf("%d\n", *(parray + i));
+    }
+
+    for (int i = 0; i < length; i++)   // O(m)
+    {
+        printf("%d\n", *(parray + i));
+    }
+}
+```
+
+###
