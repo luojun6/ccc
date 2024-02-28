@@ -151,4 +151,118 @@ void logArray(int *parray, int size, int length)
 }
 ```
 
-###
+### O($n^2$)
+
+Here we have the nested loops. This is the algorithm that we use for printing all combinations of items in an array. So we need to use runtime complexity here?
+
+```c
+void logArray(int *parray, int size)
+{
+    for (int i = 0; i < size; i++)      // O(n)
+    {
+        for (int j = 0; j < size; j++)  // O(n)
+        {
+            printf("first: %d, second: %d.\n", *(parray + i), *(parray + j));
+        }
+    }
+}
+```
+
+In our outer loop, we're iterating over out input array, so here we have to **O(n)**. In each iteration, once again you're iterating over all the items in this array, in another example of **O(n)**. So the runtime complexity of this method is **O($n^2$)**.
+
+![spend_time_diagram](./figures/spend_time_diagram.png)
+
+We say this algorithm runs in quadratic time. As you can see in this diagram. Algorithms that run in the **O($n^2$)**, is slower than algorithms that run in **O(n)**. Of course this depends on the size of the input.
+
+If you are dealing with an array of let's say 50 items, you're not going to see any differences. But as our input grows larger and larger, algorithms that run in **O($n^2$)** get slower and slower.
+
+Now, what if you had another loop before or after this loop?
+
+```c
+void logArray(int *parray, int size)
+{
+    for (int i = 0; i < size; i++)   // O(n)
+    {
+        printf("%d\n", *(parray + i));
+    }
+
+    for (int i = 0; i < size; i++)      // O(n)
+    {
+        for (int j = 0; j < size; j++)  // O(n)
+        {
+            printf("first: %d, second: %d.\n", *(parray + i), *(parray + j));
+        }
+    }
+
+    for (int i = 0; i < size; i++)   // O(n)
+    {
+        printf("%d\n", *(parray + i));
+    }
+}
+```
+
+It's still **O($n^2$)**.
+
+What happen if we had another nested loop inside.
+
+```c
+void logArray(int *parray, int size)
+{
+    for (int i = 0; i < size; i++)      // O(n)
+    {
+        for (int j = 0; j < size; j++)  // O(n)
+            for (int k = 0; k < size; k++)
+            {
+                printf("first: %d, second: %d, third: %d.\n", *(parray + i), *(parray + j), *(parray + k));
+            }
+    }
+}
+```
+
+The the runtime complexity is now **O($n^3$)**. As you can imagine, this algorithm gets far slower than an algorithm with **O($n^2$)**.
+
+### O(log n)
+
+![log_n_curve](/figures/log_n_curve.png)
+
+Here is the logarithmic curve, compare this with a linear curve, the linear grows at the same rate, but the logarithmic curve slows down at some point.
+
+So the algorithm that runs in logarithmic time is more efficient and more scalable that an algorithm that runs in linear or poor value time.
+
+Let's see an example here. We have an array of sorted numbers from one to ten and you want to find the number 10.
+
+![ten_items_array](./figures/ten_items_array.png)
+
+one way to find the 10 is iterate over this array using a _`for`_ loop, going forward until we find a 10. This is called the **_linear search_** because it runs in a linear time.
+
+![ten_items_array_linear_search](./figures/ten_items_array_linear_search.png)
+
+In the worst case scneario, if the number we're looking for is at the end of an array. we have inspect every cell in this array to find a target number.
+
+The moe items we have, the longer this operation is going to take. So the run time of this algorithm increases lineary and in direct proportion with the size of our array.
+
+Now, we have another searching out for them called binary search, and this algorithm runs logarithmic time. It's much faster than the linear search.
+
+![ten_items_array_linear_search](./figures/binary_search_ten_items_array.png)
+
+**_Assuming that our array is sorted_**, we start off by booking at the middle item. If is this item smaller or greater than the value we're looking for? It's smaller, so our target number, in this case 10, must be in the right partition of this array. So we don't need to inspect any of the items in the left partition of this array.
+
+Assuming that out array is sorted, we start off by looking at the middle item. If this item smaller or rither nugreater than the value we're looking for? It's smaller.
+
+So our target number, int this case, must be in the light.
+
+![binary_search_demo_0](./figures/binary_search_demo_0.png)
+
+So partition of this array? So we don't need to inspect any of the items in the left part of the partition, in partition and with this, we can narrow down our search by half. With this we can narrow down our search by half.
+
+![binary_search_demo_1](./figures/binary_search_demo_1.png)
+
+Now, in the right partition, again, we look at the middle item, is it smaller or greater than the target value? It's smaller, so again ignore the items on the left, and focus on the items on the right.
+
+So every step, we're essentially narrowing down our search by half.
+
+![binary_search_demo_2](./figures/binary_search_demo_2.png)
+
+With this algorithm if we have one million items in this array, we can find a target item with a maximum of 19 comparaisons.
+
+We don't have to inspect every item in our array, this is logarithmic time in action, we have logarithimic growth in algorithms where you reduce our work by half in every step.
