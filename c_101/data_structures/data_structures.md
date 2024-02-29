@@ -266,3 +266,82 @@ So every step, we're essentially narrowing down our search by half.
 With this algorithm if we have one million items in this array, we can find a target item with a maximum of 19 comparaisons.
 
 We don't have to inspect every item in our array, this is logarithmic time in action, we have logarithimic growth in algorithms where you reduce our work by half in every step.
+
+### O($2^n$)
+
+O($2^n$) is the opposite of the O(log n) growth.
+
+![2_sqaure_n_vs_log_n](./figures/2_sqaure_n_vs_log_n.png)
+
+Remember these five curves.
+
+![five_curves](./figures/five_curves.png)
+
+### Space Complexity
+
+You have seen how we can use the big **O** notation to describe the runtime complexity of our algorithms.
+
+In an ideal world, we want our algorithms to be super fast and scalable, and take minimum amount of memory. But unfortunately, that hardly if ever happens. It's like asking for a Ferrari for 10 dollars. It just doesn't happen.
+
+Most of the time, you have to do a trade-off between saving time and saving space. There are times when we have more space, so we can use that to optimize an algorithm to make it faster and more scalable. But there are also times where you have limited space, like when we build an app for a small mobile device. In those situations we have to optimize for the space, because scalability is not a big factor. Only one user is going to use our application at that moment, not a million users.
+
+So we need a way to talk about how much space an algorithm requires, and that is where we use the big **O** notation again.
+
+Let's look at a few example, here we have this greet method that takes an array of string, and prints a high message for every name in this array.
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+void greet(char **names, int size)
+{
+    // O(1) space
+    for (int i = 0; i < size; i++)
+    {
+        printf("Hi, %s.\n", names[i]);
+    }
+}
+
+
+int main()
+{
+    char *names[4] = {"JunLuo", "CherylTan", "RoyLuo", "YummyLuo"};
+    greet(names, 4);
+    return 0;
+}
+```
+
+Now in this one we're declaring a loop variable, and this is independent of the signs of the input, so whatever our input size is 10 or one million, this method will only allocate some additional memory for the loop variable _`i`_. So it takes **O(1)** space.
+
+Now, what if you declare a string like this. Call it copy and initialize it like this.
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+void greet(char **names, int size)
+{
+    // O(n) space
+    char **new_names = (char*)malloc(size * sizeof(char*));
+
+    for (int i = 0; i < size; i++)
+    {
+        printf("Hi, %s.\n", names[i]);
+    }
+}
+
+
+int main()
+{
+    char *names[4] = {"JunLuo", "CherylTan", "RoyLuo", "YummyLuo"};
+    greet(names, 4);
+    return 0;
+}
+```
+
+So if our input size is 1000, this array *`*new_names[]`\* will also have 1000 items, what is the space complexity of this method? It's **O(n)**, the bigger size we have input, the more space our method is going to take, we have **O(n)** here.
+
+By the way when we talk about space complexity, we only look at the addtional space that we should allocate relative to the size of the input.
+
+We always have the input of size n, so we don't count it, we just analyze how much extra space we need to allocate for this algorithm, so that's all about space.
