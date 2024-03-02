@@ -3959,7 +3959,7 @@ int *pnumber = NULL;
 
   - Means that it implicitly prevents the accicental overwriting of memory by using a pointer that does not point to anything specific
 
-- Add an `#include` directive for `stddef.h` to your source file
+- Add an `#include` directive for `<stddef.h>` to your source file
 
 ### 64.3 Address of Operator
 
@@ -6429,3 +6429,301 @@ int main()
     return 0;
 }
 ```
+
+## 84 Challenge of File Input and Output: Find the Number
+
+### 84.1 Requirements
+
+- Write a program to find the total number of lines in a text file
+
+- Create a file that contains some lines of text
+
+- Open your test file
+
+- Use the `fgetc()` function to parse characters in a file until you get to the `EOF`
+
+  - If `EOF` increment counter
+
+- Display as output the total number of lines in the file
+
+## 85 Challenge of ile Input and Output: Convert characters in a File to Uppercase
+
+### 85.1 Requirements
+
+- Write a program that converts characters of a file to uppercae and write the results out a temporary file. Then rename the temporary file to the original filename and remove the temporary filename.
+
+- Use the `fgetc()` and `fputc()` functions
+
+- Use the `rename()` and `remove()` functions
+
+- Use the `islower()` function
+
+  - Can convert a character to upper case by subtracting 32 from it
+
+- Display the contents of the original file to standard output
+  - In uppercase
+
+## 86 hallenge of ile Input and Output: Print the Contents of a file in Reverse Order
+
+### 86.1 Requirements
+
+- Write a program that will print the contents of a file in reverse order
+
+- Use the `fseek()` functio nto seek to the end of the file
+
+- Use the `ftell()` function to get the position of the file pointer
+
+- Display as output the file in reverse order
+
+## 87 Standard C Library
+
+### 87.1 Standard Header Files
+
+#### 87.1.1 `<stddef.h>`
+
+The `<stddef.h>` header defines various variable types and macros. Many of these definitions also appear in other headers.
+
+**Library Variables**
+
+| **Definition** | **Description**                                                                 |
+| -------------- | ------------------------------------------------------------------------------- |
+| `ptrdiff_t`    | This is the signed integral type and is the result of subtracting two pointers. |
+| `size_t`       | This is the unsigned integral type and is the result of the `sizeof` keyword.   |
+| `wchar_t`      | This is an integral type of the size of a wide character constant.              |
+
+**Library Macros**
+
+| **Definition**                      | **Description**                                                                                                                                                                                                                     |
+| ----------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NULL`                              | This macro is the value of a null pointer constant.                                                                                                                                                                                 |
+| `offsetof(type, member-designator)` | This results in a constant integer of type size_t which is the offset in bytes of a structure member from the beginning of the structure. The member is given by member-designator, and the name of the structure is given in type. |
+
+#### 87.1.2 `<limits.h>`
+
+The `<limits.h>` header determines various properties of the various variable types. The macros defined in this header, limits the values of various variable types like char, int and long.
+
+These limits specify that a variable cannot store any value beyond these limits, for example an unsigned character can store up to a maximum value of 255.
+
+| **Macro**    | **Value**            | **Description**                                                                                                                      |
+| ------------ | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `CHAR_BIT`   | 8                    | Defines the number of bits in a byte.                                                                                                |
+| `SCHAR_MIN`  | -128                 | Defines the minimum value for a signed char.                                                                                         |
+| `SCHAR_MAX`  | +127                 | Defines the maximum value for a signed char.                                                                                         |
+| `UCHAR_MAX`  | 255                  | Defines the maximum value for an unsigned char.                                                                                      |
+| `CHAR_MIN`   | -128                 | Defines the minimum value for type char and its value will be equal to SCHAR_MIN if char represents negative values, otherwise zero. |
+| `CHAR_MAX`   | +127                 | SCHAR_MAX if char represents negative values, otherwise UCHAR_MAX.                                                                   |
+| `MB_LEN_MAX` | 16                   | Defines the maximum number of bytes in a multi-byte character.                                                                       |
+| `SHRT_MIN`   | -32768               | Defines the minimum value for a short int.                                                                                           |
+| `SHRT_MAX`   | +32767               | Defines the maximum value for a short int.                                                                                           |
+| `USHRT_MAX`  | 65535                | Defines the maximum value for an unsigned short int.                                                                                 |
+| `INT_MIN	`    | -2147483648          | Defines the minimum value for an int.                                                                                                |
+| `INT_MAX`    | +2147483647          | Defines the maximum value for an int.                                                                                                |
+| `UINT_MAX`   | 4294967295           | Defines the maximum value for an unsigned int.                                                                                       |
+| `LONG_MIN`   | -9223372036854775808 | Defines the minimum value for a long int.                                                                                            |
+| `LONG_MAX`   | +9223372036854775807 | Defines the maximum value for a long int.                                                                                            |
+| `ULONG_MAX`  | 18446744073709551615 | Defines the maximum value for an unsigned long int.                                                                                  |
+
+```c
+#include <stdio.h>
+#include <limits.h>
+
+int main() {
+
+   printf("The number of bits in a byte %d\n", CHAR_BIT);
+
+   printf("The minimum value of SIGNED CHAR = %d\n", SCHAR_MIN);
+   printf("The maximum value of SIGNED CHAR = %d\n", SCHAR_MAX);
+   printf("The maximum value of UNSIGNED CHAR = %d\n", UCHAR_MAX);
+
+   printf("The minimum value of SHORT INT = %d\n", SHRT_MIN);
+   printf("The maximum value of SHORT INT = %d\n", SHRT_MAX);
+
+   printf("The minimum value of INT = %d\n", INT_MIN);
+   printf("The maximum value of INT = %d\n", INT_MAX);
+
+   printf("The minimum value of CHAR = %d\n", CHAR_MIN);
+   printf("The maximum value of CHAR = %d\n", CHAR_MAX);
+
+   printf("The minimum value of LONG = %ld\n", LONG_MIN);
+   printf("The maximum value of LONG = %ld\n", LONG_MAX);
+
+   return(0);
+}
+```
+
+#### 87.1.3 `<stdbool.h>`
+
+`<stdbool.h>` - file contains definitions for working with Boolean variables (`type _Bool`)
+
+| **Define** | **Meaning**                                 |
+| ---------- | ------------------------------------------- |
+| `bool`     | Substitute name for basic `_Bool` data type |
+| `true`     | Defined as 1                                |
+| `false`    | Defined as 0                                |
+
+### 87.2 Various Functions
+
+#### 87.2.1 String Functions
+
+- To use any of these functions, you need to include the header file `<string.h>`
+
+- `char *strcat(s1, s2)`
+
+  - Concatenates the character string `s2` to the end of `s1`, placing a null character at the end of the final string. The function returns s1.
+
+- `char *strchr(s, c)`
+
+  - Searchs the string `s` for the first occurrence of the character `c`. If it is found, a pointer to the character is returned; otherwise, a null pointer is returned.
+
+- `int strcmp(s1, s2)`
+
+  - Compares strings `s1` and `s2` and returns a value less than zero if `s1` is less than `s2`, equal to zero if `s1` is equal to `s2`, and greater than zero i f`s1` is greater than `s2`.
+
+- `char *strcpy(s1, s2)`
+
+  - Copies the string `s2` to `s1`, returning `s1`
+
+- `size_t strlen(s)`
+
+  - Returns the number of characters in `s`, excluding the null character
+
+- `char *strncat(s1, s2, n)`
+
+  - Copies `s2` to the end of `s1` until either the null chracter is reached or `n` characters have been copied, whichever occurs first. Return `s1`.
+
+- `int strncmp(s1, s2, n)`
+
+  - Performs the same function as `strcmp()`, except that at most n characters from the string are compared.
+
+- `char *strrchr(s, c)`
+
+  - Searches the string `s` for the last occurrence of teh character `c`. if found, a pointer to the character in `s` is returned; otherwise, the null pointer is returned.
+
+- `char *strstr(s1, s2)`
+
+  - Searches the string `s1` for the first occurrence of the string `s2`. If found, a pointer to the start of where `s2` is located inside `s1` is returned, otherwise, if `s2` is not located inside `s1`, the null pointer is returned.
+
+  - `char *strtok(s1, s2)`
+    - Breaks the string `s1` into tokens based on delimiter characgters in `s2`
+
+#### 87.2.2 Character Functions
+
+- To use these character functions, you must include the file `<ctype.h>`
+
+- `isalnum()`, `isalpha()`, `isblank()`, `iscntrl()`, `isdigit()`, `isgraph()`, `islower()`, `isspace()`, `ispunct()`, `isupper()`, `isxdigit()`
+
+#### 87.2.3 I/O Functions
+
+- To use the most common I/O functions from the C library you should include the header file `<stdio.h>`
+
+- Included in this file are declarations for the I/O functions and definitions for the names `EOF`, `NULL`, `stdin`, `stdout`, `stderr` (all constant values), and `FILE`
+
+- `int fclose(filePtr)`
+
+  - Closes the file identified by `filePtr` and returns zero if the close is successful, or returns `EOF` if an error occurs.
+
+- `int feof(filePtr)`
+
+  - Return nonzero if the identified file has reached the end of the file and returns zero otherwise
+
+- `int fflush(filePtr)`
+
+  - Flushes (writes) any data forom internal buffers to the indicated file, returnning zero on success and the value `EOF` if an error occurs.
+
+- `int fgetc(filePtr)`
+
+  - Returns te next character from the file identified by `filePtr`, or the value `EOF` if an end-of-file condition occurs.
+  - Remember that this function returns an int
+
+- `int fgetpos(filePtr, fpos)`
+
+  - Gets the current file position for the file associated with `filePtr`, storing it into the `fpos_t` (defined in `<stdio.h>`) variable pointed to by `fpos`, `fgetpos` returns zero on success, and returns nonzero on failure.
+
+- `char *fgets(buffer, i, filePtr)`
+
+  - Reads characters from the indicated file, until either i - 1 characters are read or a newline character is read, whichever occurs first.
+
+- `FILE *fopen(fileName, accessMode)`
+
+  - Opens the specified file with the indicated access mode.
+
+- `int fprintf(filePtr, format, arg1, arg2, ..., argn)`
+
+  - Writes the specified arguments to the file identifed by `filePtr`, according to the format specified by the character string format.
+
+- `int fputc(c, filePtr)`
+
+  - Writes the value of c to the file identified by `filePtr`, returning c if the write is successful, and the value `EOF` otherwise
+
+- `int fputs(buffer, filePtr)`
+
+  - Writes the characters in the array pointed to by buffer to the indicated file until the terminating null character in buffer is reached.
+
+- `int fscanf(filePtr, format, arg1, arg2, ..., argn)`
+
+  - Reads data items from the file identified by `filePtr`, according to the format specified by the character string format
+
+- `int fseek(filePtr, offseet, mode)`
+
+  - Positions the indicated file to a point that is offset (a long int) bytes from the beginning of the file, from the current postion in the file, or from theend of the file, depending upon the valide of mode (an integer).
+
+- `int fsetpos(filePtr, fpos)`
+
+  - Sets the current file position for the file associated with filePtr to the value pointed to by `fpos`, which is of type `fpos_t` (defined in `<stdio.h>`). Returns zero on success, and nonzero on failure.
+
+- `long ftell(filePtr)`
+
+  - Returns the relative offset in bytes of the current position in the file identified by `filePtr`, or -1L on error.
+
+  - `int printf(format, arg1, arg2, ..., argn)`
+
+    - Writes the specified arguments to `stdout`, according to the format specified by the character string.
+    - Returns the number of characters written.
+
+  - `int remove(fileName)`
+
+    - Removes the specified file. A nonzero value is returned on failure.
+
+  - `int rename(fileName1, fileName2)`
+
+    - Renames the file `fileName1` to `fileName2`, returning a nonzero result on failure.
+
+  - `int scanf(format, arg1, arg2, ..., argn)`
+    - Reads items from `stdin` according to the format specified by the string format.
+
+#### 87.2.4 Conversion Functions
+
+- To use these functions convert character strings to numbres you must include the header file `<stdlib.h>`
+
+- `double atof(s)`
+  Converts the string pointed to by `s` into a floating-point number, returning the result.
+
+- `int atoi(s)`
+
+  - Converts the string pointed by `s` into an int, returning the result
+
+- `int atol(s)`
+
+  - Converts the string pointed to by `s` into a long int, returning the result.
+
+- `int atoll(s)`
+  - Converts the string pointed to by `s` into long long int, returning the result.
+
+#### 87.2.5 Dynamic Memory Functions
+
+- To use these functions that allocate and free memory dynamically you must include the `<stdlib.h>` header file
+
+- `void *calloc(n, size)`
+
+  - Allocates contiguous space for n items of data, where each item is size bytes in length. The allocated space is initially set to all zeros. On success, a pointer to the allocated space is returned; on failure, the null pointer is returned.
+
+- `void free(pointer)`
+
+  - Returns a block of memory pointed to by pointer that was previously allocated by a `calloc()`, `malloc()`, or `realloc()` call
+
+- `void *malloc(size)`
+
+  - Allocates contiguous space of size bytes, returning a pointer to the beginning of teh allocated block if successful, and the null pointer otherwise
+
+- `void *realloc(pointer, size)`
+  - Changes the size of a previously allocated block to size bytes, returning a pointer to the new block (which might have moved). Or a null pointer if an error occurs.
