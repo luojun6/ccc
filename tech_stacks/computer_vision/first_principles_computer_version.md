@@ -317,6 +317,43 @@ Now if you compare these with a pinhole camera, in the case of a pinhole camera 
 
 ![lens_01.png](./figures/lens_01.png)
 
+#### 1.3.2 Gaussian Lens (Thin Lens) Law
+
+![gaussian_lens_law](./figures/gaussian_lens_law.png)
+
+#### 1.3.3 How ti Find the Focal Length?
+
+How dees one find the focal length of a lens if that's not given to you. It's actually pretty easy.
+
+Once again you have the Gaussion Lens Law. In this equation if you set $o = \infty$, which means if you use a source that is or a point in the scene that is really far away and you image it, then $o$ is infiity, then you see that $f = i$.
+
+![lens_infinite_object_distance](./figures/lens_infinite_object_distance.png)
+
+By simply showing the lens an object that is really far away such as the sun, a very distant point light source, and looking at where the image of that point source is formed on say a sheet of paper, the distance between the focused image and the lens is the focal length.
+
+Now the bending power or the focal length of the lens is determined by a few factors.
+
+- One is the material that lenses made of.
+  - It could be made of glass or it could be made of plastic.
+  - It has to be a transparent material.
+- So the refractive index of the material determines $f$ to a great extent, but it's also determined by the shape of the lens.
+  - The shape of the lens has two surfaces, curved surfaces - typically spherical surfaces.
+  - The radius of curvature of these two surfaces also determines the focal length of the lens.
+
+#### 1.3.4 Image Magnification
+
+Once again you have the object distance $o$, the image at distance $i$. And the height of the object in this case is $h_{0}$, and we want to know what is going to be the height of the image $h_{i}$.
+
+![lens_image_magnification](./figures/lens_image_magnification.png)
+
+So the magnification is defined as $h_{i}$ divided by $h_{0}$. If you look at these two similar triangles - the red triangles, you see that $h_{i}$ divided by $h_{0}$ is equal to $i$ divide by $o$.
+
+![lens_image_magnification_formula](./figures/lens_image_magnification_formula.png)
+
+#### 1.3.5 Two Lens System
+
+So one can actually change the magnification of a lens system by using multiple lenses.
+
 ## 2 Features: Edges, Boundaries, SIFT, Applications
 
 ## 3 Reconstruction 1: Shading, Focus, Active Illumination
