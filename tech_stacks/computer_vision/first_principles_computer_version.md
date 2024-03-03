@@ -352,7 +352,109 @@ So the magnification is defined as $h_{i}$ divided by $h_{0}$. If you look at th
 
 #### 1.3.5 Two Lens System
 
-So one can actually change the magnification of a lens system by using multiple lenses.
+So one can actually change the magnification of a lens system by using multiple lenses. Let's take a look at this two lens system.
+
+![two_lens_system.png](./figures/two_lens_system.png)
+
+In this case, you have lens $L_{1}$ and $L_{2}$, an object with distance $o_{1}$ from the lens $L_{2}$. So this object is imaged onto the _`Intermediate image`_ that is focused, that acts like a new object, if you will. And it is image by the lens $L_{1}$ to get the _`final image`_.
+
+So the magnification of the complete system is a magnification due to lens $L_{2}$ times the magnification due to a lens $L_{1}$. Without changing the distance between the object and the image plane, you can actually move the lenses $L_{1}$ and $L_{2}$ around to change the effect of magnification of the complete system.
+
+That really is the process of **zomming**, it's moving the lenses to change the magnification of a lens system.
+
+#### 1.3.6 Aperture of Lens
+
+The aperture of the lens is the clear area of the lens that gathers light from points in the scene and it has a diameter $D$.
+
+![aperture_of_lens.png](./figures/aperture_of_lens.png)
+
+In a typical lens such as this screenshots as below, you see that the aperture is implemented using what's called the diaphgram.
+
+![aperture_diaphgram.png](./figures/aperture_diaphgram.png)
+
+You can change the ring in the back, what that does is this set of blades that come together to change the diameter of the aperture. So from left to right, we're going from an open aperture to a closed aperture.
+
+#### 1.3.7 f-number (f-stop, f-ratio) of Lens
+
+It's convenient to express the aperture diameter of lens in terms of its as a fraction of the focal length of the lens. That's called the **f-number**.
+
+![fnumber.png](./figures/fnumber.png)
+
+If you are looking at the **f-number** as the aperture as a way to represent the aperture, as you go from a fully open aperture to a closed aperture, the **f-number** is going to go up while the diameter goes down.
+
+![fnumber_example.png](./figures/fnumber_example.png)
+
+#### 1.3.8 Lens Defocus
+
+Now let's talk about the price we pay when we use a lens. Gathers a lot more light, but there's only one plane in the scene that is perfectly focused onto the **image plane** by lens.
+
+So let's take a look at our point $o$ once again, this distance $o$ is going to be focused at the distance $i$ behind the lens.
+
+![plane_of_focus.png](./figures/plane_of_focus.png)
+
+For this particular position of the **image plane**, that is exactly one plane which is going to be completely in focus. In fact any point on the **plane of focus** on the right is going to be perfectly focused on this **image plane**, and this is called the plane of focus corresponding to your lens system.
+
+Now we have to ask what happens if you happen to lie outside of this **plane of focus**. So let's consider at this point right here, which happens to be at a distance $o'$ from the lens.
+
+![outside_plane_of_focus.png](./figures/outside_plane_of_focus.png)
+
+Since it's closer to the lens, its image is going to be formed behind the **image plane**. In other words, the light that the lens receives from the central point is not going to end up being a single point on the image plane, but rather distributed over a circular disk on the image plan. It's going to be **blurred**. This is call **blur circle**.
+
+The **blur circle** has a diameter let's say equalt to $b$. We want to figure out what thi **blur circle** diameter is for any given position of the object in the scene.
+
+For that we use these similar triangles, the small orange left of the **blur circle**, and the large one on the right. We have:
+
+<span style="font-size:2em;">${b \over D} = {|i' - i| \over i'}$</span>
+
+**Blur circle diameter:**
+
+<span style="font-size:2em;">$b = {D \over i'}|i' - i|$</span>
+
+<span style="font-size:2em;">$b \propto D \propto {1 \over N}$</span>
+
+The **blur circle diameter** is proportional to the diameter of the aperture. You use a lens which deviates from a pinhole camera more and more, which larger and larger aperture, you're going to end up with a greater degree of blur for point that lie outside the plane of focus.
+
+So the blur circle diameter is proportional to the diameter of the aperture, and therefore inversely proportional to the **f-number** of the lens.
+
+Let's review this expression again, we have the image distances $i'$ and $i$. We'd like to express this in terms of the object distances $o'$ and $o$ because that's what we have at our disposal. We want to know what happens when we move things away from the plane of focus in the scene.
+
+#### 1.3.9 Blur Circle (Defocus)
+
+So we use the Gaussian lens law again. We can write the Gaussian lens law for lens equation for the focused point and the defoused point.
+
+![blur_circle.png](./figures/blur_circle.png)
+
+Eventually we can get the expression here.
+
+#### 1.3.10 Focusing
+
+How do we focus an imaging system? Here you see an out of focus defocused imaging system. The object you want to in the image, but it's being imaged behind the image plane, therefore creating a blur circle.
+
+![focusing_methods.png](./figures/focusing_methods.png)
+
+The obvious thing to do to focus this imaging system would be:
+
+- move the image plane.
+- move the lens itself thereby changing the Guassian lens equation and getting the point into focus.
+- move both the len and the iamge plane.
+
+For that matter you could also move the entire camera system towards or further away form the object. So as to bring it into focus.
+
+### 1.4 Depth of Field
+
+#### 1.4.1 Depth of Field (DoF)
+
+For any given image sensor or image plane location, there is one plane in the scene that is perfectly focused. All things, all objects that lie outside of that plane are going to be out of focus.
+
+And the degree of defocus is going to increase with its distance from the plane of focus. This is in continous domain when you're talking about your optical image.
+
+![dof.png](./figures/dof.png)
+
+But we also know that images have finite resolution, they are made of pixels of finite size. So it turns out that the best focus region in the scene or the range of depths in the scene that are best focus are those points in the scen, for which the blur circel lies within a single pixel.
+
+So as long as the blur circle happens to be smaller in diameter that the size of a pixel, all points are going to be equally out of focus, or equally focus, and that's why you see here
+
+The range of object distances for which the image is sufficiently well focused, that is the range over which the blue $b$ is lees that the pixel size is called the** depth of field **of the imaging system.
 
 ## 2 Features: Edges, Boundaries, SIFT, Applications
 
