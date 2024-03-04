@@ -454,7 +454,38 @@ But we also know that images have finite resolution, they are made of pixels of 
 
 So as long as the blur circle happens to be smaller in diameter that the size of a pixel, all points are going to be equally out of focus, or equally focus, and that's why you see here
 
-The range of object distances for which the image is sufficiently well focused, that is the range over which the blue $b$ is lees that the pixel size is called the** depth of field **of the imaging system.
+The range of object distances for which the image is "sufficiently well" focused, that is the range over which the blue $b$ is lees that the pixel size is called the** depth of field **of the imaging system.
+
+So let's find the depth of field of lens system. For that we have to:
+
+![dof_model.png](./figures/dof_model.png)
+
+- First define the pixel size, let's call that $c$.
+- See what is the range of distances of the object $o$ for which the blur is going to smaller than $c$.
+- Let's consider the point $o_{1}$.
+  - This is the point for which the diameter of the blur circle exactly equals the size of the pixel $c$.
+  - In this case because the point is in front or closer to the image, the lens itself, it is closer to the lens than $o$, so the image is going to be formed behind the image plane with a blur circle of diameter $c$.
+- Then there is another point $o_{2}$ which is further away from the lens, where the images are going to be formed in front of the image plane, but then it again diverges to create a blur circle of diameter $c$.
+
+**DoF = $o_{2}$ - $o_{1}$**
+
+We can find out this **DoF** pretty easily, because we have an expression for the blur circle diameter. So in that blur circle diameter expression instead of $b$, we are going to just plug-in $c$ which is the size of your pixel.
+
+- For the scenario where the object is in front you are going to have the first expression with $o_{1}$.
+- For the case where the object is further away than the plane of focus, you're going to get the second expression on the right.
+
+Note that we have got:
+
+- $c$ - size of the pixel.
+- $f$ - focal length
+- **f-number**
+- The distance of the plane of focus $o_{1}$ and $o_{2}$.
+
+**So now we can get a simple expression for the depth of the field.**
+
+![dof_expression.png](./figures/dof_expression.png)
+
+Interesting thing to note here that the distance between $o_{2}$ and $o$ is greater than the distance between $o1$ and $o$. That is closer and closer you get to the lens, the defocus is going to increase more rapidly.
 
 ## 2 Features: Edges, Boundaries, SIFT, Applications
 
