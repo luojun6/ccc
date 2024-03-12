@@ -6247,7 +6247,7 @@ int main()
 
 ### 83.1 File Positioning
 
-- For many applications, you need to be able to access data in a file other than sequential orer
+- For many applications, you need to be able to access data in a file other than sequential order
 
 - There are various functions that you can use to access data in random sequence
 
