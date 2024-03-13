@@ -580,6 +580,118 @@ Two's complement addition looks just like a regular edition. In other words, we 
 |         | 1101     | -8+4+1 = -3 |
 | 1       | 0010     | 5-3 = 2     |
 
+| Dropped | Original | Value             |
+| ------- | -------- | ----------------- |
+|         | 1011     | -8+2+1 = -5       |
+|         | 0011     | 2+1 = 3           |
+|         | 1110     | -5+3 = -8+4+2= -2 |
+
+**Overflow examples:**
+
+| Dropped | Original | Value        |
+| ------- | -------- | ------------ |
+|         | 1010     | -8+2 = -6    |
+|         | 1101     | -8+4+1 = -3  |
+| 1       | 0111     | 7 (overflow) |
+
+It's become positive and that's referred to as a negative overflow. The reason of course is the number -9, but we can't represent it in a 4-bit two's complement number, so it overflowed. You'll notice that the +7 differs from -9 by 16.
+
+| Dropped | Original | Value         |
+| ------- | -------- | ------------- |
+|         | 0111     | 4+2+1 = 7     |
+|         | 0101     | 4+1 = 5       |
+| 1       | 1100     | -4 (overflow) |
+
+We've taken two positive numbers and added them together and gotten a negative result.
+
+##### 1.3.4.4 TAdd Overflow
+
+- **Functionality**
+  - True sum requires _w_+1 bits
+  - Drop off MSB
+  - Treat remaining bits as 2's comp. integer
+
+![tadd_overflow.png](./images/tadd_overflow.png)
+
+##### 1.3.4.5 Visulizing 2's Complement Addition
+
+- **Values**
+  - 4-bits two's comp.
+  - Range from -8 to +7
+- **Wraps Around**
+  - If sum >= 2$^{w-1}$
+    - Becomes negative
+    - At most once
+  - If sum < -2$^{w-1}$ - Becomes positive - At most once
+
+![visualize_tadd_comp.png](./images/visualize_tadd_comp.png)
+
+##### 1.3.4.6 Multiplication
+
+Multiplication is basically the same idea. In fact all the operation are the basically the same idea that if you can't represent it within the word size, you just take the lower _w_ bits.
+
+So all these complicated solutions here are just ways or sayings, in principle if you take two _w_ bits numbers and multiply them together. You might need a result may require as much as 2*w* bits to represent.
+
+Before addtion is _w_+1, multiplication you actually have to double, because you're potentially squaring the largest number.
+
+- **Goal: Computing Product of _w_-bit numbers _x, y_**
+  - Either signed or unsigned
+- **But, exact results can be bigger than _w_ bits**
+
+  - Unsigned: up to 2w bits
+    - Result range: 0 $\le$ _x_\*_y_ $\le$ (2$^w$ - 1)$^2$ = 2$^{2w}$ - 2$^{w+1}$ + 1
+  - Two's complement min(negative): Up to 2*w*-1 bits
+    - Result range: _x_\*_y_ $\ge$ (-2$^{w-1}$\*2$^{w-1}$-1) = -2$^{2w-2}$ + 2$^{w-1}$
+  - Two's complement max(positive): Up to 2*w* bits, but only for (_TMin_$_{w}$)$^2$
+    - Result range: _x_\*_y_ $\le$ (-2$^{w-1}$)$^2$ = 2$^{2w-2}$
+
+- **So, maintaining exact results...**
+  - Would need to keep expanding word size with each product computed
+  - Is done in software, if needed
+    - e.g., by “arbitrary precision” arithmetic packages
+
+##### 1.3.4.7 Unsigned Multiplication in C
+
+![unsigned_multiplication.png](./images/unsigned_multiplication.png)
+
+- **Standard Multiplication Funciton**
+  - Ignores high order _w_ bits
+- **Implements Modular Arithmetic**
+  - UMult$_{w}$(_u_, _v_) = _u_ - _v_ mod 2$^w$
+
+| Dropped | Original | Value   |
+| ------- | -------- | ------- |
+|         | 0011     | 2+1 = 3 |
+|         | 0101     | 4+1 = 5 |
+|         | 1101     | 15      |
+
+| Dropped | Original | Value         |
+| ------- | -------- | ------------- |
+|         | 0101     | 4+1 = 5       |
+|         | 0101     | 4+1 = 5       |
+| 1       | 1001     | 25 mod 16 = 9 |
+
+##### 1.3.4.8 Signed Multiplication in C
+
+![signed_multiplication.png](./images/signed_multiplication.png)
+
+- **Standard Multiplication Function**
+  - Ignores high order _w_ bits
+  - Some of which are different for signed vs. unsigned multiplication
+  - Lower bits are the same
+
+| Dropped | Original | Value        |
+| ------- | -------- | ------------ |
+|         | 0100     | 4            |
+|         | 0101     | 4+1 = 5      |
+| 1       | 0100     | 20 mod 16 =4 |
+
+| Dropped | Original | Value     |
+| ------- | -------- | --------- |
+|         | 0101     | 4+1 = 5   |
+|         | 0101     | 4+1 = 5   |
+| 1       | 1001     | -8+1 = -7 |
+
 #### 1.3.5 Summary
 
 ### 1.4 Representations in memory, pointers and strings

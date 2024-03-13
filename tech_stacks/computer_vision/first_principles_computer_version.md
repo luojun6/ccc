@@ -666,6 +666,26 @@ This is an image of a printed sheet of paper, it's black and white, but even so 
 
 #### 1.5.4 Geometric Distortion
 
+Two very well-known geometric distortions are radial distortion and ttangential distortion.
+
+![geometric_distortion.png](./images/geometric_distortion.png)
+
+In the case of radial distortion, as you move away from the center of the image, points tend to get pushed out more and more, and so you get this bulging of the iamge, it's also called barrel distortion. Again if you know exactly what the barrel distoration is you can correct for it.
+
+In the case of tangential distortion, you have a slight twisting of the iamge, as you go further and further away from the center of the iamge the twisting increases in the tangential distortion.
+
+These are due to imperfection in the lens, the cheaper the lens is typically speaking, the more you're going to see all of these effects, vignetting, chromatic aberration, and radial & tangential distortion.
+
+#### 1.5.5 Geometric Distortion Correction
+
+![geometric_distortion_correction.png](./images/geometric_distortion_correction.png)
+
+We often find these in inexpensive wide angle camreas or lenses. Can you can see here an image taken with one such lens. And one of the things that you immediately note is that straight lines in the scene no longer map the straight lines, because it's not prospective projection, there's this barrel distortion.
+
+But if you know what the barrel distortion is, you can of course take this image and apply a very simple piece of software to it, mapping software to get a pure perspective image that looks like the right one.
+
+The the undistored image, all straight lines in the scene do end up being as straight lines in the image. The one interesting thing to note here is that the field of view is not rectangular, because the field of view of the original image itself due to barrel distortion was not rectangular, even though the image sensor was rectangular.
+
 ## 2 Features: Edges, Boundaries, SIFT, Applications
 
 ## 3 Reconstruction 1: Shading, Focus, Active Illumination
