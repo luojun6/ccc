@@ -686,10 +686,62 @@ But if you know what the barrel distortion is, you can of course take this image
 
 The the undistored image, all straight lines in the scene do end up being as straight lines in the image. The one interesting thing to note here is that the field of view is not rectangular, because the field of view of the original image itself due to barrel distortion was not rectangular, even though the image sensor was rectangular.
 
+### 1.6 Wide Angle Cameras
+
+#### 1.6.1 Fisheye Lens Camera
+
+This is was first introduced by Miyamoto back in 1964. The fisheye lens has bee designed to have a very large field of view - 170 degrees in this particular case.
+
+![170_fisheye_lens.png](./images/170_fisheye_lens.png)
+
+And uses a series of what are called meniscus lenses. A meniscus lens is convex on one side and concave on the other side. This allows the sysatem to bend light severely, especially those rays of light that are more away from the optical axis, towards the periphery of the field of view.
+
+Below the meniscus lenses, there ara a series of other lenses, which finally compress the field of view onto this small image sensor.
+
+Actually bending light to arrive in a small area, compression is not that hard. What's really hard is making sure that the image is well focused everywhere, the entire field of view. So these are fairly sophisticated optical designs.
+
+#### 1.6.2 Fisheye Image
+
+This fisheye lens has 180 degree field of view.
+
+![fisheye_image.png](./images/fisheye_image.png)
+
+#### 1.6.3 Captureing the Complete Sphere
+
+![ricoh_theata.png](./images/ricoh_theata.png)
+
+The two hemispheres actually overlap a tiny bit. What's nice here is that the design is such that the two have been placed very closed together. This is all the imaging hardwere has been packed in between these two lenses, so that the viewpoints of tboth these systems are close enough that you can assume them to be at the same time.
+
+This allows you to stich these two hemispheres together to create a complete spherical image. And that spherical image then allows you to look in various directions. There are versions of this camera both that produce still images as well as videos.
+
+Remmeber that it's hard to design a lens based system that can go well beyond a hemisphere. There are applications where you do indeed want not the hemisphere, but a panorama goes all the way around, 360 degrees, one application would be video conferencing.
+
+#### 1.6.4 Planar Mirrors and Reflected Cameras
+
+![optical_folding.png](./images/optical_folding.png)
+
+You can use planar mirrors to play lots of games and manipulate or move around the position and field of view of a real camera. This is used in many different applications. It's called **optical folding**.
+
+Actually this technique for imaging is called catadioptrics. Catoptrics is the use of mirrors. And dioptrics is the use of lenses. This kind of a system uses both lenses, mirrors, and therefore is a catadioptric system.
+
+#### 1.6.4 Hyperbolic Mirror Camera
+
+**Question:** How do we enlarge the field of view of the real caream? We do this by using curved mirrors.
+
+Here is an example, a design that uses a hyperbolic camera. We know that a hyperbola has two foci.
+
+![hyperbolic_mirror.png](./images/hyperbolic_mirror.png)
+
+#### 1.6.5 Parabolic Mirror Camera
+
+![syytem_blogge](./images/syyytem_blogge.png)
+
+![parablic_xinchangyui.png](./images/parablic_xinchangyui.png)
+
 ## 2 Features: Edges, Boundaries, SIFT, Applications
 
 ## 3 Reconstruction 1: Shading, Focus, Active Illumination
 
-## 4 Reconstruction 2: Stereo, Optical Flow, SFM
+## 4 Reconstruction 2: Stereo, Optical Flow, SFMoptical folding
 
 ## 5 Perception: Segmentation, Tracking, Recognition

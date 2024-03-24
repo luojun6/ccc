@@ -161,7 +161,7 @@ The other thing and this is an important featuer is any address is defined to be
 - **Representation**
 
   - Width w bit vector represents subset of {0, 1, ..., w-1}
-  - ## $\alpha_{j}=1$ if $j\owns A$
+  - **$\alpha_{j}=1$ if $j\owns A$**
 
     - 01101001 {0,3,5,6}
     - _7<span style="color:red">65</span>4<span style="color:red">3</span>21<span style="color:red">0</span>_
@@ -692,6 +692,822 @@ Before addtion is _w_+1, multiplication you actually have to double, because you
 |         | 0101     | 4+1 = 5   |
 | 1       | 1001     | -8+1 = -7 |
 
+##### 1.3.4.9 Power-of-2 Multiply with Shift
+
+There's a trick for multiplying by a power-of-2, which is just to shift the number to the left. You'll often see that when you have in your code, we want to multiply some number by 4, you'll write it in your C code, if you look at the assembly code, you'll see that compiler generated is just says shift it by 2.
+
+- **Operation**
+  - **u << k gives u \* 2$^k$**
+  - Both signed an unsgined
+
+So when they're doing shifts where you might expect them to be doing multiplicaiton, the reason for that as an optimization is historically the multiplication instruction took a lot longer than a shift instruction.
+
+Say one clock to do a shift, and it used to be like 11, 12, 13 clock cycles to do a multiplication. Nowadays like on computers, we use the shark machines it only takes three clock cycles to do multiplication, because they added a lot of hardware to do that. But three clock cycles is still more time than one.
+
+So when you can get away with a shift, it's generally a better idea. And the compiler has its onw kind of judgement calls on when is it more efficient to substitute one up for another.
+
+![power_of_2_multiplication.png](./images/power_of_2_multiplication.png)
+
+##### 1.3.4.10 Unsigned Power-of-2 Divide with Shift
+
+- **Quotient of Unsigned by Power of 2**
+  - **u >> k gives u / 2$^k$**
+  - Uses logical shift
+
+Then if you want to divide something by a power-of-2, you can shift it right by this in the same general idea. The only thing that becomes a little bit quirky is what if the number you have is not actually divisible by the power-of-2.
+
+**Unsigned Example:**
+
+- Complement with 0 - Logical Operations
+- Result round to 0
+
+| operands | Original | Droped | Value   |
+| -------- | -------- | ------ | ------- |
+|          | 0110     | 0      | 4+2 = 6 |
+| >>       | 0011     | 1      | 2+1 = 3 |
+| >>       | 0001     | 1      | 1       |
+
+**Signed Example:**
+
+- Complement with 1 - Arithmetic Operations (most machines)
+- Result round to minus infinity -$\infty$
+
+![unsigned_power_of_2_divide.png](./images/unsigned_power_of_2_divide.png)
+
+| operands | Original | Droped | Value         |
+| -------- | -------- | ------ | ------------- |
+|          | 1010     | 0      | -8+2 = -6     |
+| >>       | 1101     | 0      | -8+4+1 = -3   |
+| >>       | 1110     | 1      | -8+4+2 = -2   |
+| >>       | 1111     | 1      | -8+4+2+1 = -1 |
+
 #### 1.3.5 Summary
 
+##### 1.3.5.1 Arithmetic: Basic Rules
+
+- **Addition:**
+  - Unsigned/signed: Normal addition followed by truncate, same operation on bit level
+  - Unsigned: addition mod 2$^w$
+    - Mathematical addtion + possible subtraction of 2$^w$
+  - Signed: modified addition mod 2$^w$ (result in proper range)
+    - Mathematical addition + possible addition or subtraction of 2$^w$
+- **Multiplication:**
+  - Unsigned/signed: Normal multiplication followed by truncate, same operation on bit level
+  - Unsigned: multiplication mod 2$^w$
+  - Signed: modified multiplication mod 2$^w$ (result in proper range)
+
+##### 1.3.5.2 Why Should I Use Unsigned?
+
+- **Don't use without understanding implications**
+
+  - Easy to make mistakes
+
+  ```c
+  unsigned i;
+  for (i = cnt-2; i >= 0; i--)
+    a[i] += a[i+1];
+  ```
+
+  - Can be very subtle
+
+  ```c
+  #define DELTA sizeof(int)
+  int i;
+  for (i = CNT; i-DELTA >= 0; i-= DELTA)
+    ...
+  ```
+
+- **_Do_ Use When Performing Modular Arithmetic**
+  - Multiprecision arithmetic
+- **_Do_ Use When Using Bits to Represent Sets**
+  - Logical right shift, no sign extension
+
+##### 1.3.5.3 Countig Down with Unsigned
+
+- **Proper way to use unsigned as loop index**
+  ```c
+  unsigned i;
+  for (i = cnt-2; i < cnt; i--)
+    a[i] += a[i+1];
+  ```
+- **See Robert Seacord, _Secure Coding in C and C++_**
+
+  - C Standard guarantees that unsigned addition will behave like modular arithmetic
+    - 0 - 1 > _UMax_
+
+- **Even beteer**
+  ```c
+  size_t i;
+  for (i = cnt-2; i < cnt; i--)
+    a[i] += a[i+1];
+  ```
+  - Data **size_t** defined as unsigned value with length = word size
+  - Code will work even if cnt = _UMax_
+  - What if _cnt_ is signed and <0 ?
+
 ### 1.4 Representations in memory, pointers and strings
+
+#### 1.4.1 Byte-Oriented Memory Organization
+
+The main point is when you are running program on a computer, from the programming perspective either, even not just as a C programmer. In your mind the memory is just this bit array of bytes. That's numbered from 0 up to some maximum number.
+
+![memory_byte_array.png](./images/memory_byte_array.png)
+
+- **Programs refer to data by address**
+
+  - Conceptually, envision it as a very large array of bytes
+    - In reality, it's not, but can think of it that way
+  - An address is like an index into that array
+    - And, a pointer variable stores an address
+
+- **Note: system provides private address spaces to each "process"**
+  - Think of a process as a program being executed
+  - So, a program can clobber its own data, but not that of others
+
+#### 1.4.2 Machine Words
+
+The hardware doesn't neccessarily define what the word size is, it's a combination of the hardware and the compiler that determines what is the word size being used in the particular program.
+
+```sh
+gcc -m32 example.c -o example_32bit
+gcc -m64 example.c -o example_64bit
+```
+
+- **Any given computer has a "Word Size"**
+
+  - Norminal size of integer-valued data
+
+    - and of addresses
+
+  - Until recently, most machines used 32 bits (4 bytes) as word size
+
+    - Limites addresses to 4GB (2$^{32}$ bytes)
+
+  - Increasingly, machines have 64-bit word size
+
+    - Potentially, could have 18 PB (petabytes) of addressable memory
+    - That's 18.4 x 10$^{15}$
+
+  - Machines still support multiple data formats
+    - Fractions or multiples of word size
+    - Always integral number of bytes
+
+#### 1.4.3 Word-Oriended Memory Orgranization
+
+- **Address Specify Byte Locations**
+
+  - Address of first byte in word
+  - Addresses of successive words differ by 4 (32-bit) or 8 (64-bit)
+
+![memory_organization.png](./images/memory_organization.png)
+
+We can see these 32-bit memory are on multiples of 4 if bit boundaries, and same the 64-bit words are on multiples of 8. Those are known as aligned words and will generally will see that the compiler works pretty hard to keep things aligned. Because the hardware runs more efficiently that way.
+
+But the main point is that we can just take as many bytes and collect them together and call it a word for what word size we need.
+
+#### 1.4.4 Example Data Representations
+
+| C Data Type | Typical 32-bit | Typical 64-bit | x86-64 |
+| :---------- | :------------: | :------------: | :----: |
+| char        |       1        |       1        |   1    |
+| short       |       2        |       2        |   2    |
+| int         |       4        |       4        |   4    |
+| long        |       4        |       8        |   8    |
+| float       |       4        |       4        |   4    |
+| double      |       4        |       8        |   8    |
+| long double |       -        |       -        | 10/16  |
+| pointer     |       4        |       8        |   8    |
+
+#### 1.4.5 Byte Ordering
+
+- **So, how are the bytes within a multi-byte word ordered in memory?**
+
+- **Conventions**
+
+  - Big Endian: Sun, PowerPC Mac, Internet
+    - Least significatn byte has highest address
+  - Littile Endian: x86, ARM processrs running Android, iOS, and Windows
+    - Least significant byte has lowest address
+
+- **Example**
+  - Variable x has 4-byte value of 0x01234567
+  - Address given by &x is 0x100
+
+![ordering_byte_example.png](./images/ordering_byte_example.png)
+
+#### 1.4.6 Representing Integers
+
+![representing_integers.png](./images/representing_integers.png)
+
+#### 1.4.7 Examining Data Representations
+
+- **Code to Print Byte Representation of Data**
+  - Casting pointer to unsigned char \* allows treatment as a byte array
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+// unsigned char -> general point type
+typedef unsigned char *pointer;
+
+void show_bytes(pointer start, size_t len)
+{
+    size_t i;
+    for (i = 0; i < len; i++)
+        // %p -> print pointer
+        // %x: print hexadecimal
+        printf("%p\t0x%.2x\n", start + i, start[i]);
+    printf("\n");
+}
+
+int main(int argc, char **argv)
+{
+    int a = 15213;
+    printf("int a = 15213; \n");
+    show_bytes((pointer) &a, sizeof(int));
+
+    return 0;
+}
+```
+
+```sh
+int a = 15213;
+0x7ffeef79374c	0x6d
+0x7ffeef79374d	0x3b
+0x7ffeef79374e	0x00
+0x7ffeef79374f	0x00
+```
+
+If you run this on a x86 machine, you see that there is these addresses with a lot of `7F`s. What that mean is it's in the upper end of this 47 bit address space.
+
+#### 1.4.8 Representing Strings
+
+- **Strings in C**
+  - Represented by array of characters
+  - Each character encoded in ASCII format
+    - Standard 7-bit encoding of character seet
+    - Character "0" has code 0x30
+      - Digit _i_ has code 0x30+_i_
+    - String should be null-terminated
+      - Final character = 0
+- **Compatibility**
+  - Byte ordering not an issue
+
+#### 1.4.9 Integer C Puzzles
+
+**Initialization**
+
+```c
+int x = foo();
+int y = bar();
+unsigned ux = x;
+unsigned uy = y;
+```
+
+- x < 0 => (x \* 2) < 0 => False for TMin
+- ux >= 0
+- x & 7 == 7 => (x << 30) < 0 => True
+- ux > -1 => Always False
+- x > y => -x < -y => False
+- x \* x >= 0 => False
+- x > 0 && y > 0 => x + y > 0
+- x >= 0 => -x <= 0 => True
+- x <=0 => -x >= 0 => False for Tmin
+- (x|-x) >> 31 == -1 => True
+
+## 2 Floating Point
+
+### 2.1 Background: Fractional binary numbers
+
+#### 2.1.1 Fractional binary numbers
+
+- **What is 1101.101$_{2}$?**
+
+![fractional_binary_numbers](./images/fractional_binary_numbers.png)
+
+- **Exmaples:**
+
+| Value  | Representation |
+| ------ | -------------- |
+| 5 3/4  | 101.11         |
+| 2 7/9  | 10.111         |
+| 1 7/16 | 1.0111         |
+
+- **Observations**
+  - Divide by 2 by shifting right (unsigned)
+  - Multiply by 2 by shifting left
+  - Numbers of form 0.1111111.... are just below 1.0
+    - 1/2 + 1/4 + 1/8 + ... + 1/2$^i$ + ... -> 1.0
+    - Use notation 1.0 - $\epsilon$
+
+#### 2.1.1 Representable Numbers
+
+- **Limitation #1**
+
+  - Can only exactly represent numbers of the form x/2$^k$
+    - Other rational number have repeating bit representations
+
+- **Exmaples:**
+
+| Value | Representation         |
+| ----- | ---------------------- |
+| 1/3   | 0.01010101[01]...      |
+| 1/5   | 0.001100110011[0011]   |
+| 1/10  | 0.00011000110011[0011] |
+
+- **Limitation #2**
+  - Just one setting of binary point within the _w_ bits
+    - Limited range of numbers (very small values? very large?)
+
+### 2.2 IEEE floating point standard: Definition
+
+#### 2.2.1 IEEE floating point standard
+
+- **IEEE Standard 754**
+
+  - Established in 1985 as uniform standard floating point arithmetic
+    - Before that, many idiosyncratic formats
+  - Supported by all major CPUs
+
+- **Driven by numerical concerns**
+  - Nice standards for rouding, overflow, underflow
+  - Hard to make fast in hardware
+    - Numerical analysts predominated over hardware designers is defining standard
+
+#### 2.2.2 Floating Point Representation
+
+- **Numerical Form:**
+  **(-1)$^s$M2$^E$**
+
+  - Sign bit **_s_** determines whether number is negative or positive
+  - Significant **_M_** normally a fractional value in range [1.0, 2.0).
+  - Exponent **_E_** weights value by power of two
+
+- **Encoding**
+  - MSB S is sign bit **_s_**
+  - exp field encodes **_E_** (but is not equal to E)
+  - frac field encodes **_M_** (but is not equal to M)
+
+![floating_point_representation](./images/floating_point_representation.png)
+
+#### 2.2.3 Precision options
+
+![precision_options](./images/precision_options.png)
+
+#### 2.2.4 "Normalized" Values
+
+<span style="font-size:1.5em">**v = (-1)$^s$M2$^E$**</span>
+
+- **When: exp != 000...0 and exp != 111...1**
+
+- **Exponent coded as a biased value: E = Exp - Bias**
+
+  - Exp: unsigned value of exp field
+  - Bias = 2$^{k-1}$, when k is number of exponent bits
+    - Single precision: 127 (Exp: 1...254, E: -126...127)
+    - Double precision: 1023 (Exp: 1...2046, E: -1022...1023)
+
+- **Significant coded with impplied leading 1: M = 1.xxx...x$_{2}$**
+  - xxx...x: bits of frac field
+  - Minimum when frac = 000.0 (M = 1.0)
+  - Maximum when frac = 111.1 (M = 2.0 - $\epsilon$)
+
+#### 2.2.5 Normalized Encoding Example
+
+<span style="font-size:1.5em">**v = (-1)$^s$M2$^E$**</span><br>
+<span style="font-size:1.5em">**E = Exp - Bias**</span>
+
+- **Value: float F = 15213.0;**
+
+  - 15213$_{10}$ = 11101101101101$_{2}$
+  - = 1.1101101101101$_{2}$ x 2$^{13}$
+
+- **Signficant**
+
+  - M = 1.<ins>1101101101101</ins>$_{2}$
+  - frac = <ins>1101101101101</ins>0000000000$_{2}$
+
+- **Exponent**
+
+  - E = 13
+  - Bias = 127
+  - Exp = 140 = 10001100$_{2}$
+
+- **Result**
+
+![normalized_encoding_15213](./images/normalized_encoding_15213.png)
+
+- **0 <= Exp <= 0111111 = 255**
+- **-127 <= E <= 255-127 = 128**
+
+#### 2.2.6 Denormalized Values
+
+Now these normalized values always have this implied one, when we want to represent numbers closer to zero, that limits us. So there is another type of floating point number called the denormalized values.
+
+- **Condtion: exp = 000...0**
+
+- **Exponent value: E = 1 - Bias (instead of E = 0 - Bias)**
+- **Significant coded with implied leading 0: M = 0.xxx...x$_{2}$**
+
+  - xxx...x: bits of frac
+
+- Cases
+  - exp = 000...0, frac = 000...0
+    - Represents zero value
+    - Note distinct values: +0 ad -0 (why?)
+  - exp = 0000...0, frac != 000...0
+    - Numbers closest to 0.0
+    - Equispaced
+
+#### 2.2.7 Special Values
+
+- **Condition: exp = 111...1**
+
+- **Case: exp = 111...1, frac = 000...0**
+
+  - Represents value $\infty$ (infinity)
+  - Operation that overflows
+  - Both positive and negative
+  - E.g., 1.0/0.0 = -1.0/-0.0 = +$\infty$, 1.0/-0.0 = -$\infty$
+
+- **Case: exp = 111...1, frac != 000...0**
+  - Not-a-Number (NaN)
+  - Represents case when no numeric value can be determined
+  - E.g., sqrt(-1), $\infty$ - $\infty$, $\infty$ x 0
+
+#### 2.2.7 Visualization: Floating Point Encoding
+
+![visualized_floating_point_encoding.png](./images/visualized_floating_point_encoding.png)
+
+### 2.3 Example and properties
+
+#### 2.3.1 Tiny Floating Point Example
+
+![tiny_floating_point_example.png](./images/tiny_floating_point_example.png)
+
+- **8-bit Floating Point Representation**
+
+  - the sign bit is in the most significant
+  - the next four bits are the exponent, with a bias of 7
+  - the last three bits are the **frac**
+
+- **Same general form as IEEE Format**
+  - normalized, denormalized
+  - representation of 0, NaN, infinity
+
+![tiny_floating_point_example_dynamic_range.png](./images/tiny_floating_point_example_dynamic_range.png)
+
+#### 2.3.2 Distribution of Values
+
+![distribution_values_floating_point_6bit.png](./images/distribution_values_floating_point_6bit.png)
+
+You can see that the values are very dense around zero, so they've very spaced very closely together. And then every time you increase the exponent by one, the numbers are spaced twice as far apart as the previous, the numbers that were represented by the previous exponent.
+
+![distribution_values_floating_point_6bit_close_up.png](./images/distribution_values_floating_point_6bit_close_up.png)
+
+#### 2.3.3 Special Properties of the IEEE Encoding
+
+- **FP Zero Same as Integer Zero**
+
+  - All bits = 0
+
+- **Can (Almost) Use Unsigned Integer Comparison**
+  - Must first compare sign bits
+  - Must consider -0 = 0
+  - NaNs problematic
+    - Will be greater than any other values
+    - What should comparison yield?
+  - Otherwise OK
+    - Denorm vs. normalized
+    - Normalized vs. infinity
+
+### 2.4 Rounding, addition, multiplication
+
+#### 2.4.1 Floating Point Operations: Basic Idea
+
+- **x + y = Round(x + y)**
+
+- **x $\times$ y = Round(x $\times$ y)**
+
+- Basic idea
+  - Fisrt **compute exact result**
+  - Make it fit into desired precision
+    - Possibly overflow if exponent too large
+    - Possibly **round to fit into** _frac_
+
+#### 2.4.2 Rounding
+
+- **Rounding Modes (illustrate with $ rounding)**
+
+|                        | $1.40 | $1.60 | $1.50 | $2.50 | -$1.50 |
+| ---------------------- | ----- | ----- | ----- | ----- | ------ |
+| Towards zero           | $1    | $1    | $1    | $2    | -$1    |
+| Round down (-$/infty$) | $1    | $1    | $1    | $2    | -$2    |
+| Round up (+$/infty$)   | $2    | $2    | $2    | $3    | -$1    |
+| Neraest Even (default) | $1    | $2    | $2    | $2    | -$2    |
+
+#### 2.4.3 Closer Look at Rount-To-Even
+
+- **Default Rounding Mode**
+
+  - Hard to get any other kind without dropping into assembly
+  - All others are statistically biased
+    - Sum of set of positive numbers will consistenly be over- or under- estimated
+
+- **Applying to Other Decimal Places / Bit Positions**
+  - When exactly halfway between two possible values
+    - Round so that least significant digit is even
+  - E.g., round to nearest hundredth
+    - 7.894999 7.89 (Less then half way)
+    - 7.895001 7.90 (Greater then half way)
+    - 7.895000 7.90 (Half way - round up)
+    - 7.885000 7.88 (Half way - round down)
+
+#### 2.4.4 Rounding Binary Numbers
+
+- **Binary Fractional Numbers**
+
+  - "Even" when least significant bit is 0
+  - "Half way" when bits to right of rounding position = 100...$_{2}$
+
+- **Examples**
+  - Round to nearest 1/4 (2 bits right of binary point)
+
+| Value  | Binary                    | Rounded     | Action        | Rounded Value |
+| ------ | ------------------------- | ----------- | ------------- | ------------- |
+| 2 3/32 | 10.00<ins>011</ins>$_{2}$ | 10.00$_{2}$ | (<1/2 - down) | 2             |
+| 2 3/16 | 10.00<ins>110</ins>$_{2}$ | 10.01$_{2}$ | (>1/2 - up)   | 2 1/4         |
+| 2 7/8  | 10.11<ins>100</ins>$_{2}$ | 11.00$_{2}$ | (1/2 - up)    | 3             |
+| 2 5/8  | 10.10<ins>100</ins>$_{2}$ | 10.00$_{2}$ | (1/2 - down)  | 2 1/2         |
+
+#### 2.4.5 Floating Point Multiplication
+
+- <span style="color:red">**(-1)$^{s1}$ M1 2$^{E1}$ $\times$ (-1)$^{s2}$ M2 S$^{E2}$**</span>
+- **Exact Result: <span style="color:red">(-1)$^{s}$ M1 2$^{E}$</span>**
+
+  - Sign s: s1 ^ s2
+  - Significant M: M1 $\times$ M2
+  - Exponent E: E1 + E2
+
+- **Fixing**
+
+  - If M > 2, shift M rightm increment E
+  - If E out of range, overflow
+  - Round M to fit _frac_ precision
+
+- **Implementation**
+  - Biggest chore is multiplying significants
+
+#### 2.4.6 Floating Point Addition
+
+- <span style="color:red">**(-1)$^{s1}$ M1 2$^{E1}$ + (-1)$^{s2}$ M2 S$^{E2}$**</span>
+
+  - Assume E1 > E2
+
+- **Exact Result: <span style="color:red">(-1)$^{s}$ M1 2$^{E}$</span>**
+
+  - Sign s, significant M:
+    - Result of signed align & add
+  - Exponenet E: E1
+
+![floating_point_addition.png](./images/floating_point_addition.png)
+
+- **Fixing**
+  - If M >= 2, shift M right, increment E
+  - If M < 1, shift M left k positions, decrement E by k
+  - Overflow if E out of range
+  - Round M to fit _frac_ precision
+
+#### 2.4.7 Mathematical Properties of Floating Point Add
+
+Remember that those great realities that ints aren't really integers and floats aren't really reals. Just as we saw when we looked at two's complement representation integers, it's not exactly they're not exactly like real integers. And operations on them aren't exactly like real integers, but they follow very predictable mathematical properties. They are similar to integers, but not quite.
+
+So the same thing holds for floating point numbers, they follow very predictable mathematical properties, but they're somewhat different from the reals.
+
+- **Compare to those Abelian Group**
+
+  ![abelian_group](./images/abelian_group.webp)
+
+  - Closed under addition? **<span style="color:red">Yes<span>**
+    - But may generate infinity or NaN
+  - Commutative? **<span style="color:red">Yes<span>**
+
+    _The big thing with addition is that it doesn;t associate, it's communtative but it's not associative._
+
+  - Associative? **<span style="color:red">No<span>**
+    - Overflow and inexactness of rounding
+    - (3.14 + 1e$^{10}$) - 1e$^{10}$ = 0, 3.14 + (1e$^{10}$ - 1e$^{10}$) = 3.14
+  - 0 is additive identity?
+  - Every element has additive inverse? **<span style="color:red">Yes<span>**
+    - Yes, except for infinities & NaNs **<span style="color:red">Almost<span>**
+
+- **Monotonicity**
+  - a >= b => a+c >= b+c? **<span style="color:red">Almost<span>**
+    - Except for infinities & NaNs
+
+#### 2.4.8 Mathematical Properties of Floating Point Multiplication
+
+- **Compare to Commutative Ring**
+
+  - Closed under multiplication? **<span style="color:red">Yes<span>**
+    - But may generate infinity or NaN
+  - Multiplication Commutative? **<span style="color:red">Yes<span>**
+  - Multiplication is Associative? **<span style="color:red">No<span>**
+    - Possibility of overflw, inexactness of rounding
+    - (1e$^{20}$ _ 1e$^{20}$) _ 1e - 20 = inf, 1e$^{20}$ \* (1e$^{20}$ - 20) = 1e$^{20}$
+  - 1 is multiplication identity? **<span style="color:red">Yes<span>**
+  - Multiplication distributes over addition? **<span style="color:red">No<span>**
+    - Possibility of overflow, inexactness of rounding
+    - 1e$^{20}$ _ (1e$^{20}$ - 1e$^{20}$) = 0.0, 1e$^{20}$ _ 1e$^{20}$ - 1e$^{20}$ \* 1e$^{20}$ = NaN
+
+- **Monotonicity**
+  - a >= b => a\*c >= b\*c? **<span style="color:red">Almost<span>**
+    - Except for infinities & NaNs
+
+### 2.5 Floating point in C
+
+- **C Guarantees Two Levels**
+
+  - `float` single precision
+  - `double` double precision
+
+- Conversions/Casting
+
+  - Casting between `int`, `float`, and `double` changes bit representation
+  - `double`/`float` -> int
+    - Truncates fractional part
+    - Like rounding toward zero
+    - Not defined when out of range or NaN: Generally sets to TMin
+  - `int` -> `double`
+    - Exact conversion, as long as `int` has <= 53 bit word size
+  - `int` -> `float`
+    - Will round according to rounding mode
+
+- **Puzzles: For each of the following C expressions, either:**
+
+  - Argue that it is ture for all argument values
+  - Explain why not true
+
+  Assume either `d` not `f` is `NaN`
+
+  ```c
+  #include <stdio.h>
+
+  int main(int argc, char **argv)
+  {
+      int x = -8;
+      float f = -444.444;
+      double d = -88.88888;
+
+      printf("x = %d, f = %f, d = %f\n", x, f, d);
+      printf("x == (int)(float)x => %d\n", (x == (int)(float)x));
+      printf("x == (int)(double)x => %d\n", (x == (int)(double)x));
+      printf("f == (float)(double)f => %d\n", (f == (float)(double)f));
+      printf("d == (double)(float)d => %d\n", (d == (double)(float)d));
+      printf("f == -(-f) => %d\n", (f == -(-f)));
+      printf("2/3 == 2/3.0 => %d\n", ((2/3) == (2/3.0)));
+      printf("d > f => (-f > -d) => %d\n", (-f > -d));
+      printf("d * d >= 0.0 => %d\n", (d * d >= 0.0));
+
+      f = -1.54334E-34;
+      d = -88.88888;
+      printf("Changed f = %f, d = %f\n", f, d);
+      printf("(d+f)-d == f => %d\n", ((d+f)-d == f));
+
+      return 0;
+  }
+  ```
+
+  Result:
+
+  ```sh
+  x = -8, f = -444.444000, d = -88.888880
+  x == (int)(float)x => 1
+  x == (int)(double)x => 1
+  f == (float)(double)f => 1
+  d == (double)(float)d => 0
+  f == -(-f) => 1
+  2/3 == 2/3.0 => 0
+  d > f => (-f > -d) => 1
+  d * d >= 0.0 => 1
+  Changed f = -0.000000, d = -88.888880
+  (d+f)-d == f => 0
+  ```
+
+## 3 Machine-Level Programming I: Basics
+
+### 3.1 History of Intel processors and architectures
+
+#### 3.1.1 Intel x86 Processors
+
+The x86 is sort of a colloquial term for Intel processors. The reason is that the first one was called the 8086, and then they kind of skipped 81, but them they went to 8286 and so forth 8386. The one thing in common was 86,so people just call it x86.
+
+One thing that's important to this and it will have influence on what the program look like is, x86 is a language like english. That's been an accrual and evoluton of different feature layered on top of each other, and not always in a elegant way. So just like english there's sort of quirky things ... it's a language that just got there, because of a bunch of decisions that locally were probably the right thing to do, but globaly were not.
+
+There's other instruction sets that are much cleaner and easier to understand. But we figure it;s just the same reason that you learn english instead of leanring esperanto or something like that. That's a much more useful language.
+
+- **Dominate laptop/desktop/server market**
+
+- **Evolutionary design**
+
+  - Backwards compatible up until 8086, introduced in 1978
+  - Added more features as time goes on
+
+- **Complex intructon set computere (CISC)**
+  - Many different instructions with many different formats
+    - But, only small subset encountered with Linux programs
+  - Hard to match performance of Reduced Instruction Set Computers (RISC)
+  - But, Intel has done just that!
+    - In terms of speed. Less so for low power.
+
+#### 3.1.2 Intel x86 Evolution: Milestones
+
+![intel_x86_evolution_milestones.png](./images/intel_x86_evolution_milestones.png)
+
+- **Machine Evelution**
+  ![intel_x86_machine_evolution.png](./images/intel_x86_machine_evolution.png)
+
+- **Added Features**
+  - Instructions to support multimedia operations
+  - Instructions to enable more efficient conditional operations
+  - Transition from 32 bits to 64 bits
+  - More cores
+
+#### 3.1.3 2015 State of the Art
+
+_If you describe something as state-of-the-art, you mean that it is the best available because it has been made using the most modern techniques and technology._
+
+- **Core i7 Broadwell 2015**
+
+![core_i7_broadwell_2015.png](./images/core_i7_broadwell_2015.png)
+
+#### 3.1.4 x86 Clones: Advanced Micro Devices (AMD)
+
+- **Historically**
+
+  - AMD has followed just behind Intel
+  - A little bit slower, a lot cheaper
+
+- **Then**
+  - Recruited top circuit designers from Digita Equipment Corp. and other downward trending companies
+  - Build Opteran: tough competitor to Pentium 4
+  - Developed x86-64, their own extension to 64 bits
+- **Recent Years**
+  - Intel got its act together
+    - Leads the world in semiconductor technology
+  - AMD has fallen behind
+    - Relies on external semiconductor manufaturer
+
+#### 3.1.5 Intel's 64-Bit History
+
+- **2001: Intel Attempts Radical Shift from IA32 to IA64**
+  - Totally different architecture (Itanium)
+  - Executes IA32 code only as legacy
+  - Performance disapointing
+- **2003: AMD Steps in with Evolutionary Solution**
+  - x86-64 (now called "AMD64")
+- **Intel Felt Obligated to Focus on IA64**
+  - Hard to admit mistake or that AMD is better
+- **2004: Intel Announces EM64T extension to IA32**
+  - Extended Memory 64-bit Technology
+  - Almost identical to x86-64!
+- **All but low-end x86 processor support x86-64**
+  - But, lots of code still runs in 32-bit mode
+
+#### 3.1.6 ARM
+
+ARM actually is an acronym for Acorn RISC Machine, RISC means reduced instruction set computer. An acorn means the seed of oak tree, it was a Britsh company that decided to make its own personal computers in the early days of it and they said "we are going to buy those chips from Intel, we're going to make them ourselves". So they designed and manufactured their own chips.
+
+Well as a company a computer manufacturer it was a complete bust. But it turned out that they'd come up with a fairly good instruction set that was sufficiently simple that it could be put on chips and better yet it could be customized.
+
+ARM is now a company of its own headquartered in Cambridge England, the reason why part of they're successful therefore is becuase it tends to be a lower power processor requirement than an x86 machine because it's simpler.
+
+But the other is that they don't actually sell processors, they sell companies the rights the licensing rigts to use their designs. So if you look at like a cell phone processor the actual ARM processor is a little tiny of it on the chip. And they'll have other stuff to make the graphics go better to improve your phone calls and so forth.
+
+So they're really selling what intellectual property is as opposed to chips.
+
+### 3.2 C, assembly, machine code
+
+#### 3.2.1 Definitions
+
+- **<span style="color:red">Architecture:</span> (also ISA: Instruction Set Architecture) The parts of a proccessor design that one needs to understand or write assembly/machine code.**
+
+  - Example: instruction set specification, registers.
+
+- **<span style="color:red">Microarchitecture:</span> Implementation of the architecture.**
+
+  - Examples: cache sizes and core frequency.
+
+- **Code Forms:**
+  - <span style="color:red">Machine Code:</span> The byte-level programs that a processor executes
+  - <span style="color:red">Assembly Code:</span> A text representation of machine code
+- **Example ISAs:**
+  - Intel: x86, IA32, Itanium, x86-64
+  - ARM: Used in almost all mobile phones
+
+#### 3.2.2 Assembly/Machine Code View
+
+### 3.3 Assembly Basics: Registers, operands, move
+
+### 3.4 Arithmetic & logical operations
