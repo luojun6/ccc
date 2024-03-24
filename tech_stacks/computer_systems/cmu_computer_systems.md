@@ -1508,6 +1508,124 @@ So they're really selling what intellectual property is as opposed to chips.
 
 #### 3.2.2 Assembly/Machine Code View
 
+![machine_code_view](./images/machine_code_view.png)
+
+From a programmer machine level programmer perspective, things are a bit different than you see when you write C code.
+
+First of all there is some ver yvisible parts of the instruction the machine state, that you can examine and test and operate on and you must in fact. You would never know understand what those are if you're just thinking in terms of C.
+
+In particular there's some sort of a program counter to tell you what address is the instruction that you're going to execute next and where is that located in memory.
+
+Then there's a set of registers which are part of that the programmer actually makes use of. You can think of them as a very small number of memory locations, but rather than iving an address from 0 up to n-1 or something. You actaully give them by name as specifically.
+
+There is another sort of state, that's just a few bits worth of state that talked about what are the results of some recent instructions, where they did it produce a value of 0, did it produce a negative or a positive value. And those are used to implement conditional branching.
+
+So that's sort of the processor and then the other part of is the memory, that you can think of logically as just an array of bytes, that's what the machine level programmer sees.
+
+It's actaully kind of a fiction in different way, there's sort of a collabration between the operating system and the hardware, what they all virtual memory to make it look each program running on the processor. Has its own independent array of bytes that it can access. Even though they actaully share values within the physical memory itself.
+
+Further more, the idea of a cache is not visible here at all. Beacause it just is automatically loaded with recent stuff. The only thing that will look different is if you read access that memory, it will go faster. But it's mot visible in terms of there's no instructions to manipulate the cache. There's no way you can directly access the cache.
+
+- **Programmer-Visible State**
+  - **PC: Program counter**
+    - Address of next instruction
+    - Called "RIP" (x86-64)
+  - **Register file**
+    - Heavily used program data
+  - **Condition codes**
+    - Store status information about most recent arithmetic or logical operation
+    - Used for condition branching
+  - **Memory**
+    - Byte addressable array
+    - Code and user data
+    - Stack to support precedures
+
+#### 3.2.3 Turning C into Object Code
+
+![tunning_c_into_object_code.png](./images/tunning_c_into_object_code.png)
+
+- Code in file **`p1.c`, `p2.c`**
+- Compile with command: **`gcc -Og p1.c p2.c -o p`**
+  - Use basic optimization (**`-Og`**) (New to recent versions of GCC)
+  - Put resulting binary in file **`p`**
+
+#### 3.2.4 Compiling Into Assembly
+
+**C Code (sum.c)**
+
+```c
+long plus(long x, long y);
+
+void sumstore(long x, long y, long *dest)
+{
+    long t = plus(x, y);
+    *dest = t;
+}
+```
+
+```sh
+gcc -Og -S sum.c
+```
+
+**Produces file sum.s**
+
+_<span style="color:red"> Warning: Will get very differnt results on different machines.</span>_
+
+**Generated x86-64 Assembly on shark machine**
+
+```asm
+sumstore:
+	pushq	%rbx
+	movq	%rdx, %rbx
+	call	plus
+	movq	%rax, (%rbx)
+	popq	%rbx
+	ret
+```
+
+- Those `%` are the actual names of registers - remember that the registers are given by name.
+- `pushq` means push something onto a stack.
+- `move` means move copy it from one place to another.
+- `call` means to call some procedure.
+- `pop` is the counterpart to `push`.
+- `ret` is exit return out of this particular function.
+
+The **`-Og` ** is a specification of what kind of optimization we want the compiler to do. If you don't say anything - just don't give any directive, it will generate compeletely unoptimized code and it's actually very hard to read that code, it was very tedious the way it works.
+
+If you say **`-O1`**, which is what people used to do to turn on the optimizer, it turns out tha as GCC as they've gotten more advanced, it does a lot of optimizations now. That for the purpose of this course make the code pretty hard to understand.
+
+So just with one of the most recent generations of GCC came out with this level called **`g`** for debugging. Purpose of this course a nice level that sort of does the obvious kind of optimizations to make the code readable.
+
+-> Check the actuall `sum.s` file...
+
+The reason is there are various directives that aren't really directly part of the code itself. The fact they start with a period **`.`** is an indication that these aren't actaully instructions, they're something else. And they all are related to what the information that needs to be fed to a debugger, for it to be able to locate various parts of the program. And some information for the linker to tell it that this is globally defined function. And various other things that you don't really need to at least think about initially. So we sort of take those out the program just to make them more readable.
+
+#### 3.2.5 Assembly Characteristics: Data Types
+
+In integer data types, they don't distingush signed versus unsigned in how it gets stored. Even at an address or a pointer, is just stored as a number in a computer, and doesn't have any special significance to it.
+
+A floating point is handled in a very differnt way, on the other hand with a different set of registers.
+
+The program itself is in x86 it's just a series of bytes.
+
+And things like arrays and structs you think of as fundamental datatypes don't exist in the machine level. They're sort of constructed artificially by the compiler.
+
+- **"Integer" data of 1, 2, 4, or 8 bytes**
+
+  - Data values
+  - Addresses (untyped pointers)
+
+- **Floating point data of 4, 8, or 10 bytes**
+
+- **Code: Byte sequences encoding series of instructions**
+
+- **No aggregate types such arrays or structures**
+  - Just contiguously allocated bytes in memory
+
 ### 3.3 Assembly Basics: Registers, operands, move
 
 ### 3.4 Arithmetic & logical operations
+
+```
+
+```
