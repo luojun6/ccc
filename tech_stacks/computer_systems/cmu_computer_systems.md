@@ -1622,6 +1622,29 @@ And things like arrays and structs you think of as fundamental datatypes don't e
 - **No aggregate types such arrays or structures**
   - Just contiguously allocated bytes in memory
 
+#### 3.2.6 Assembly Characteristics: Operations
+
+- **Perforam arithmetic function on register or memory data**
+
+- **Transfer data between memory and register**
+
+  - Load data from memory into register
+  - Store register data into memory
+
+- **Transfer control**
+  - Unconditional jumps to/from procedures
+  - Conditional branches
+
+#### 3.2.7 Object Code
+
+![sumstore_object_code](./images/sumstore_object_code.png)
+
+#### 3.2.8 Machine Instruction Example
+
+```c
+*dest = t;
+```
+
 ### 3.3 Assembly Basics: Registers, operands, move
 
 ### 3.4 Arithmetic & logical operations
