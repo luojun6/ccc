@@ -106,3 +106,123 @@
   - Optional parity bit for detecting single-bit errors
 
 - Widdly used serial data protocol, but slowing being replaced by SPI, I$^2$, USB and Ethernet
+
+## UART: Microcontroller overview
+
+### UART
+
+- Universal Asynchronous Revceiver Transmitter
+- Features
+  - Fully programmable interface
+    - Programmable baud rate generator with over sampling
+    - 5, 6, 7 or 8 data bits
+    - 9$^th$ bit for single master/multiple slave bus schemes
+    - Even, odd, no-parity bit generation and detection
+    - Line break detection
+    - LSB-first or MSB-first data transmit and receive
+    - Hardware flow control
+  - Separate transmit and receive buffers
+    - Multi-byte fixed or programmable level FIFO (to reduce CPU buffer loading)
+
+### UART Block Diagram
+
+![uart_block_diagram](./images/uart_block_diagram.png)
+
+At a functional level, a UART has three primary features:
+
+- transmiter
+- receiveer
+- clock generator
+
+#### Transmitter
+
+The transmitter has a transmittor buffer and shift register and performs a parallel to serial conversion. A byte loaded into the transmitting UART's buffer and is converted and transmitted one bit at a time through the shift register.
+
+![uart_transmitter](./images/uart_transmitter.png)
+
+Transmit control logic outpts that serial bitstream beginning with a start bit followed by the data bits, parity bit, and stop bits according to the program confiuration in the control registers.
+
+The transmit logic also notifies the CPU when the transmit buffer is empty, and at a minimum we'll have one transmit data buffer register. Others may offer multiple buffers with either a fixed or programmale threshold known as FIFO. These FIFO buffers help reduce the CPU interrupt service loading.
+
+#### Receiver
+
+The receiver also has a shift register and a receive buffer, and performs a serial to parallel conversion on the received bitstream after a valid star has been detected by the receiver control logic.
+
+![uart_receiver](./images/uart_receiver.png)
+
+Overrun, parity, frame error checking, and line break detection is also performed by the control logic. After the stop bit has been detected, the bits are reassembled into a data byte and placed in the receiver buffer. The control logic notifies the CPU when data has been received.
+
+#### Clock Generator
+
+The clock timing for the transmit and receive shift registers and logic is provided by the UART's clock generator.
+
+![uart_clock_generator](./images/uart_clock_generator.png)
+
+The clock generator takes an incomming system clock and creates two output clocks, one clock for the transmit section. Commonly referred to as the bit clock or baud rate clock, and a faster clock is used for thereceiver for bit sampling.
+
+The transmitter and receiver modules also have control logic, which provides status information and control for each module and for the various protocols supported by the UART that are not convered in detail here.
+
+### UART Transmitter Operation
+
+![uart_tx_opts_0](./images/uart_tx_opts_0.png)
+
+The UART's transmit module's responsibility is to convert a data byte into bits and transmit each bit serially out of the UART's TXD pin. This function is imeplemented using a buffer, serial shift register, and transmit status, and control logic.
+
+![uart_tx_opts_1](./images/uart_tx_opts_1.png)
+
+The UART's buffer size can be one data byte, or multiple data bytes in a FIFO queue, depending on the UART. The buffer reduces the time needed to manage the UART's transit buffer by the CPU.
+
+![uart_tx_opts_2](./images/uart_tx_opts_2.png)
+
+The transmit control logic manages the movement of each data byte into the UART's shift register. The data's parallel to serial conversion is performed by the shifting the data one bit at a time out of the TXD pin.
+
+- CPU loads byte into buffer register
+
+  - To transmit a byte, the CPU checks transmit buffer flag to see if the buffer is empty.
+  - If the transit buffer is empty, the CPU writes a byte into the transmit buffer.
+  - If you are has multiple buffers or FIFO. The CPU can load additional bytes until the FIFO is full.
+    ![uart_tx_opts_3](./images/uart_tx_opts_3.png)
+
+- Byte transferred to shift register
+
+  - If the shift register empty, the first byte in the buffer is immediately transferred from buffer into the shift register.
+    ![uart_tx_opts_4](./images/uart_tx_opts_4.png)
+
+- Bits shifted out
+  - The control logic enables the bit clock to begin clocking the bits out of the transmit pin.
+  - After the last bit from the shift resgister is shifted out, the next byte in the buffer or FIFO will automatically transfer into the shift register, and the sequence will repeat.
+
+### UART Receiver Operation
+
+![uart_rx_opts_0](./images/uart_rx_opts_0.png)
+
+Like the transmitter, the UART's reciver module also has a serial shift register, receive buffer, and control logic, and is responsible for assembling an incoming serial bitstream into a parallel data byte that can be read by the CPU.
+
+- Shift in bits
+
+  - The process starts by shifting the incoming bits into the shift register.
+  - Because of the UART's asynchronous nature, the receiver module samples the RXD pin to know when a bit has arrived and correctly determine if it is a 0 or 1.
+  - The receiver's logic is able to synchronize with the start of each new bit stream by detecting a falling edge of the first bit in the stream, known as the start bit.
+
+  ![uart_rx_opts_1](./images/uart_rx_opts_1.png)
+
+- Transfer to buffer when full and notify CPU
+
+  - When the shift register is full, the bits are transferred to the receiver's input buffer or FIFO, and a flag is set.
+
+  ![uart_rx_opts_2](./images/uart_rx_opts_2.png)
+
+- CPU reads byte data
+  - The CPU can monitor the recevie buffer flag to know when to read the data from the received buffer.
+  - In this example, the data read by CPU is 0xAC.
+
+### UART Clock Generator
+
+![uart_clock_0](./images/uart_clock_0.png)
+
+- System Clock
+
+  - The generator's clock source typically comes from a system clock.
+
+- Dividers and Oversample
+  - Through the use of divivders and oversampling features.

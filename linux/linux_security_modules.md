@@ -56,3 +56,49 @@
 - LSM extends "sensitive data types" with opaque data security fields
 - The LSM security fields are simply void \* pointers added in various kernel data structures
 - They are completely managed by security modules
+
+### Security Data Fields Inside Kernel Objects
+
+- For process and program, security field added to
+  - struct task_struct and struct linux_binrpm
+- For file system, security field added to
+  - struct super_block
+- For pipe, file and socket, security field added to
+  - struct inode and struct file
+- For packet and network decice, security field added to
+  - struct sk_buff and struct net_device
+- For system V IPC, security field added to
+  - struct kern_ipc_perm and struct msg_msg
+
+### LSM Security Data Structures and Hooks
+
+- LSM data structure "struct security_hook_list"
+  -This data structure maintains list of pointer to the security_hook_list and store informaiton on LSMs added into the system.
+- LSM data structure "union security_list_options"
+  - Union of function pointers of the security hooks defined for the LSM, which are called at various critical pathes in the kernel code.
+- LSM data structure "structure security_hook_heads"
+  - This data structure containing the heads of the linked list corresponding to each hook, thus allowing them for execution in the right order, respecting the stacking property of LSM.
+
+https://github.com/torvalds/linux/blob/master/include/linux/lsm_hooks.h
+
+### Looking in security_list_options, hooks
+
+- In the code snippet, we can see the hooks related to the creation and removal of directories, file open, inode/socket creation, task alloc, IPC, etc.
+- `int (*path_mkdir)(const struct path *dir, struct dentry *dentry, umode_t mode);`
+- `int (*path_rmdir)(const struct path *dir, struct dentry *dentry);`
+- `int (*file_open)(struct file *file)`
+- `int (*inode_create)(strct inode *dir, struct dentry *dentry), umode_t mode);`
+- `int (*socket_create)(int family, int type, int protocol, int kern);`
+- `int (*task_alloc)(struct task_struct *task, unsigned long clone_flags);`
+- `int (*ipc_permission)(struct kern_ipc_perm *ipcp, short flag);`
+
+### Clarification about the LSM hooks
+
+- Most of the hooks privided by LSM need to return an integer value (some return void)
+  - `0` equivalent to the authorization
+  - `ENOMEM`, No memory available
+  - `EACCESS`, Access denied by the security policy
+  - `EPERM`, Privileges are required to do this action
+- Hooks provided by LSM can be 2 different types: Object based hooks: these are related to kernel objects such C structures like inodes, files or sockets
+  - Access authorization will be based on these object attributes
+- Path based: these are related to paths

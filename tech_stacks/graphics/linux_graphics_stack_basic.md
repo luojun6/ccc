@@ -4,7 +4,7 @@
 
 ### Applications draw pixels into pixels buffer
 
-Application first draws pixels into some buffer so it's some memory and it puts them as RGN or nv12 so in some specified format describes the color of each pixels.
+Application first draws pixels into some buffer so it's some memory and it puts them as RGB or nv12 so in some specified format describes the color of each pixels.
 
 For example it may just go through the each line of this buffer and put the color once there.
 
@@ -121,7 +121,7 @@ The API to applications for using hardware accelerators which are being used GPU
 - **GLSL** - OpenGL Shading Language
 - **EGL** - Native Platform Graphics Interface API
 
-**OpenGL** is the APi to applications, so applications use **OpenGL** to do some rendering, that's currently the case there is **OpenGL** is more or less deprecated and superseded by **Volcan** but it's not that broadly used yet. So we will be focusing on **OpenGL**.
+**OpenGL** is the API to applications, so applications use **OpenGL** to do some rendering, that's currently the case there is **OpenGL** is more or less deprecated and superseded by **Volcan** but it's not that broadly used yet. So we will be focusing on **OpenGL**.
 
 **GLSL** is the shading language, so you write some shaders for what the GPU should do, and you write this shader programs in a **GSL**.
 
