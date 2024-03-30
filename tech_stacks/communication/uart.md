@@ -225,4 +225,107 @@ Like the transmitter, the UART's reciver module also has a serial shift register
   - The generator's clock source typically comes from a system clock.
 
 - Dividers and Oversample
-  - Through the use of divivders and oversampling features.
+
+  - Through the use of divivders and oversampling features, that UART's clock generator generates two clocks.
+
+- Transmit clock (bit rate clock)
+  - One for the transmitter referred to as the bit rate clock or baud clock.
+- Receive clock (sampling clock)
+  - The other for the receiver referred to as the sample clock.
+
+![uart_clock_1](./images/uart_clock_1.png)
+
+While the transmitter operates at the bit rate clock frequency, the receiver requires a higher clock frequency, typically multiple times higher than the bit rate clock frequency.
+
+The higher frequency sampling clock is used by the receiver's logic to determine the value of each arriving bit at the RXD pin by sampling the logic levels several times over the duration of each bit period.
+
+### UART Receiver Clock
+
+- Typical Over Sample Clocks are 3x, 8x or 16x faster than transmit clock
+
+  - The receiveer requires a clock frequency that is higher than the transmit clock frequency to create a sample clock.
+
+- RXD pin sampled during one bit period
+  - This higher frequency sampling clock enables the receivers to shift register and control logic to sample the incomming voltage levels on the RXD pin multiple times over the period of one bit clock.
+  - The receiver uses these samples to determine if the incomming bit is a valid 1 or 0.
+
+![uart_clock_2](./images/uart_clock_2.png)
+
+### UART Receiver Bit Sampling
+
+- 16x over-sampling means receiver clock is 16 times faster than baud clock
+
+  - Understand that for each byte that is transmitted, the data bits are always preceded by a single start bit, which is a high to low transition on the RXD pin and signals the beginning of a UART packet.
+
+- Start-bit synchronizes the receiver to the incoming data
+
+  - In between receiving data packets, the receiver continously evaluates the voltage level on the RXD pin every sample clock cycle waiting to detect the falling edge of the start bit.
+  - When the falling edge of the RXD pin is detected, the receiver's sampling clock is synchronized to the UART packet.
+
+- Receiver samples RXD pin around mid-point bit period
+
+  - The synchronization occurs with every packet received, so this provides a simple method for synchronizing the transmitter and receiver.
+
+- Majority rule samples on 7th, 8th and 9th sample clock cycles typically
+
+  - What happens next is referred to as the majortiy rule and may vary from UART to UART.
+  - If the RXD pin is low duing each these three samples, the bit is delcared a `0`.
+  - If, on the other hand, the RXD pin is high for each of these three samples, then the bit is declared a `1`.
+  - Note, the start bit may be sampled times rather than three and may be sampled earlier in the bit period bit on some UARTs.
+
+![uart_clock_3](./images/uart_clock_3.png)
+
+So which oversample rate is best to use? It depends, consider, though, when using 16x, sampling the power consumption can be higher than if using 8x or 3x over sampling.
+
+Another consideration when using a 16x sample clock, you have 1/16 of time difference between the sampled part bit edge and the real received edge. This means you could already be wrong 1/16 or 6% into the bit period, and with an 8x sample clock, 1/8 or 12.5%.
+
+Generally when using 16x oversampling, any UART to UART baud rate frequency differences can be more realized compared to when using an 8x oversampling, where are to UART to UART baud rate difference must be more tightly controlled.
+
+- No two clocks will always be exactly the same frequency
+
+  - Due to the difference in system clock sources for any two UARTs, configuring the UARTs to operate at the same baud rate frequency does not always guarantee the frequencies will be exactly the same.
+
+- Small differences or jitter can be tolerated
+  - In fact, in most all cases the frequencies will never be exactly the same, especially when you consider that one or both UART frequencies may change over temperature or may introduce some clock jitter.
+  - These differences, if small, can be easily tolerated, because the receiver samples around the midpoint of each bit.
+
+### UART Clock Baud Rate
+
+Previously, the divider purpose is to reduce the input clock frequency to support a wide range of lower transmit baud rates.
+
+The UART's divider is typically a combination of two divisors.
+
+![uart_clock_4](./images/uart_clock_4.png)
+
+- Integer baud rate divisor (IBRD)
+- Fractional baud rate divisor (FBRD)
+- BRD = IBRD + FBRD
+
+  - Which depending on the combination of the input frequency and divisor can typically meet the desired baud rate.
+  - Some combinations of input clock and divisor may not produce an exact baud rate that is needed.
+  - The fractional portion of the divisor is used to help achieve clock frequencies with very good accuracies that would otherwise not be possible using an integer divisor only.
+  - Refer to your UART's documentation regarding baud rate error calculations.
+
+  **_BRD = (System Clock) / (Oversample x Baudrate)_**
+
+- Example
+  - Baud = 19200
+  - Oversample = 16
+  - System Clock = 20MHz
+  - BRD = 65.104
+  - Integer value = 65 = IBRD
+  - Fractional value = 0.104 -> formatted = FBRD
+
+### UART Connections
+
+- 2-wire
+
+  - Most UART applications support
+  - TXD pin -> transmit data
+  - RXD pin -> receive data
+  - Both UARTs must agree to use the same frequency or rate at which data is transmitted and received, known as the baud rate.
+
+- 4-wire with Flow Control
+  - Some UARTs can also support a 4-wire interface for flow control using two additional pins, RTS and CTS.
+  - The RTS output signal indicates that the UART is ready to receive data, while the CTS signal controls
+  - CTS and RTS are also cross-connected.
