@@ -326,6 +326,154 @@ The UART's divider is typically a combination of two divisors.
   - Both UARTs must agree to use the same frequency or rate at which data is transmitted and received, known as the baud rate.
 
 - 4-wire with Flow Control
+
   - Some UARTs can also support a 4-wire interface for flow control using two additional pins, RTS and CTS.
   - The RTS output signal indicates that the UART is ready to receive data, while the CTS signal controls
-  - CTS and RTS are also cross-connected.
+  - CTS and RTS are also cross-connected between two UART.
+
+- Note on shared IO pin configuration
+  - On many MCUs, the UART's pin, inputs and outputs are not always available on dedicated I/O pins.
+  - In stead, the UART shares its signals with other input and output funcitons, such as timer outputs, ADC inputs, and general purpose I/O.
+  - This is especially true for smaller pin count devices.
+  - If this is the case, configure the I/O pins as recommended in the MCU's documentation.
+
+## UART Protocol Overview and Error Sources
+
+### The UART
+
+- UART - Universal Asychronous Receiver Transmitter
+
+- Requires only 2-pins, RXD and TXD
+
+  Because the UART only needs one pin to transmit and one pin to receive data, the UART transmitter must first convert a data byte into serial stream or sequence of 1's and 0's. And then reverse this process when receiving.
+
+  ![uart_tx_data](./images/uart_tx_data.png)
+
+- No additional synchronization pin or clock signal is needed
+
+  Unlike other interfaces, which use a clock signal for synchronizing their data transfers, the UART is asynchronous, or has no shared synchronizing signal.
+
+- Synchronization by adding `START` and `STOP` bits to data
+
+  In order to correctly interpret data, the UART uses a hardware protocol which provides synchronization by adding a couple of extra bits to the data sequence.
+
+### UART Hardware Protocol
+
+- UART Data Frame
+
+  During a data transfer, UARTs don't send or receive just data bits. Instead, the data bits are grouped along with some synchronization and error-detection bits to form a single data frame or character.
+
+  ![uart_data_frame_0](./images/uart_data_frame_0.png)
+
+  The frame begins with the `START` bit, followed by the data to be transmitted, then an optional parity bit, and finally one or two stop bits.
+
+- `START` bit - synchronizes receiver to start of frame
+
+  The `START` bit signals the beginning of the frame by transitioning from a logic-level `HIGH` to a logical-level `LOW` on the transmitter TXD pin, and is held `LOW` for one baud-clock period. This allows for the receiver to synchronize its internal clock with incoming data.
+
+- Data bits - data
+
+  A portion of the frame is typically represented by 7 or 8 bits, and for legacy reasons, many UART support as few as 5 data bits.
+
+  The data portion of the frame is transmitted `LSB`, or at Least Significant Bit, first. However, most modern UARTs support `LSB` or `MSB`, Most Significant Bit, ordering.
+
+- `PARITY` bit - single bit error detection (optional)
+
+  The `PARITY` bit is optional that can provide a simple bit-error detection scheme that can detect bit errors in the data.
+
+- `STOP` bit - signal end of the frame
+
+  The stop bit signals the end of the UART frame, as a logic-level `HIGH` for one baud clock. After the `STOP` bit, the TXD output remains at a logic-level high indefinitely or until the next `START` bit.
+
+- Second `STOP` bit (optional)
+
+  The optional second `STOP` bit can be used to extend a frame's transmit time by one additional baud-clock period.
+
+  This additional period allows the receiving MCU a little more time to read the current data byte in the UART receive buffer before it's overwritten with the data in the incoming frame.
+
+### UART Parity Example
+
+- `PARITY` provides signal bit error detection (optional)
+- `PARITY` options are Even, Odd, None
+- Both UART's must be configured the same
+
+- Transmitter generates `PARITY` bit
+
+  - Even Parity configuration
+  - Sume of frame = 6 (even)
+  - `PARITY` bit set to 0
+
+  ![uart_parity_example_0](./images/uart_parity_example_0.png)
+
+- Received correct packet
+
+  - Count number of 1's
+  - Add `PARITY` bit value
+  - If sume is even, data is valid
+
+  ![uart_parity_example_1](./images/uart_parity_example_1.png)
+
+- Received incorrect packet
+
+  - Noise changes bit `D1`
+  - Count number of 1's
+  - Add `PARITY` bit value
+  - Sum is odd, data is not valid
+  - Parity error flag set
+
+  ![uart_parity_example_2](./images/uart_parity_example_2.png)
+
+### Baud Rate - Maximum Error Tolerance
+
+- Baud Rates Review
+  - Common Baud Rates are 9600, 19200, 115200
+  - UARTs must be same baud rate
+  - System clock and Baud Rate Divisor (BRD)
+
+In real-world UART applications, there are inherent timing errors that come from the difference between the transmitting and receiving baud rates, as well as timing errors associated with the UART's receivers bit-detection scheme and error propagation.
+
+- Typical maximum baud rate error tolerance is 2-3%
+
+  Reliable communication with slightly different baud rates is possible because typical systems have a baud rate tolerance of roughly 2% to 3%.
+
+  Beyond this limit, communications will begin to become unreliable.
+
+- Bit error accumulation
+- `START` bit synchronization
+- RX signal rise and fall times
+
+Commined, these sources establish the maximum frequency difference between the transmitting and receiving baud rates before communications become unreliable.
+
+### Baud Rate Accumulation Errors
+
+- Receiver uses oversample clock (16x baud rate clock)
+
+  The receiver is able to determine the value or state of each data bit by using an oversampling clock. An oversampling clock is typically 8 or 16 times faster than the baud clock. This faster clock is used by the receiver logic to make multiple samples during a data-bit period.
+
+  In particular, the midpoint sample represented by the gray arrow, is where the receiver logic determines the bit value or state as either a 0 or a 1.
+
+  ![uart_baud_rate_acc_error_0](./images/uart_baud_rate_acc_error_0.png)
+
+  Ideally, the receiver samples each bit period in exactly the middle, as represented by the gray arrow.
+
+- Faster baud rate
+
+  However, the transmitting baud clock may be slightly faster or slower than a nominal baud rate.
+
+  ![uart_baud_rate_acc_error_1](./images/uart_baud_rate_acc_error_1.png)
+
+  We can see that each bit's midpoint(green arrow), arrives slightly sonner relative to when the receiver samples in that period.
+
+  The difference between the bit's actual midpoint and when the receiver samples the bit, is the bit-timming error.
+
+  Notice that with each subseuqent bit, the errors accumulate. If the accumulated error becomes greater than the bit's period, the receiver will incorrectly read the bit values.
+
+- Slower baud rate
+
+  ![uart_baud_rate_acc_error_2](./images/uart_baud_rate_acc_error_2.png)
+
+  The errors accumulated in the opposite direction.
+
+- Theoretical Maximum Accumulated bit tolerance
+
+  In an ideal scenario, the receiver and transmitter baud rates are exactly the same.
