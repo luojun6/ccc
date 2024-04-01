@@ -476,4 +476,56 @@ Commined, these sources establish the maximum frequency difference between the t
 
 - Theoretical Maximum Accumulated bit tolerance
 
-  In an ideal scenario, the receiver and transmitter baud rates are exactly the same.
+  In an ideal scenario, the receiver and transmitter baud rates are exactly the same. The receiver's sampling logic correctly samples the midpoint of each bit as represented by the gray arrow.
+
+  This leaves room or margin for the transmitter's baud rate to be slightly faster or slower relative to the receiver's operating baud rate and without causing any communication failures.
+
+- Bit error or margin of error
+
+- Example with a faster clock:
+
+  - Accumulated error = $\pm$40% over 10 bit periods
+
+  In our example, we use a common UART data frame, which uses 10 bits a start bit, 8 data bits, and a stop bit. The baud rate isd operating slightly faster than the receiver, which causes a 40% accumulated bit-timming error over the 10 bits.
+
+  ![uart_baud_rate_acc_error_3](./images/uart_baud_rate_acc_error_3.png)
+
+  Since the 40% is within the plus or minus 5% margin, no bit errors occurred.
+
+### Start bit Synchronization Error
+
+Another error comes from the UART's sampling scheme, known as the `START` bit synchronization error.
+
+- `START` bit falling edge
+  ![uart_start_bit_sync_error_0](./images/uart_start_bit_sync_error_0.png)
+
+  When the receiver's hardware detects a `START` bit, it synchronizes its sampling clock to this edge. This synchronization can take up to one sample clock.
+
+- Sampling clock synchronization tolerance
+
+  ![uart_start_bit_sync_error_1](./images/uart_start_bit_sync_error_1.png)
+
+  Once synchronized to the incoming bitstream, the UART receiver samples where it thinks each subsequent bit midpoint should be. But in reality, it can sample up to one clock cycle later than the midpoint.
+
+- 1/16 clock or 6.25% of the `START` bit period
+
+### RX Signal slew rate (rise/fall times)
+
+![uart_start_bit_sync_error_2](./images/uart_start_bit_sync_error_2.png)
+
+- Rise/Fall timing delays
+
+- Caused by added capacitance
+
+  - On the TX and RX signal paths
+  - Can be quite large
+
+The voltage levels during these periods have not stablizized, so this effectively increases the timing error by the amount of the rise and fall delay.
+
+In this example, let's assume a rise and fall delay of approximately 2%.
+
+### Example Baud Rate Error Tolerance Calculation
+
+Let's perform a calculation to find the maximum tolerable difference between the transmitter and receiver clock before a bit error occurs.
+
+![bard_rate_error_sum](/images/bard_rate_error_sum.png)
