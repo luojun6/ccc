@@ -92,6 +92,26 @@ It will manage the data, start-stop it detection and generation, and interrupts 
 
 A hardware I2C module may seem complicated, but it is the most efficient and easiest way to implement I2C communication on an MCU.
 
-Software I2C, or otherwise known as bit-ranged I2C, has none of the built-in features found in a hardware I2C module.
+### Software I2C Control
 
-It is an I2C functionality implemented purely in software.
+Software I2C, or otherwise known as bit-ranged I2C, has none of the built-in features found in a hardware I2C module. It is an I2C functionality implemented purely in software.
+
+In a software I2C, the SDA and SCL lines are connected to standard GPIOs, which are toggled manually, and all data handling and decoding is also done in the software.
+
+![i2c_sw_0](./images/i2c_sw_0.png)
+
+Software I2C has some clear disadvantages, mainly that it requires a high amount of the MCu processing bandwidth and due to that, will usually run much slower than a hardware I2C.
+
+Even with these disadvantages, software I2C is still sometimes a very good option. Software I2C can be used to add an additional I2C bus to an MCU that is all out of I2C hardware modules. It can even be used in small, low-cost devices that have no I2C hardware module.
+
+In both of these cases, using a software I2C will typically allow for cheaper MCU than one with a hardware module.
+
+### Slave Address
+
+When an I2C master is addressing an I2C slave, it's important to note that the 7-bit slave address is left-shifted 1 bit in the data byte.
+
+![i2c_slave_address](./images/i2c_slave_address.png)
+
+When actually addressing the slave, the address needs to be shifted left. Even though the slave address is 0x70, after it has been shifted and a 1 has been added to indicate a slave read. The byte transmit on the I2C bus is actually 0xE1.
+
+This functiaonlity is typically handled automatically in the hardware I2C, but not software I2C. It's also important to remember when using a logic analyzer to monitor the I2C bus to understand which slave is being addressed.

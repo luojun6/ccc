@@ -16,6 +16,6 @@ int main(int argc, char *argv[]) {
   long y = atoi(argv[2]);
   long z;
   sumstore(x, y, &z);
-  printf("%ld + %ld --> %ldd\n", x, y, z);
+  printf("%ld + %ld --> %ld\n", x, y, z);
   return 0;
 }

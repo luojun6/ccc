@@ -1645,7 +1645,80 @@ And things like arrays and structs you think of as fundamental datatypes don't e
 *dest = t;
 ```
 
+- **C Code**
+
+  - Store value `t` where designated by `dest`
+
+  What that will typically and not always but this sort of way to think about that at the machine level is.
+
+  `T` or some local value would by typically store in a register.
+
+```asm
+movq %rax (%rbx)
+```
+
+- **Assembly**
+  - Move 8-byte value t omemory
+    - Quad words in 86-64 parlance
+  - Operands:
+    `t`: Register %rax
+    `dest`: Register %rbx
+    `_dest_: MemoryM[%rbx]
+
+```s
+0x400r59r: 48, 89, 03
+```
+
+- **Object Code**
+  - 3-byte instruction
+  - Stored at address 0x40059
+
+#### 3.2.9 Dissembling Object Code
+
+**Disassmembled**
+
+![sumtore_yummy_](./images/sumtore_yummy_.png)
+
+- **Disassemble**
+
+```sh
+objdump -d sum
+objdump -d sum > sum.d
+```
+
+![objdump_sum_0](./images/objdump_sum_0.png)
+
+- Useful tool for examining object code
+- Analyzes bit pattern of series of instructions
+- Produces approximate rendition of assembly code
+- Can be run on either `a.out` (completed executable) or `.o` file
+
+#### 3.2.10 Alternate Disassembly
+
+![alternate_isassembly](./images/alternate_isassembly.png)
+
+![gdb_disassemble_sumstore](./images/gdb_disassemble_sumstore.png)
+
+![gdb_exam_sumstore](./images/gdb_exam_sumstore.png)
+
+#### 3.2.11 What can be Disassembled?
+
+![disassemble_wordexe](./images/disassemble_wordexe.png)
+
+- **Anything that can be interpreted as exectuable code**
+- **Disassembler examines bytes and reconstructs assembly source**
+
 ### 3.3 Assembly Basics: Registers, operands, move
+
+#### 3.3.1 x86-64 Integer Registers
+
+![x86-64_Integer_Registers](./images/x86-64_Integer_Registers.png)
+
+- Can reference low-order 4 bytes(also low 1 & 2 bits)
+
+For each register if you use the `%r` name of it, you'll get 64 bits. If you use `%e` version of it you'll get 32 bits.
+
+Remember `%e` is just the low-order bits a of a larger `%r` entity.
 
 ### 3.4 Arithmetic & logical operations
 

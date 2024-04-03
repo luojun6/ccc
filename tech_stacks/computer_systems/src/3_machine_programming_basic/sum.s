@@ -31,7 +31,7 @@ sumstore:
 	.size	sumstore, .-sumstore
 	.section	.rodata.str1.1,"aMS",@progbits,1
 .LC0:
-	.string	"%ld + %ld --> %ldd\n"
+	.string	"%ld + %ld --> %ld\n"
 	.text
 	.globl	main
 	.type	main, @function
