@@ -1718,10 +1718,320 @@ objdump -d sum > sum.d
 
 For each register if you use the `%r` name of it, you'll get 64 bits. If you use `%e` version of it you'll get 32 bits.
 
-Remember `%e` is just the low-order bits a of a larger `%r` entity.
+Remember `%e` is just the low-order bits a of a larger `%r` entity. In fact it goes beyond that you can also reference the lower order 16 bits and the low order 1 byte, within each of these registers as well.
+
+#### 3.3.2 Some History: IA32 Registers
+
+![ia32_registers_history.png](./images/ia32_registers_history.png)
+
+#### 3.3.3 Moving Data
+
+- **Moving Data**
+
+```asm
+movq Source, Dest;
+```
+
+The `movq` instruction in x86 is actually can do a lot of things, because it can take different types of information or what they call **operands**. So the source is some where you're copying from the source to the destination.
+
+- **Operand Types**
+
+  - _<span style="color:red">Immediate:</span>_ Constant integer data
+
+    - Example: `$0x400, $-533`
+    - Like C constant, but prefiexed with `$`
+    - Encoded with 1, 2, or 4 bytes
+
+    It's actually a number that's baked into the program, that you want to copy into some other location.
+
+  - _<span style="color:red">Register:</span>_ One of 16 integer registers
+
+    - Example: `%rax, %r13`
+    - But `%rsp` reserved for special use
+    - Others have special uses for particular instructions
+
+    It's one a specially namaed memory of locaitons.
+
+  - _<span style="color:red">Memory:</span>_ 8 consecutive bytes of memory at address given by register
+
+    - Simplest example: `(%rax)`
+    - Various other "address modes"
+
+    It's the array of bytes that you typically you have to specify what's the address that you either reading from if it's the source are you writing to it's the destination.
+
+![mov_operand_combination.png](./images/mov_operand_combination.png)
+
+**The `movq` instruction gives you all these possibilities:**
+
+- An immediate value can be written to a register or directly to memory.
+- A register value can be copied to another register or write to memory. Or you can take a value from memory (read it from memory) and copy it to a register.
+
+#### 3.3.4 Simple Memory Addressing Modes
+
+When you put the name of a register in parentheses, that's just saying use this register whatever that that's an address, and use that address to reference some memory location.
+
+- **Normal (R) Mem[Reg[R]]**
+  - Register R specifies memory address
+  - Aha! Pointer derefercing in C
+
+```asm
+movq (%rcx),%%rax
+```
+
+This is equivalent of dereferencing a pointer and putting it in a temporary.
+
+- **Displacement D(R) Mem[Reg[R]+D]**
+  - Register R specifies start of memory region
+  - Constant displacement D specifies offset
+
+```asm
+moveq 8(%rbp),%rdx
+```
+
+**Example:**
+
+```c
+void swap (long *xp, long *yp)
+{
+  long t0 = *xp;
+  long t1 = *yp;
+  *xp = t1;
+  *yp = t0;
+}
+```
+
+```asm
+swap:
+  movq  (%rdi), %rax  # rdi -> destinaion index -> *xp, ax -> accumulate -> t0
+  movq  (%rsi), %rdx  # rsi -> source index -> *yp, dx -> data -> t1
+  movq  %rdx, (%rdi)
+  movq  %rax, (%rsi)
+  ret
+```
+
+**Understanding Swap():**
+
+![understanding_swap_0.png](./images/understanding_swap_0.png)
+
+![understanding_swap_1.png](./images/understanding_swap_1.png)
+
+![understanding_swap_2.png](./images/understanding_swap_2.png)
+
+![understanding_swap_3.png](./images/understanding_swap_3.png)
+
+#### 3.3.5 Complete Memory Addressing Modes
+
+- **Most General Form**
+  **D(Rb, Ri, S) Mem[Reg[Rb] + S\*Reg[Ri] + D]**
+
+  - D: Constant "displacement" 1, 2, or 4 bytes
+  - Rb: Base register: Any of 16 integer register
+  - Ri: Index register: Any, except for `%rsp`
+  - S: Scale: 1, 2, 4, or 8 (_why these numbers?_)
+
+This is useful for implementing array references, where there can be actually two registers involved.
+
+There can be a displacement which is a constant offset and a scale factor which will be 1, 2, 4, 8. The general idea of this is to take `Ri` register known as an index register, you multiply it by the scale factor. You add the value of `Rb` register and the constant displacement `D`.
+
+It turns out this will be the sort of natural way to implement array referecncing. Basically you can think of this is an array index. I have typically scale it by however many bytes my data type is. This
+
+So if it is an `int` type I have to scale it by four, if it is `long` I hava to scale it by eight. That's where these scale factors will come in.
+
+- **Special Cases**
+  - **(Rb, Ri) Mem[Reg[Rb] + Reg[Ri]]**
+  - **D(Rb, Ri) Mem[Reg[Rb] + Reg[Ri] + D]**
+  - **(Rb, Ri, S) Mem[Reg[Rb] + S\*Reg[Ri]]**
+
+**Examples:**
+
+| Register | Address |
+| -------- | ------- |
+| %rdx     | 0xf000  |
+| %rcx     | 0x0100  |
+
+| Expression      | Address Computation | Address |
+| --------------- | ------------------- | ------- |
+| 0x8(%rdx)       | 0xf000 + 0x8        | 0xf008  |
+| (%rdx, %rcx)    | 0xf000 + 0x100      | 0xf100  |
+| (%rdx, %rcx, 4) | 0xf000 + 4\*0x100   | 0xf400  |
+| 0x80(, %rdx, 2) | 2\*0xf000 + 0x80    | 0x1e80  |
 
 ### 3.4 Arithmetic & logical operations
 
+#### 3.4.1 Address Computation Instruction
+
+- **leaq Src, Dest**
+
+  - Src is address mode expression
+  - Set Dst to address denoted by expression
+
+- **Uses**
+
+  - Computing address without a mmeory reference
+    - E.g., translation of `p = &x[i];`
+    - Computing aithmetic expression ofthe form `x + k*y`
+      - k = 1, 2, 4, or 8
+
+- **Example**
+
+```c
+long m12(long x)
+{
+  return x*12;
+}
 ```
 
+**Converted to ASM by compiler:**
+
+```asm
+leaq (%rdi, %rdi, 2)  %rax  # t <- x + x*2
+salq $2, %rax               # return t<<2
 ```
+
+If you multiply x by 12, it will turn it into an address computation, then it adds `%rdi + 2*%rdi`, so that the 3\*%rdi us store in %rax. And then `salq` means shift left by two.
+
+#### 3.4.2 Some Arithmetic Operations
+
+- **Two Operand Instructions:**
+
+| Format  |          | Computation        |
+| ------- | -------- | ------------------ |
+| `addq`  | Src,Dest | Dest = Dest + Src  |
+| `subq`  | Src,Dest | Dest = Dest - Src  |
+| `imulq` | Src,Dest | Dest = Dest \* Src |
+| `salq`  | Src,Dest | Dest = Dest << Src |
+| `sarq`  | Src,Dest | Dest = Dest >> Src |
+| `shrq`  | Src,Dest | Dest = Dest >> Src |
+| `xorq`  | Src,Dest | Dest = Dest ^ Src  |
+| `andq`  | Src,Dest | Dest = Dest & Src  |
+| `xorq`  | Src,Dest | Dest = Dest \| Src |
+
+- Also called `shlq` Arithmetic Logical
+
+- **Watch out for argument order!**
+- **No distinction beween signed and unsigned (why?)**
+
+#### 3.4.3 Some Arithmetic Operations
+
+- **One Operand Instructions**
+  - `incq` Dest Dest = Dest + 1
+  - `dncq` Dest Dest = Dest - 1
+  - `negq` Dest Dest = Dest
+  - `notq` Dest Dest = ~Dest
+
+#### 3.4.4 Arithmetic Expression Example
+
+```c
+long arith (long x, long y, long z) (long x, long y, long z)
+{
+  long t1 = x + y;
+  long t2 = x + t1;
+  long t3 = x + 4;
+  long t4 = y * 48
+  long t5 = t3 + t4
+  long rval = t2 * t5;
+  long rval = t2 * t5;
+}
+```
+
+Here is one that just does a bunch of junk of arithmetic instructions, it converts into the following assembly code.
+
+```asm
+arith:
+  leaq  (%rdi,%rsi), %rax     # t1
+  addq  %rdx, %rax            # t2
+  leaq  (%rsi,%rsi,2), %rdx
+  salq  $4, %rdx              # t4
+  leaq  4(%rdi,%rdx), %rcx    # t5
+  imulq %rcx, %rax            # rval
+  ret
+```
+
+You see it's using this `leaq` instruction mutiple times to do addition in various forms. It also has shifting and multiplication, you saw in the original code it just has addtion and multiplication. Here the assembly code has various instructions, there is only one multiply whereas, it has twice in the c code.
+
+So the compiler is sort of scrambiling things around trying to find clever way to implement what you are asking for using less comlex expensive less time-consuming instructions.
+
+| Register | Use(s)         |
+| -------- | -------------- |
+| %rdi     | Argument **x** |
+| %rsi     | Argument **y** |
+| %rdx     | Argument **z** |
+| %rax     | t1, t2, rval   |
+| %rdx     | t4             |
+| %rcx     | t5             |
+
+**Interesting Instructions**
+
+- `leaq`: address computation
+- `salq`: shift
+- `imulq`: multiplication
+  - But, only, used once
+
+That this instruction here corresponds to this computation of `t1`, it's adding two values and giving it a new name it's putting in `%rax`. Similarly this one is adding `z` to `t1` and storing it back in `%rax`.
+
+The `x+4` doesn't show up directly here, it turns out what it does is it jumps right at head to `long t4 = y * 48`. It does it by computing shifting that left by 4, because 3/\*16 = 48.
+
+And then the `t4` here that `x+4` actaully shows up in `leaq  4(%rdi,%rdx), %rcx`, it just uses the displacement field of this computation to add 4 to some other values.
+
+### 3.5 Machine Programming I: Summary
+
+- **History of Intel processors and architectures**
+
+  - Evolutionary design leads to many quriks and artifacts
+
+- **C, assembly, machine code**
+
+  - New forms of visible state: program conter, register, ...
+  - Compiler must transform statements, expressions, procedures into low-level instructions sequences
+
+- **Assembly Basics: Registers, operands, move**
+
+  - The x86-64 move instructions cover wide range of data movement forms
+
+- **Arithmetic**
+  - C compiler will figure out different instruction combinations to carry out computation
+
+## 4 Machine-Level Programming II: Control
+
+### 4.1 Control: Condition codes
+
+#### 4.1.1 Processor State (x86-64, Partial)
+
+- **Infomration about currently executing program**
+  - Temporary data
+    - `(%rax, %rcx, ...)`
+  - Location of runtime stak
+    - `(%rsp)` -> current statk top
+  - Location of current code control point
+    - `(%rip, ...)`
+  - Status of recent tests
+    - `(CF, ZF, SF, OF)`
+    - There are actually 8 of them
+    - They are all one bit flags and they get set not directly
+    - Side effect of other operations that take place
+    - They're the basis for which conditional operation gets decided
+
+![processor_state.png](./images/processor_state.png)
+
+#### 4.1.2 Conditon Codes (Implicit Setting)
+
+- **Single bit register**
+
+| Register(Unsigned) | Meanning   | Register(Signed) | Meanning      |
+| ------------------ | ---------- | ---------------- | ------------- |
+| CF                 | Carry Flag | SF               | Sign Flag     |
+| ZF                 | Zero Flag  | OF               | Overflow Flag |
+
+- **Implictly Set (think of it as side effect) by arithmetic operations**
+  Example: `addq` Src,Dest <-> `t = a+b`
+  `CF set` if carry out from most significant bit (unsigned overflow)
+  `ZF set` if `t == 0`
+  `SF set` `t < 0` (as signed)
+  `OF set` if two's-complement (signed) overflow
+  `(a>0 && b> 0 && t>0) || (a<0 && b <0 && t>=0)`
+
+### 4.2 Conditional branches
+
+### 4.3 Loops
+
+### Switch Statements
