@@ -2022,16 +2022,363 @@ And then the `t4` here that `x+4` actaully shows up in `leaq  4(%rdi,%rdx), %rcx
 | CF                 | Carry Flag | SF               | Sign Flag     |
 | ZF                 | Zero Flag  | OF               | Overflow Flag |
 
+**`CF` means Carry Flag,** if you think of adding two numbers, think of them as two unsigned numbers, and you do the binary arithmetic and sometimes extra one pops out of the left and side.
+
+That's the carry bit, the numbers you added sort of were too big to be contained in the 32 or 64 bit or even 16 or 8 bit result. So an extra bit was generated that's called the carry bit.
+
+The **Zero Flag** is what it sounds like, it's set if the value you just compute is zero. These are set typically by arithmetic instructions by the way.
+
+The **Sign Flag** is said if the value just computed as one in the most significant bit meaning is a negative value.
+
+The **Overflow Flag** is two's complement version or overflow.
+
 - **Implictly Set (think of it as side effect) by arithmetic operations**
   Example: `addq` Src,Dest <-> `t = a+b`
-  `CF set` if carry out from most significant bit (unsigned overflow)
-  `ZF set` if `t == 0`
-  `SF set` `t < 0` (as signed)
-  `OF set` if two's-complement (signed) overflow
-  `(a>0 && b> 0 && t>0) || (a<0 && b <0 && t>=0)`
 
-### 4.2 Conditional branches
+  - `CF set` if carry out from most significant bit (unsigned overflow)
+  - `ZF set` if `t == 0`
+  - `SF set` `t < 0` (as signed)
+  - `OF set` if two's-complement (signed) overflow
+    `(a>0 && b>0 && t>0) || (a<0 && b <0 && t>=0)`
+
+- **Not set by `leaq` instruction**
+
+#### 4.1.3 Conditon Codes (Explicit Setting: Compare)
+
+- **Explicit Setting by Compare Instruction**
+
+  - `cmpq` Src2, Src1
+  - `cmpq b, a` like computing `a-b` without setting destination
+    _Note: the `q` at the end of thses is all just a reflection of their operating on 64-bit word, "quadword"._
+
+  - `CF set` if carry out most significant bit (used for unsigned comparisions)
+  - `ZF set` if `a == b`
+  - `SF set` if `(a-b) < 0` (as signed)
+  - `OF set` if two's-complement (signed) overflow
+    `(a>0 && b<0 && (a-b)>0) || (a<0 && b<0 && (b-a)>=0)`
+
+#### 4.1.3 Conditon Codes (Explicit Setting: Test)
+
+- **Explicit Setting by Test instruction**
+
+  - `testq` Src2, Src1
+    `testq b, a` like computing `a&b` without setting destination
+
+  - Sets condition codes based on value of Src1 and Src2
+  - Useful to have one of the operands be a mask
+
+  - `ZF set` when `a&b` == 0
+  - `SF set` when `a&b` < 0
+
+#### 4.14 Reading Condition Codes
+
+- **SetX Instructions**
+
+  - Set low-order byte of destination to 0 or 1 based on combination of condition codes
+
+  - Does not alter remaining 7 bytes
+
+| SetX    | Condition      | Decription                |
+| ------- | -------------- | ------------------------- |
+| `sete`  | `ZF`           | Equal/Zero                |
+| `setne` | `~ZF `         | Negative                  |
+| `setns` | `SF`           | Monnegative               |
+| `setg`  | `~(SF^OF)&~ZF` | Greater (Signed)          |
+| `seqge` | `~(SF^OF)  `   | Greater or Equal (Signed) |
+| `setl`  | `(SF^OF)`      | Less(Signed)              |
+| `setle` | `(SF^OF)\|ZF`  | Less or Equal (Signed)    |
+| `seta`  | `~CF&~ZF `     | Above (unsigned)          |
+| `setb`  | `CF`           | Below (unsigned)          |
+
+**About x86-64 Integer Registers**
+
+![reference_low_bytes](./images/reference_low_bytes.png)
+
+It turns out for every of these 16 registers, you can directly set the lowest order byte of it to either 0 or 1. And it wouldn't affect it, it turns out it doesn't affect any of the other 7 bytes of that register.
+
+They all have the quirky names, the `l` means low in there.
+
+- **SetX Instructions**
+
+  - Set single byte based on combination of condition codes
+
+- **One of addressable byte registers**
+  - Does not alter remaining bytes
+  - Typically use `movzbl` to finish job
+    - 32-bit instructions also set upper 32 bits to 0
+
+```c
+int gt(long x, long y)
+{
+  return x > y;
+}
+```
+
+| Register | Use(s)       |
+| -------- | ------------ |
+| `%rdi `  | Argument x   |
+| `%rsi`   | Argument y   |
+| `%rax`   | Return value |
+
+```asm
+cmpq    %rsi, %rdi     # Compare x:y
+setg    %al            # Set when >
+movzbl  %al, %eax      # Zero rest of %rax
+ret
+```
+
+What that means is you can actually copy a byte from any place, like the low order or byte of some other register into a new register. And you put zeros to the left of it, that's what they mean by zero extension.
+
+That seems logical but one thing you'll notice the destination here is `%eax`, that's the lower 32-bit of register `%rax`.
+
+How do we make sure the upper 32 bits are set to 0. One of the weird quirks of x86-64 is for any computation where the result is 32-bit result.
+
+It will add zeros to remaining 32 bits of the register. It's different for example the byte level operations only affect the bytes.
+
+The two byte or operations like what you'd have if the data type were `short`. Only affect thoes two bytes, but the four byte instructions set the upper bytes to 0.
+
+So the effect of this instruction is to take this one bit result, which is the lower bit or register `%rax`. Copy it to the same place as it already is, but then set the remaining 7 bytes to 0, which is what we want.
+
+### 4.2 Conditional Branches
+
+#### 4.2.1 Jumping
+
+The traditional way is to use what's known as a `jmp`(jump) instruction. The `jmp` instruction normally intructions execute in a particular order, just like when you're writing a program and you write a series of statements, they execute one after the next.
+
+An `jmp` instruction is a way you can go from wherever you are to someplace else, and either skip over some instructions or jump back to some other a previous position wherever.
+
+There's two kinds of jumps, ones that are unconditional whether serveral kinds, but unconditional jump means when I say jump you jump.
+
+But there's others conditional jumps that will actually only do that jumping if the condition codes are set appropriately.
+
+- **jX instructions**
+  - Jump to different part of code depending on condition codes
+
+| SetX  | Condition      | Decription                |
+| ----- | -------------- | ------------------------- |
+| `jmp` | 1              | Unconditional             |
+| `je`  | `ZF`           | Equal / Zero              |
+| `jne` | `~ZF `         | Not Equal / Not Zero      |
+| `js`  | `SF`           | Negative                  |
+| `jns` | `~SF`          | Monnegative               |
+| `jg`  | `~(SF^OF)&~ZF` | Greater (Signed)          |
+| `jge` | `~(SF^OF)  `   | Greater or Equal (Signed) |
+| `jl`  | `(SF^OF)`      | Less(Signed)              |
+| `jle` | `(SF^OF)\|ZF`  | Less or Equal (Signed)    |
+| `ja`  | `~CF&~ZF `     | Above (unsigned)          |
+| `jb`  | `CF`           | Below (unsigned)          |
+
+#### 4.2.2 Conditional Branch Example (Old Style)
+
+- **Generation**
+
+```sh
+gcc -Og -S -fno-if-conversion control.c
+```
+
+**_control.c:_**
+
+```c
+long absdiff (long x, long y)
+{
+  long result;
+  if (x > y)
+    result = x - y;
+  else
+    result = y - x;
+  return result;
+}
+```
+
+```asm
+absdiff:
+  cmpq      %rsi, %rdi    # x:y
+  jle       .L4
+  movq      %rdi, %rax    # move the value of y to accumulate register
+  subq      %rsi, %rax    # result = x - y;
+  ret
+.L4
+  movq      %rsi, %rax    # move the value of x to accumulate register
+  subq      %rdi, %rax    # result = y - x;
+  ret
+```
+
+| Register | Use(s)       |
+| -------- | ------------ |
+| `%rdi `  | Argument x   |
+| `%rsi`   | Argument y   |
+| `%rax`   | Return value |
+
+#### 4.2.3 Expressing with Goto Code
+
+- **C allows `goto` statement**
+- **Jump to position designed by labl**
+
+```c
+long absdiff_j (long x, long y)
+{
+  long result;
+  int ntest = x <= y;
+  if (ntest) goto Else;
+  result = x - y;
+  goto Done;
+Else:
+  result = y - x;
+Done:
+  return result;
+}
+```
+
+#### 4.2.4 General Conditional Expresion Translation (Using Branches)
+
+```c
+val = Test ? Then_Expr : Else_Expr;
+```
+
+```c
+val = x>y ? x-y : y-x;
+```
+
+Goto Version
+
+```c
+
+  int ntest = !Test;
+  if (ntest) goto Else;
+  val = Then_Expr;
+  goto Done;
+Else:
+  val = Else_Expr;
+Done:
+...
+```
+
+- Create separate code regions for then & else expressions
+- Execute appropritate one
+
+#### 4.2.5 Using Conditional Moves
+
+- **Conditional Move Instructions**
+
+  - Instruction supports:
+    _if (Test) Dest <- Src_
+  - Supported in post-1995 x86 processors
+  - GCC tries to use them
+    - But, only when known to be safe
+
+- **Why?**
+  - Branches are very disruptive to instruction flow through pipelines
+  - Conditional moves do not require control transfer
+
+```c
+val = Test
+      ? Then_Expr
+      : Else_Expr;
+```
+
+Goto Version
+
+```c
+result = Then_Expr;
+eval = Else_Expr;
+nt = !Test;
+if (nt) result = eval;
+return result;
+```
+
+```c
+long absdiff (long x, long y)
+{
+  long result;
+  if (x > y)
+    result = x - y;
+  else
+    result = y - x;
+  return result;
+}
+```
+
+| Register | Use(s)       |
+| -------- | ------------ |
+| `%rdi `  | Argument x   |
+| `%rsi`   | Argument y   |
+| `%rax`   | Return value |
+
+```asm
+absdiff:
+  movq      %rdi, %rax    # x
+  subq      %rsi, %rax    # result = x - y
+  movq      %rsi, %rdx
+  subq      %rdi, %rdx    # eval = y - x
+  cmpq      %rsi, %rdi    # x:y
+  cmovle    %rdx, %rax    # if <=, result = eval
+  ret
+```
+
+#### 4.2.6 Bad Cases for Conditional Move
+
+- **Expensive Computations**
+
+  ```c
+  val = Test(x) ? Hard1(x) : Hard2(x);
+  ```
+
+  - Both values get computed
+  - Only makes sense when computations are very simple
+
+- **Risk Computations**
+
+  ```c
+  val = p ? *p : 0;
+  ```
+
+  - Both values get computed
+  - May have undesirable effects
+
+- **Computations with side effects**
+
+  ```c
+  val = x > 0 ? x*=7 : x+=3;
+  ```
+
+  - Both values get computed
+  - Must be side-effect free
 
 ### 4.3 Loops
 
+#### 4.3.1 "Do-While" Loop Example
+
+```c
+long pcount_do (unsigned long x)
+{
+  long result = 0;
+  do {
+    result += x & 0x1;
+    x >>= 1;
+  } while (x);
+  return result;
+}
+```
+
+Goto Version
+
+```c
+long pcount_do (unsigned long x)
+{
+  long result = 0;
+  loop:
+    result += x & 0x1;
+    x >>= 1;
+    if(x) goto loop;
+  return result;
+}
+```
+
+- **Count number of 1's in argument `x` ("popcount")**
+- **Use condtional branch to either continue looping or to exiting loop**
+
 ### Switch Statements
+
+```
+
+```
