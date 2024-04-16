@@ -2349,6 +2349,7 @@ absdiff:
 #### 4.3.1 "Do-While" Loop Example
 
 ```c
+// C Code
 long pcount_do (unsigned long x)
 {
   long result = 0;
@@ -2360,9 +2361,8 @@ long pcount_do (unsigned long x)
 }
 ```
 
-Goto Version
-
 ```c
+//Goto Version
 long pcount_do (unsigned long x)
 {
   long result = 0;
@@ -2377,7 +2377,198 @@ long pcount_do (unsigned long x)
 - **Count number of 1's in argument `x` ("popcount")**
 - **Use condtional branch to either continue looping or to exiting loop**
 
+| Register | Use(s)     |
+| -------- | ---------- |
+| `%rdx `  | Argument x |
+| `%rax`   | result     |
+
+```asm
+  movl      $0, %eax      # result -0
+.L2                       # loop:
+  movq      %rdi, %rdx
+  andl      $1, %edx      # t = x & 0x1
+  addq      %rdx, %rax    # result += t
+  shrq      %rdi          # x>>= 1
+  jne       .L2           # if (x) goto loop
+  rep; ret
+```
+
+#### 4.3.2 General "Do-While" Translation
+
+```c
+// C Code
+do
+  Body
+  while (Test);
+```
+
+```c
+// Goto Version
+loop:
+  Body
+  if (Test)
+    goto loop;
+```
+
+```
+Body:
+{
+  Statement1;
+  Statement2;
+  ...
+  Statementn;
+}
+```
+
+#### 4.3.3 General "While" Translation #1
+
+A `while` loop is really a `do-while` loop except that you move the test to the beginning. The only difference therefore is with a `do` loop you don't do the test it. The first time through you're guarantted to do it the first time no matter what.
+
+While a `while` loop will explicitly test even at the very beginning and skip over the loop if the condition doesn't hold.
+
+- **"Jump-to-middle" translation**
+- **Used with `-Og`**
+
+`-Og` where you want to be able to look at machine code and understad it and how it relates to the C code, because it does some sort of simple optmizations but it doesn't try to rewrite your whole program to make it run better.
+
+Wheeras even with `-O1` one which is the next level in the optimization, you'll find sometimes it will do some pretty quirky stuff.
+
+When you actually as a program developer as a software developer out there, or you talk to companies and you ask what optimization level do you use. Those propabably say `-O2` that's sort of the common one.
+
+So usually there's higher levels optimization, and we're pruposely backing off from that to make this code easier to understand.
+
+```c
+// While version
+while (Test)
+  Body
+```
+
+```c
+//Goto Version
+  goto test;
+loop:
+  Body
+test:
+  if (Test)
+    goto loop;
+done:
+```
+
+#### 4.3.4 While Loop Example #1
+
+```c
+// C Code
+long pcount_do (unsigned long x)
+{
+  long result = 0;
+  do {
+    result += x & 0x1;
+    x >>= 1;
+  } while (x);
+  return result;
+}
+```
+
+```c
+//Jump to Middle
+long pcount_goto_Jtm (unsigned long x)
+{
+  long result = 0;
+  goto test;
+  loop:
+    result += x & 0x1;
+    x >>= 1;
+  test:
+    if(x) goto loop;
+  return result;
+}
+```
+
+- **Compare to do-while version of function**
+- **Initial goto starts loop at test**
+
+#### 4.3.5 General "While" Translation #2
+
+```c
+// While version
+while (Test)
+  Body
+```
+
+$\Downarrow$
+
+```c
+// Do-While Version
+if (!Test)
+  goto done;
+do
+  Body
+  while(Test);
+done;
+```
+
+$\Downarrow$
+
+```c
+// Goto Version
+if (!Test)
+  goto done;
+loop:
+  Body
+  if (Test)
+    goto loop;
+done;
+```
+
+- **"Do-While" conversion**
+- **Used with `-O1`**
+
+The idea of that is to do a essentially to take a while loop and turn it into a do-while loop, but introducing a conditional beforehand. That would esentially guard entrance to the loop.
+
+So you do the initial test, and if that's false then you skip over the loop all togehter. Otherwise it's performed like a do-while loop.
+
+#### 4.3.6 While Loop Example #2
+
+```c
+// C Code
+long pcount_do (unsigned long x)
+{
+  long result = 0;
+  do {
+    result += x & 0x1;
+    x >>= 1;
+  } while (x);
+  return result;
+}
+```
+
+```c
+//Do-While Version
+long pcount_goto_dw (unsigned long x)
+{
+  long result = 0;
+  if (!x) goto done;
+  loop:
+    result += x & 0x1;
+    x >>= 1;
+    if(x) goto loop;
+  done:
+  return result;
+}
+```
+
+- **Compare to do-while verion of function**
+- **Initial conditional guards entrance to loop**
+
 ### Switch Statements
+
+```
+
+```
+
+```
+
+```
 
 ```
 
