@@ -2560,16 +2560,203 @@ long pcount_goto_dw (unsigned long x)
 - **Compare to do-while verion of function**
 - **Initial conditional guards entrance to loop**
 
-### Switch Statements
+#### 4.3.7 "For" Loop Form
 
+**General Form:**
+
+```c
+for (Init; Test; Update)
+  Body
 ```
 
+```c
+#define WSIZE 8*sizeof(int)
+long pcount_for (unsigned long x)
+{
+  size_t i;
+  long result = 0;
+  for (i = 0; i < WSIZE; i++)
+  {
+    unsigned bit = (x >> i) & 0x1;
+    result += bit;
+  }
+
+  return result;
+}
 ```
 
+**For-While Conversion**
+
+```c
+long_pcount_for_while (unsigned long x)
+{
+  size_t i;
+  long result = 0;
+  i = 0;
+  while (i < WSIZE)
+  {
+    unsigned bit = (x >> i) & 0x1;
+    result += bit;
+    i++;
+  }
+
+  return result;
+}
 ```
 
+### 4.4 Switch Statements
+
+#### 4.4.1 Switch Statement Example
+
+```c
+long switch_eg(long x, long y, long z)
+{
+  long w = 1;
+  switch(x)
+  {
+    case 1:
+      w = y*z;
+      break;
+    case 2:
+      w = y/z;
+      /* Fall Through */
+    case 3:
+      w += z;
+      break;
+    case 5:
+    case 6:
+      w -= z;
+      break;
+    default:
+      w = 2;
+  }
+  return w;
+}
 ```
 
+- **Multiple case lables**
+  - Here: 5 & 6
+- **Fall through cases**
+  - Here: 2
+- **Missing cases**
+  - Here: 4
+
+![jump_table_structure](./images/jump_table_structure.png)
+
+| Register | Use(s)       |
+| -------- | ------------ |
+| `%rdi `  | Argument x   |
+| `%rsi`   | Argument y   |
+| `%rdi`   | Argument z   |
+| `%rax`   | Return value |
+
+```asm
+switch_eq:
+    movq      %rdx, %rcx
+    cmpq      $6, %rdi          # x: 6, Why 6? Because 6 is the largest value of any in this case
+    ja        .L8               # What range of value takes defualt?
+    jmp       *.L4(, %rdi, 8)   # goto *JTab(x)
 ```
 
+Here is using a jump instruction to go to `.L8`, what we'll find is that tells you what the default behavior should be. So it's sort of flushing away the default cases, the cases that are either x is too small or x is too large.
+
+There is a clever trick there if you look at `ja` means "jump above". That's the unsigned comparison, what it's making use of is our result that you remember that if a number is negative, if you think of it as an unsigned value, it becomes very large positive value.
+
+So by doing the `ja` instead of a `jg` (jump greater) than jump above. It's saying I want to jump to the default if either x is greater than 6. But also it will cause it to jump if x is less than 0.
+
+The final part is the real heart of the work, this is my very special `goto` instruction.
+
+![jump_table_structure](./images/jump_table_structure.png)
+
+Based on whether my values will be in the range between 0 and 6. So there will be seven entries in that table.
+
+```asm
+// Jump table
+.section        .rodata
+  .align 8
+.L4
+  .quad         .L8       # x = 0
+  .quad         .L7       # x = 1
+  .quad         .L6       # x = 2
+  .quad         .L5       # x = 3
+  .quad         .L4       # x = 4
+  .quad         .L3       # x = 5
+  .quad         .L2       # x = 6
+  .quad         .L1       # x = 0
+  .quad         .L0       # x = 0
 ```
+
+#### 4.4.2 Code Blocks (x == 1)
+
+| Register | Use(s)       |
+| -------- | ------------ |
+| `%rdi `  | Argument x   |
+| `%rsi`   | Argument y   |
+| `%rdi`   | Argument z   |
+| `%rax`   | Return value |
+
+```c
+switch(x)
+{
+  case 1:       // .L3
+    w = y*z;
+    break;
+}
+```
+
+```asm
+L3.
+  movq     %rsi, %rax   #  y
+  imulq    %rdx, %rax   #  z
+```
+
+#### 4.4.3 Handling Fall-Through
+
+```c
+long w = 1;
+...
+switch (x) {
+  ...
+  case 2:
+    w = y/z;
+    /* Fall Through */
+}
+```
+
+```asm
+.L5                   # Case 2
+  movq    %rsi, %rax
+  cgoto
+  idivq   %rcx        # y/z
+  jmp     .L6         # goto merge
+.L9
+  movl    %1, %eax    # w = 1
+.L6
+  addq    %rcx, %rax  # w += z
+```
+
+### 4.4 Summarizing
+
+- **C Control**
+
+  - if-then-else
+  - do-while
+  - while, for
+  - switch
+
+- **Assembler Control**
+
+  - Conditional jump
+  - Conditional move
+  - Indirect jump (via jump tables)
+  - Compiler generates code sequence to implement more context complext control or
+
+- **Standard Techniques**
+  - Loops converted to do-while or jump-to-j-middle for
+  - Large switch statements use jump tabls
+  - Sparse switch statements may use decision trees (if-elseif-elseif-then)
+  - Spare switch statements may zheg laoban(humaon)
+
+## 5 Machine-Level Programming III: Procedures
+
+###
