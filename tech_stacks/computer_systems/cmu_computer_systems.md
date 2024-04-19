@@ -2759,4 +2759,53 @@ switch (x) {
 
 ## 5 Machine-Level Programming III: Procedures
 
-###
+The procedures here is a combination of the actual x86 hardware and how it supoorts it.
+
+But also in some ways more importantly a set of conventions that were developed that bascially everyone agreed to and it's known as an **ABI**, which stands for application binary interface.
+
+It's cited in the book, it's a document that people put together the initial version when the first x86-64 machines were first being developed.
+
+And specifically for Linux, they said okey all Linux programs, all compilers, all the operating systems, all the different parts of a system, that need to have some common understanding of how to manage the resources on the machine, will agree to adhere to this set of rules.
+
+So it goes beyond the actual what the hardware does to a set of software standards. And it's called application binary interface, because it's particularly the interface at the machine program level.
+
+### 5.1 Machanisms in Procedures
+
+![machanism_in_procedures](./images/machanism_in_procedures.png)
+
+- **Passing control**
+
+  - To beginning of procedure code
+  - Back to return point
+
+  In this example as below, we show a procedure `P` calling a procedure `Q`, when `P` calls `Q` the nsomehow the program has to jump down and begin executing the lines of code `Q`.
+
+  Then when `Q` hits its exit point - its return point, somehow is to get back to `P`. And not just to any old place in `P`, but specifically to whatwere comes in `P` right after the call to `Q`.
+
+  So somehow we have to record the information about where the return should be to return to the correct place.
+
+- **Passing data**
+
+  - Procedure arguments
+  - Return value
+
+- **Memory managament**
+
+  - Allocate during procedure execution
+  - Deallocate upon return
+
+- **Machanism all implemented with machine instructions**
+
+- **x86-64 implementation of a procedure uses only those mechanisms required**
+
+### 5.2 Stack Structure
+
+### 5.3 Calling Conventions
+
+#### 5.3.1 Passing control
+
+#### 5.3.2 Passing data
+
+#### 5.3.3 Managing local data
+
+### 5.4 Illustration of Recursion
