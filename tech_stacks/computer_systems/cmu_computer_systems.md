@@ -2789,23 +2789,303 @@ So it goes beyond the actual what the hardware does to a set of software standar
   - Procedure arguments
   - Return value
 
+  In this particular case, `Q` is a function that takes a single argument that it calls internally it calls `i`, and up here where `P` is calling it, it's passing some vale within `P` called `x`.
+
+  Somehow that data value of `x` has to be recorded in a form, that within `Q` it will have access to that information, and similarly when `Q` wants to return a value back and then `P` will make use of that value. There has to be some convention of how that data gets communicated back.
+
 - **Memory managament**
 
   - Allocate during procedure execution
   - Deallocate upon return
 
+  And then finally in a funciton might have some local data that requires allocation of some amount of space. Where does that space get allocated, how do we make sure it gets allocated properly?
+
+  In particular C we know when a function return as any local data that it allocated should get deallocated should be freed up. So that we don't sort of start consuming an unbounded amount of storage. So how dow we do that?
+
 - **Machanism all implemented with machine instructions**
+
+  Part of the reason for breaking it down into those little segments is, in x86-64, one of the clear things they did was to try and reduce the overhead of procedure calls as much as possible.
+
+  Because as you know good programming style you often write these functions that do a fairly small amount of actual useful stuff.
 
 - **x86-64 implementation of a procedure uses only those mechanisms required**
 
+  It's sort of good programming style to do that especially in a more object-oriented programming style. So you won;t want the overhead the extra number of steps taken to invoke a procedrure and deal with all those aspects to take any more time than it needs to. Becuase it's a fairly critial overhead.
+
+  So one of things they do in this, they only do whatever absolutely needed, in particular if no local storage is needed on this for data then don't allocate it therefore don't free it.
+
+  If you're not passing any values don't pass them. In general sort of how little can you get away with, and that makes it a little bit confusing from a teaching point of view. And that there is no set template that it follows every time.
+
+  It sort of you have to each case is a special case for how a particular procedure gets implemented.
+
 ### 5.2 Stack Structure
+
+#### 5.2.1 x86-64 Stack
+
+- **Region of memory managed with stack discipline**
+
+- **Grows toward lower addresses**
+
+- **Register `%rsp` contains lowest stack address**
+  - address of "top" element
+
+![x86_64_stack.png](./images/x86_64_stack.png)
+
+The first one and sort of the most critical is how do we pass control to a function? Before we can even talk about that we have to talk about the stack.
+
+The stack is really not a special memory, it's just a region of the normal memory. Remember to the programmers perspective assembly level programmers perspective is memory is just a big array of bytes.
+
+Somewhere within that bunch of bytes, we're going to call it the stack, the stack is used by the program to manage the state associated with the procedures that it calls and as they return.
+
+It's where it passes all these potential information, the control information, data and allocates local data. The reason why it can be managed is a stack, because of the nature of the whole idea of procedure calls and returns. That you make a call and you might need some information, but when you return from a call, all that information can be discarded.
+
+And so it makes use of that sort of **last in first out** allocation principle. Matches very well this idea of procedure call and return.
+
+In x86 stacks, actually start with a very high numbered address, when they grow when more data are allocated for the stack, it's done by decrementing the stack pointer.
+
+So the stack pointer as you know is just a regular register `%rsp`, its value is the address of the current top of the stack, every time you allocate more space on the stack it does by decrementing the pointer.
+
+Just for convention, the top of the stack is actually shown at the bottom, addresses go from botom to top, not from top to bottom. So when you add to the stack, you decrement the stack pointer.
+
+#### 5.2.2 x86-64 Stack: Push
+
+- **`pushq Src`**
+
+  - Fetch operand at Src
+  - Decrement `%rsp` by 8
+  - Write operand at address given by `%rsp`
+
+![x86_64_stack_push.png](./images/x86_64_stack_push.png)
+
+In particular there is explicit instructions push and pop that make use of the stack, it's often writte `pushq` and `popq`, but that `q` is actually an optional suffix on the instruction.
+
+The idea of pushing something onto the stack, then is there is some source operand it could be from register or from memory or an immediate. This is sort of like a move instruction. But the destination of the move will be toward memory, and that address of the memory is determined by first decrementing the stack pointer and then doing a write.
+
+#### 5.2.3 x86-64 Stack: Pop
+
+- **`popq Dest`**
+  - Read value at address given by `%rsp`
+  - Increment `%rsp` by 8
+  - Store value at Dest (must be register)
+
+![x86_64_stack_pop.png](./images/x86_64_stack_pop.png)
+
+Similarly the pop instruction takes reads data from the stack, and stores it in the destination which must be a register for this particular instruction.
+
+_Pop and push, or other the three things, there is a difference between like using the top?_
+
+Yes, you could actually, except for some weird corner cases write it out as a set of separate instructions. But it's a common enough thing that it's sort of built in as the operation. Whereas call and retuner are special they can't be simulated.
+
+In one case you decrement, you do the arithmetic on the stack pointer before you write, because when you first start it out, the stack pointer is pointing to whatever was the top element of the stack.
+
+We want to create a new element so we're going to decrement first and then do the write. Whereas going the other direction you want to read off the current top of stack element, and then you want to increment the stack pointer to sort of deallocate it.
+
+One thing you'll notice here is that the "deallocated" is not like we magically erase this or something all, we re doing is just moving a stack pointer. Whatever it was there at the top of the stack is still in memory. It's just no longer considered part of the stack.
 
 ### 5.3 Calling Conventions
 
 #### 5.3.1 Passing control
 
+![x86_64_stack_code_example.png](./images/x86_64_stack_code_example.png)
+
+This is a C function called `mulstore`, the following is the output slightly cleaned up output from the disassembler of that exact function. Similarly this is a function called `mult2`.
+
+The reason I'm showing this is, because I want to use the addresses that these instructions are at thet you don't see when you write it in assembly code. So I'm showing it the disassembled version.
+
+#### 5.3.2 Procedure Control Flow
+
+- **Use stack to support procedure call and return**
+
+- **<span style="color:red">Procedure call:</span> `call lable`**
+
+  - Push return address on stack
+  - Jump to label
+
+- **Return address:**
+
+  - Address of the next instruction right after a call
+  - Example from disassembly
+
+- **<span style="color:red">Procedure return:</span> `ret`**
+  - Pop address from stack
+  - Jump to address
+
+Let's break this down into its simplest part.
+
+![control_flow_example_1.png](./images/control_flow_example_1.png)
+
+Let's imagine a scenario, in which the top of stack is at `0x120`, which is not realistic by the way. And the program counter which is called `%rip`. It is indicating that the current instruction is that at `0x400544`, which is this `callq` instruction.
+
+![control_flow_example_2.png](./images/control_flow_example_2.png)
+
+What would happen with the `callq` instruction is it would do three things:
+
+- Decrement the stack pointer and so subtracting 8 from `0x120` and hex gives you `0x118`.
+- Write the address of the instruction following the `callq` onto the top of the stack. It's important that it does it the one following the `callq` to fit. That's instruction I'm going to return and use for my return address. And I want to resume execution in this function at the instruction after the `callq` not the `callq` itself, otherwise you'd have an infinite loop.
+- This `callq` instruction also embedded in the encoding of the instruction in the destination address of it. Which happens to be the starting address of this particular function. So the program counter will be set to that value. And now the processor starts just executing along these instructions.
+
+So it did a combination of a jump and a push and that's why the question was raised earlier. Is a push instruction could you assemble that out of existing instructions. The answer is yes for push but not for call.
+
+![control_flow_example_3.png](./images/control_flow_example_3.png)
+
+Now imagine this `mult2` chugs along and it hits its return point and it hits this `ret` instruction. By the way `retq` and `rep` are the same instructions.
+
+The `ret` will, its purpose is to sort of reverse the effect of a call. It assumes that the top of the stack has an address that you want to jump to.
+
+![control_flow_example_4.png](./images/control_flow_example_4.png)
+
+It will pop that address off the stack, meaning it will increment the stack pointer, actually the value doesn't really disappear from the memory, just is no consider as part of the stack.
+
+And then it will set the program counter to what it just popped off the stack. And that will cause the program to resume back to where it came from.
+
+You see that sort of clever idea of pushing the address of the next instruction, so when the return comes it will get it to the point where it should resume execution.
+
 #### 5.3.2 Passing data
 
+![procedure_data_flow.png](./images/procedure_data_flow.png)
+
+Again this all built into this **ABI**. You know defined as the set of conventions not particularly part of the hardware.
+
+So in particular the rule is that the first six arguments get passed within these particular registers. The return value is returned in register `%rax`.
+
+By the way this is all for arguments that are either integers or pointers. The float point are passed in a separate set of registers. So these are just for assumed now we just are dealing with integer data pointer data.
+
+What happen if you have more than 6 arguments to a function? Which isn't very common but it happens. The rule on that is those get put in memory on the stack. So they passed to the function, and then the function has to retrieve those values on the stack.
+
+Back in the bad old days of IA-32 by the way all arguments got passed on the stack, but now for the most part you pass arguments on registers. The reason for that is register access is way faster than memory access.
+
+![data_flow_examples.png](./images/data_flow_examples.png)
+
 #### 5.3.3 Managing local data
+
+To get that idea across we have to bring another concept which is called the **<span style="color:red">Stack Frame<span>**.
+
+This is a particular allocation pattern that's used in memory, one of the feature of calling and returning is you can imagine when you have a nested series of calls to a function.
+
+When a particular is executing, it only needs to reference the data within that function or values that have been passed into it. Some which might be pointers and therefore pointing to other locations in memory.
+
+But the point is sort of the rest of the functions in your code however many there are sort of frozen at that moment really there's only one function executing at any given time. Assuming what you'd call single threaded model here.
+
+So we can allocate on this stack whatever space is required for the particular function. When we return from that function, we shouldn't if it's correctly written need any of the information associated with that function, it can just sort of disappear forever.
+
+That's why this idea of a stack. You allocate something if you make more calls you keep allocating more stuff. But as they return you kind of back out of the stack and free things up. So the stack discipline is exactly the right. It matches well this whole idea of procedure call and return.
+
+##### 5.3.3.1 Stack-Based Languages
+
+- **Languages that support recursion**
+  - e.g., C, Pascal, Java
+  - Code must be "Reentrant"
+    - Multiple simultaneous instantiations of single procedure
+  - Need some place to store state of each instantiation
+    - Arguments
+    - Local variables
+    - Return pointer
+- **Stack discipline**
+  - State for given procedure needed for limited time
+    - From when called to when return
+  - Callee returns before caller does
+- **Stack allocated in <span style="color:red">Frames</span>**
+  - State for insgle procedure instantiation
+
+So each block we use for a particular call then is called the **<span style="color:red">Stack Frame<span>**. It's a frame for a particular instance of a procedure a particular call to a procedure.
+
+##### 5.3.3.2 Call Chain Example
+
+[call_chain_example.png](./images/call_chain_example.png)
+
+##### 5.3.3.3 Stack Frames
+
+- **Contents**
+
+  - Return information
+  - Local storage (if needed)
+  - Tempoary space (if needed)
+
+  ![stack_frames.png](./images/stack_frames.png)
+
+In terms of the stack, what will keep a frame for every sort of procedure that has been called, but not yet returned on the stack. In general this stack of is delimited by two pointers, one is the stack pointer `%rsp`, the another is called the base pointer which register `%rbp` indicates.
+
+One feature (actually is now become a feature of IA32 as well) is that this is an optional pointer. In particular the code that we'll see does not use a base pointer, except in some every special cases. So this register doesn't really won't show up in your programs being used in a special way as a frame pointer. It will be used instead just as a regular register.
+
+So typically the only things you'll know about is the stack pointer, you won't even be able to figure out where the frame is exactly. You'll just know that the top part of the stack is the top frame for the topmost function.
+
+- **Management**
+  - Space allocated when enter procedure
+    - "Set-up" code
+    - Includes push by `call` instruction
+  - Deallocated when return
+    - "Finish" code
+    - Includes pop by `ret` instruction
+
+All of this is managed by the code itself, this is the same stack which you're pushing and poping address too.
+
+In general then imagine that each time you begin a function some space gets allocated potentially on the stack for its frame. Then that frame is indicated by either one pointer or two pointers.
+
+![stack_frames_example_1.png](./images/stack_frames_example_1.png)
+
+![stack_frames_example_2.png](./images/stack_frames_example_2.png)
+
+![stack_frames_example_3.png](./images/stack_frames_example_3.png)
+
+![stack_frames_example_4.png](./images/stack_frames_example_4.png)
+
+![stack_frames_example_5.png](./images/stack_frames_example_5.png)
+
+As we continue with these recursive calls, we're just adding more stuff to the stack getting deeper and deeper,and that will keep happening that's one of the reasons why recursion is a little bit of risky thing.
+
+Comparing to iteration, it keeps requiring more space as you go deeper in the recursion. In particular most system limit the total depth of the stack.
+
+And then as these begin to return, those frames get deallocated removed from the stack.
+
+![stack_frames_example_4.png](./images/stack_frames_example_4.png)
+
+![stack_frames_example_3.png](./images/stack_frames_example_3.png)
+
+![stack_frames_example_2.png](./images/stack_frames_example_2.png)
+
+![stack_frames_example_1.png](./images/stack_frames_example_1.png)
+
+Part of it the nice thing about this is it means that if I have multiple calls to `amI`, because I've gone deep recursively each one of them will have its own local state that it needs to manage. And again the whole stack discipline is what makes it work.
+
+What we'll find out in particular is because of the way this is set up, recursive calls are handled the same way that regular calls are, there are nothing special about them.
+
+All the infrastructure required to support recursion is built into this whole stack discipline.
+
+![x86_64_linux_stack_frame.png](./images/x86_64_linux_stack_frame.png)
+
+In General that what the stack frame will look like in one of these machines will be something like this. If we have to pass more than 6 arguments, the caller will actually use its own stack frame to store thoese arugments.
+
+When you do a `call`, it will push the `return` address onto the stack. So before our function even starts all this information would be on the stack.
+
+If there's a if this particular if we're making use of a base pointer, then we have to have some way where to store the old value of the base pointer. So that we could fix it back when we return.
+
+But in general if there's some local state like some registers that need to be saved and we'll see example of that, or an array that needs to be allocated locally. That would be stored within the stack frame.
+
+And there might be some requirement for some extra space in the stack frame for other stuff. In particular if we're going to pass more than seven arguments it needs space somewhere in the stack frame to do it.
+
+##### 5.3.3.4 Example: `incr`
+
+```c
+long incr (long *p, long val)
+{
+  long x = *p;
+  long y = x + val;
+  *p = y;
+  return x;
+}
+```
+
+| Register | Use(s)              |
+| -------- | ------------------- |
+| `%rdi `  | Argument `p`        |
+| `%rsi`   | Argument `val`, `y` |
+| `%rax`   | `x`, Return value   |
+
+```asm
+incr:
+  movq      (%rdi), %rax    // long x = *p;
+  addq      %rax, %rsi      // long y = x + val;
+  movq      %rsi, (%rdi)    // *p = y;
+```
 
 ### 5.4 Illustration of Recursion
