@@ -3088,4 +3088,48 @@ incr:
   movq      %rsi, (%rdi)    // *p = y;
 ```
 
+**Here is an example of calling this `incr` and how arguments get passed to the function and how it makes use of the stack frame.**
+
+![calling_incr_1](./images/calling_incr_1.png)
+
+Here is the function `call_incr`, it's going to create a value called by `v1` and have to generate pointer of that.
+
+So what that meaned is `v1` can't just stay in a register? Because it can't create a address of a register, it has to store in memory somewhere so that you can create a pointer an address of it.
+
+Where is it stored? Well it puts in the stack.
+
+How does it find space in the stack while allocates? See that the read code here generates. The first instruction is to allocate 16 bytes on the stack. The other is to store `$15213` at offset eight from the stack pointer.
+
+As will often see that the program often allocates more space on the stack than it really needs to. There's some conventions about trying to keep addresses on aligned in various ways.
+
+That are sort of obscure and you should just kind of not worry about the fact there's unused space and functions.
+
+So now we have a number 15213 that's sitting in memory, and we can create a pointer to it.
+
+![calling_incr_2](./images/calling_incr_2.png)
+
+So now to set up the call, we need to create a pointer to `v1` and we have to pass the `3000`. So we'll see that will copy `3000` to registe r`%esi`
+
+And yet it's copying `3000` just to register `%esi` and not `%rsi`, it's using `movl` and not `movq`. Because `movq` and `movl` are variations of the mov command (moving data to a memory location or a register). `movq` moves **8 bytes** starting at the current specified memory address whereas `movl` moves **4 bytes** starting at the current specificed memory address.
+
+And`3000` is a small enough number, it will fit in 32 bits. It's a positibve number so we don't have to worry about sign bits. So the thing can sort of get away with a trick here of using just a `movl` instruction.
+
+Because when any instruction has a one of the `e` register as its destination, it will set the upper 32 bits of that register to 0's.
+
+So this have the effect of copying the number 3000, and zeroing out the upper bytes to register `%rsi`. And the reason the compiler likes this is it takes one less byte to encode a `movl` than it does to encode `movq`.
+
+Now is the setting up argument - the second argument to the call. But the first argument is using this inscrution `lea` or `leaq` for what it's supposed to be used for which is to create pointers. But instead of now reading from that memory reference the instruction will just copy the computed address to `%rdi`.
+
+`%rdi` will now be equal to whatever the stackpointer plus 8. So `%rdi` will now be equal to whatever the stack pointer + 8.
+
+![calling_incr_3](./images/calling_incr_3.png)
+
+Now the `call` instruction will happen. And you'll recall that the `call` instruction adds (3000) these two numbers and stores the result back in the pointer.
+
+So the effect will be to set this memory location to 18213.
+
+![calling_incr_4](./images/calling_incr_4.png)
+
+![calling_incr_5](./images/calling_incr_5.png)
+
 ### 5.4 Illustration of Recursion
