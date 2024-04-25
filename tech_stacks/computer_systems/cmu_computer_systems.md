@@ -3126,10 +3126,75 @@ Now is the setting up argument - the second argument to the call. But the first 
 
 Now the `call` instruction will happen. And you'll recall that the `call` instruction adds (3000) these two numbers and stores the result back in the pointer.
 
-So the effect will be to set this memory location to 18213.
+So the effect will be to set this memory location to 18213 and also return the particular value.
 
 ![calling_incr_4](./images/calling_incr_4.png)
 
+Now when we return back, what we want to do is add the value in `v1` to the value we just computed which is in `v2`. We know that the `v1` is designated by this memory location that `%rsp+8`. So we'll just read from memory to include that to `%rax`.
+
+And then the final step is to deallocate, this is how does it know how to restore the stack back to its orignal place. Well the compiler will build into it figured out how much space it would need for this particular function. It allocates that when it comes in, and it deallocates it when it goes out.
+
 ![calling_incr_5](./images/calling_incr_5.png)
+
+The `ret` instruction will always take whatever is pointed by the stack pointer and use that as the return address. Os it's very important that `%rsp` get set back to where it should be before you it does a `ret`.
+
+##### 5.3.3.5 Register Saving Conventions
+
+Now let's get a little bit more refined, an important idea is what about these registers, what can be assumed about particular registers and how they get changed and so forth.
+
+Again it's built into this idea of an ABI is a set of conventions about the register, obviously `%rsp` is a very important register. You don't wnat programs just to randomly change its value without them knowing what to do.
+
+It turns out we'll also be careful with some of the other registers to, so here is sort of a thought experiment imagine we had a function called `yoo` that's going to call `who`. And it has some data that it wants to put somewhere, and then when `who` is going to get called, then the question is can I rely on the fact that register `%rdx` will still hold the number 15213?
+
+The answer is not general. Because "who" might have overwritten `%rdx` and put something else there. In particular if `who` did some operation involving register `%rdx`, it could have messed up the value that was there before.
+
+- **When procedure `yoo` calls `who`:**
+
+  - `yoo` is the <span style="color:red">caller</span>
+  - `who` is the <span style="color:red">callee</span>
+
+- **Can register be used for temporary storage?**
+  ![register_saving_convention.png](./images/register_saving_convention.png)
+
+- **Contents of register `%rdx` overwritten by `who`**
+- **This could be trouble -> something should be done!**
+  - Need some coordination
+
+So the obvious answer is while you should not have used `%rdx` for that purpose. And that's why we will come up with a set of conventions.
+
+- **Conventions**
+  - <span style="color:red">"Caller Saved"</span>
+    - Caller saves temporary values in its frame before the call
+  - <span style="color:red">"Callee Saved"</span>
+    - Callee saves temporary values in its frame before using
+    - Callee restores them before returning to caller
+
+So in some terminology, when we are talking about one function calling another, it's useful to have used the following words, we'll call the calling function the `caller`, and the function that gets called the `callee`.
+
+Now there's basically two ways we can manage register it can be what's called <span style="color:red">"caller saved"</span>, which means if the caller really cares, if you really want to value that will be there when it returns when control returns back to it. Then it should store it away first, it shouldn't assume that the register will be. It should assume that the register might get altered by it.
+
+But there's another class we can deiine it called <span style="color:red">"callee save"</span>, which is sort of a contract between all the functions and it's built into the ABI. if a particular function wants to alter this register, what it needs to do is first store it away and it will do it by putting the value in the stack. Then before we return from the procedure, we should restore it back to whatever it was before.
+
+##### 5.3.3.6 x86-64 Linux Register Usage #1 - caller
+
+![x86-64_linux_register_usage_1.png](./images/x86-64_linux_register_usage_1.png)
+
+In particular with this ABI, we've already seen `%rax` for the return value, and these six registers that get used for passing arguments. And will also designate registers `%r10` and `%r11` to be just temporary values that can be altered by any function, that's the meaning of "caller-save".
+
+We've already seen actually within code often them overriding these registers, because whatever gets passed to a function. The function can do whatever it wats to that data, as long as it's not somehow corrupting other data. So those often get used as temporary storage as well.
+
+And `%rax` gets often overwriiten multiple times before it gets to the final return value.
+
+##### 5.3.3.6 x86-64 Linux Register Usage #2 - callee
+
+![x86-64_linux_register_usage_2.png](./images/x86-64_linux_register_usage_2.png)
+
+These four register and most commonly `%rbx` are our called "callee-saved" registers. Meaning they'll only get used in this special way that if a function wants to alter it. One of these registers has to push. It will push the value on the stack. And then just before returning it will pop that value back off the stack.
+
+Register `%rbp` is special if you're using frame pointers. If you are not using frame pointers then it ca be treated a "callee-saved" register.
+
+##### 5.3.3.7 Callee-Saved Example
+
+![callee_saved_example_1.png](./images/callee_saved_example_1.png)
 
 ### 5.4 Illustration of Recursion
