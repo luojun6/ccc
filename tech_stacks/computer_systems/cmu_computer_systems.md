@@ -3197,4 +3197,170 @@ Register `%rbp` is special if you're using frame pointers. If you are not using 
 
 ![callee_saved_example_1.png](./images/callee_saved_example_1.png)
 
+Now we are going to do is our return value is to add `x` which is an argument of being passed to this function. So somehow we have to have `x`, i gets passed to originally in register `%rdi` as you know.
+
+But we are going to have reuse register `%rdi` to pass value to `incr`. So somehow we have to do something with `x`. Because we are going to need `x`, when we return back to here after the call. So where we are going to put it, that's why w have callee-saved registers.
+
+Look the code here, at the outset of this function then it will store away whatever is in `%rbx` currently it will put it on the stack. So now the stack frame for this function looks like there's a return address.
+
+Before we are going to save the value of `%rbx`, and then decrement the stack pointer by 16. But that will be on the top of the eight bytes we've already allocated to store `%rbx`.
+
+![callee_saved_example_2.png](./images/callee_saved_example_2.png)
+
+We see within the code, for example when we want to computer this return value. It can assume that `%rbx` when whatever this call does `incr`. We assume `incr` is well behaved that if it make use of register `%rbx`, it will fix up before it returns.
+
+Then this function in its exit code will not only increment the stack point, but it will then pop the value of `%rbx` back. So again we see this sort of backeting push, pop, subsctract, add.
+
+We notice this thing, on the clean-up part of it, the end we sort of do things in the reverse order that they were done. Again because of the stack discipline.
+
+That's so of a demonstration of this eight idea of an ABI that every one will treat `%rbx` this way, it will save it on the stack. Everyone will treat `%rbx` this way it will save it on the stack if it's going to alter it, if it's not going to alter it, it doesn't have to save anything.
+
 ### 5.4 Illustration of Recursion
+
+#### 5.4.1 Recursive Example
+
+![recursive_function.png](./images/recursive_function.png)
+
+Keep in mind these are all unsigned numbers, the argument is. So the right shift are logical.
+
+In general, recursive code it's going to always generate a bigger block of code than the iterative version. Because it has to do all the stack stuff.
+
+**Termnimal Case:**
+![recursive_function_terminal_case.png](./images/recursive_function_terminal_case.png)
+
+If easy case is if `x` is zero, it first of all assumes `x` is going to be zero in fact. And sets up te return value of zero to the register. And it it will `test` now while is x `0`, The `test` instruction has two operands that get ended. If that's equal `je` means jump equre to `0` in this case.
+
+**Register Save:**
+
+![recursive_function_register_save.png](./images/recursive_function_register_save.png)
+
+Here's the code and it doesn't need any other thing anything on the stack, other than a space to store `%rbx` which is whatever was in `%rbx` when you enter. I'm just going to put it on the stack, I won't look at it, I won't make use of it.
+
+But I'll have it here so I can restore the register when return, so it will push the value under the stack.
+
+**Call Setup:**
+
+![recursive_function_register_call_setup.png](./images/recursive_function_register_call_setup.png)
+
+Now the real mean of the body of it is, it will copy `x` into `%rbx`, which we've just put on the stack so we can safety do it. And We'll just set only clear out at all the least significiant that particular register.
+
+This is one of these weird ones 1's where I can se `%ebx` as a destination knowing that all 0's all the high order bits. And then I'm going to take `x` and I'm just going to shift it right by one position, which sets me up for this recursive call.
+
+Now I'm ready to call `pcount_r` recursively, because I have the shifted vale in `%rdi`.
+
+**Call:**
+![recursive_function_call.png](./images/recursive_function_call.png)
+
+And I know because this is a well behaved function, that when `pcount_t` returns it can assume that `%rax` holds the recursive result. Even `pcount_r` actually does modify `%rbx`, the `%rbx` will get restored to whatever was there before.
+
+`%rbx` in this case before making the call set it the value of this was significant right. When we return back, we can assume that `%rbx` holds the least significant bit of `x` my orignal argument.
+
+**Result:**
+![recursive_function_register_result.png](./images/recursive_function_register_result.png)
+
+`%rax` call holds the recursive result, so I can just add those two numbers together, call that the return value and I've correctly computed the result.
+
+**Completion:**
+
+![recursive_function_completion.png](./images/recursive_function_completion.png)
+
+Then the final clean-up is to pop `%rbx` to restore whatever was in there, and then to do the return.
+
+So you see that the piece is all kind of it's a puzzle that all fits together, because all the functions are using this common set of convention about, where arguments get passed, what registers can be used. If some registers have to be restored back if they get used and all that stuff works togehter.
+
+Which gets me back to just the point I was making before, if you are using register `%rbp` for a frame pointer, so typically point to the beginning of a frame like that.
+
+So imagine you have a function that needs a base pointer, because as I mentioned the case is that if it has to within that function allocate some amount of space. It's unknown at compile time.
+
+Well imagine now that some other code gets called deep recursive calls, or whatever that might do other things. If you treat `%rbp` as a callee saved register, then when these other functions return, if they've made use of `%rbp` for one reason or another. It's guaranteed that they will restore it back to whatever condition it was in originally before.
+
+So now this function will have a reliable value of `%rbp`, so again it shows as long as all the code okeys these conventions on how they use registers. Then sort of life is good, so to have a trust that the things will be the way they are.
+
+That's why there's this sort of very carefule process for creating an ABI. Of early on in the life time of a new processor, all the compiler writers, operating system people, and the ones who implement tools like gdb debugging tools, kind of all I have the right set of standards by which they can work from.
+
+#### 5.4.2 Observations About Recursive
+
+- **Handled Without Speical Consideration**
+
+  - Stack frames mean that each function call has private storage
+    - Saved registers & local variables
+    - Saved return pointer
+  - Register saving conventions prevent one function call from corrupting another's data
+    - Unless the C code explicitly does so (e.g., buffer overflow)
+  - Stack discipline follows call / return pattern
+    - If P calls Q, then Q returns before P
+    - Last-In, First-Out
+
+- **Also works for mutual recursion**
+  - P calls Q; Q calls P
+
+## 6 Machine-Level Programming IV: Data
+
+Here we'll look at places where data gets collected into, you put together multiple data elements, and then see there's really two ways to do that:
+
+- One is with arrays where you can create many copies, or many copies of an identical data type. You can have an array of ints and array of pointers.
+- The second is where you have structs. So you create a small collection of values that can be of different data types. And each one you access by its name or a tag.
+
+It turns out those definitions can be recursive, so you can have arrays of structs and structs with arrays and nest it to an arbitrary degree.
+
+What we'll see is both how it's represented in the machine memory, and also then what the code looks like that will manipulate these different structures.
+
+The main thing to see is, at the machine code level there is no notion of an array that you'd have at a higher level except ot think of it as a collection of bytes that you can are in contiguous part of storage. And same with struct, it's just allocated as a collection of bytes.
+
+It's the job of C compiler then to generate the appropriate code to allocate the memory, to get the right value when you refer to some element of a struct or an array.
+
+But the good news is this is such a commonplace type of requirement for a programming langauge, that the machine gives you sort of instructions that you'll see now they make perfect sense. They're exactly designed for this particular class of applications.
+
+### 6.1 Arrays
+
+#### 6.1.1 One-dimensional
+
+- **Array Allocation**
+
+If you have n and an array with n elements, then that's represented by enough bytes in memory, all in one span to hold that much data. So if the underlying data types, say it's an `int` or a `char` is a single byte data type.
+
+So to have an array of 12 chars takes 12 bytes. And `int` takes four bytes so to have an array of five ints takes 20 bytes. You get the idea you just multiply the size of the underlying data type by number of elements. And that's how big the array has to be in terms of bytes.
+
+![array_allocation.png](./images/array_allocation.png)
+
+And you see in this diagram we use the `x` denotes the starting address of the beginning of this region of memory. So we can use address computation to compute offets by adding numbers to x, to get the address of particular elements of this array.
+
+- **Array Access**
+
+So in general then if you imagine array `A` has some underlying type `T`, what the elements of the array are, and some number of elements in that array in the declaration `L`.
+
+That declaration actually does two tings:
+
+- One is it allocates enough bytes of storage to hold the entire array.
+- The second from a programming language's perspective, it is the identifier of the array `A` can in some ways be treated like a pointer. That you can do pointer arithmetic off of it.
+  - That's one of the feature of C, that was fairly unique to see when it was created and is still unique to this day.
+
+This idea of the sort of interchangeability of pointers and arrays; array identifiers.
+
+![array_access.png](./images/array_access.png)
+
+So for example I can use an array notation to say `val[4]` is element four of this array. And it's a five element array so that would just be this final element.
+
+But I can also just refer to `val`, its underlying data type is as an `int*`, it's a pointer to `int`, and its value would be `x`m it's just a pointer. A pointer is remember an address. And it's just the address at the beginning of the array.
+
+And I can do pointer arithmetic on `val`, which as you know in C and this is a little confusing we'll go back and forth. Because in C when you do pointer arithmetic, like you say you know `p++` for a pointer, for example `char *p` represented a string. So you're incrementing that pointer, in this case you're incrementing it by 1. Because the underlying data type is a `char`.
+
+But if you said something like `int*`, like here `var+1`, it will get `x+4`. Because it's the address of the next integer in the array.
+
+By the way the one thing different between an array and a pointer is I can't say `val++`. I can't change the value of `val`, it's fixed by teh declaration. Whereas a pointer I can increment it, I can change it in various ways.
+
+And similarly `val[2]` says give me the address of the second element of the array. So that would be `x+8`. This is one of the fundamental properties of C, that basicaly in C if you take a pointer, it equals to `p+2`.
+
+#### 6.1.2 Multi-dimensional (nested)
+
+#### 6.1.3 Multi-level
+
+### 6.2 Structures
+
+#### 6.2.1 Allocation
+
+#### 6.2.2 Access
+
+#### 6.2.3 Alignment
+
+### 6.3 Floating Point
