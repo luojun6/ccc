@@ -3351,16 +3351,278 @@ By the way the one thing different between an array and a pointer is I can't say
 
 And similarly `val[2]` says give me the address of the second element of the array. So that would be `x+8`. This is one of the fundamental properties of C, that basicaly in C if you take a pointer, it equals to `p+2`.
 
+![array_example](./images/array_example.png)
+
+- **Declaration `zip_dig cmu` equivalent to `int cmu[5]`**
+- **Example arrays where allocated in successive 20 byte blocks**
+
+  - Not guaranteed to happen in general
+
+- **Array Accessing Example:**
+
+  ```c
+  int get_digit(zip_dig z, int digit)
+  {
+    return z[digit];
+  }
+  ```
+
+  ```asm
+  # %rdi = z
+  # %rsi = digit
+  movl (%rdi, %rsi, 4), %eax    #z[digit]
+  ```
+
+  - Register `%rdi` contains starting address of array
+  - Register `%rsi` contains array index
+  - Desired digit at `%rdi + 4*%rsi`
+  - Use memory reference `(%rdi, %rsi, 4)`
+
+- **Array Loop Example:**
+
+  ```c
+  void zincr(zip_dig z)
+  {
+    size_t i;
+    for (i = 0; i < ZLEN; i++)
+      z[i]++
+  }
+  ```
+
+  ```asm
+  # %rdi = z
+    movl    $0, %eax            # i = 0
+    jmp     .L3                 # goto midle
+  .L4:                          # loop:
+    addl    $1, (%rdi, %rax, 4) # z[i]++
+    addq    $1, %rax            # i++
+  .L3                           # middle
+    cmpq    $4, %rax            # i:4
+    jbe     .L4                 # if <=, goto loop
+    rep; ret
+  ```
+
 #### 6.1.2 Multi-dimensional (nested)
 
+Part of this is to understand the difference then between an array and a pointer, the main factor is when you declare an array in C, you're actually allocating space. The space is allocated somewhere for it, you are creating a allowable now to use ... the array name of in pointer arithmetic.
+
+Whereas when you just declare it an array a pointer, all you allocating is the space for the pointer itself. And not for anything that you're pointing to.
+
+![multidimensional_arrays_0](./images/multidimensional_arrays_0.png)
+
+- **Nested Array Example**
+
+![nested_array_example](./images/nested_array_example.png)
+
+- **`zip_dig pgh[4]` equivalent to `int pgh[4][5]`**
+
+  - Variable `pgh`: array of 4 elements, allocated contigurously
+  - Each element is an array of 5 `int`s, allocated contiguously
+
+- **"Row-Major" ordering of all elements in memory**
+
+- **Nested Array Row Access**
+
+  - **Row Vector**
+
+    - `A[i]` is array of C elements
+    - Each element pf type _`T`_ requires _`K`_ bytes
+    - Starting address `A + i*(C*K)`
+
+    ![nested_array_access](./images/nested_array_access.png)
+
+The underlying data type in this case of _`K`_ is an `int` and _`K`_ equals 4. But in general the starting address the nof row `i`, would be gotten by multiplying the number of columns by _`K`_ and then multiplying that by the row number.
+
+And now If within the array I want to reference an array element[i][j]. Then it comes out to this computation: `A + (j*C*4) + (j*4)`
+
+- **Nested Array Element Access**
+  - **Array Elements** - `A[i][j]` is element of type _T_, which requires _K_ bytes - Address `A + i*(C*K) + j*K = A + (i*C + J)*K`
+    ![nested_array_access_element](./images/nested_array_access_element.png)
+
+![nested_array_access_element_code](./images/nested_array_access_element_code.png)
+
+Basically to take this value and use soe combination of the memory referencing and shifting and `lea` instruction and so forth.
+
 #### 6.1.3 Multi-level
+
+![multi_level_array](./images/multi_level_array.png)
+
+![multi_level_array_access_element](./images/multi_level_array_access_element.png)
+
+This code is a little bit more complex, because this is going through two levels of indirection.
+
+- Firstly it has to figure out, do this deference is get the pointer to the beginning of the array.
+- First of all what it's doing is shifting `%rsi` by 2, which is equivalent to scaling the digit by 4. Because it's getting ready to take digit of parameter and scale it appropriately.
+- And then it takes that number and adds to it, the value I get by reading from there - the array `univ`.
+  - But using the index scaling by 8 to actually do a memory reference.
+  - Remember this instruction which looks a little weird -- is actually doing a memory reference of this 3 element array of called `univ`.
+- So it's reading from memory and doing an array index directly here by scaling, now geting from that a pointer, adding to that the scaled value of the digit.
+
+![multi_level_array_element_accesses](./images/multi_level_array_element_accesses.png)
+
+- The reference to a particular element of array `pgh`, is done entirely computing scaling indices in appropriate ways.
+  - You want to take the array and scale the first index by 20, because each row is 20 elements (bytes), it's 5 times 4.
+  - And you want to scale the digit by 4 to select the particular element within that array.
+  - So you all this address computation takes place and then there's a single memory reference.
+- Whereas in this data structure `univ` you have to go through two memory references.
+  - First of all you have to get index -- the appropriate element here, but that's just a pointer now.
+  - Then we add an offset to that pointer to get the appropriate element in this array here and then we read from that.
+  - So that's what this notation means is that I'm doing two memory references here and just one there.
+  - It's a little bit curious because if you look at the C code it looks the same. But the underlying data types are different and so the reference are different.
+
+![n_x_n_matrix_code](./images/n_x_n_matrix_code.png)
+
+![16_x_16_matrix_code](./images/16_x_16_matrix_code.png)
+
+![n_x_n_matrix_access](./images/n_x_n_matrix_access.png)
 
 ### 6.2 Structures
 
 #### 6.2.1 Allocation
 
+- **Structure Representation**
+
+  - **Structure represented as block of memory**
+
+    - **Big enough to hold all of the fields**
+
+  - **Fields ordered acording to declaration**
+
+    - **Even if another ordering could yield a more compact representation**
+
+  - **Compiler determines overall size + positions of fields**
+    - **Machine-level program has no understanding of the structures in the source code**
+
+  ```c
+  struct rec {
+    int a[4];
+    size_t i;
+    struct rec *next;
+  }
+  ```
+
+  ![struct_representation](./images/struct_representation.png)
+
 #### 6.2.2 Access
+
+- **Generating Pointer to Structure Member**
+
+  - **Generating Pointer to Array Element**
+    - Offset of each structure member determined at compile time
+    - Compute as `r + 4*idx`
+
+  ![struct_access](./images/struct_access.png)
+
+  ```c
+  int *get_ap(struct rec *r, sizt_t idx)
+  {
+    return &r->a[idx]
+  }
+  ```
+
+  ```asm
+  # r in %rdi, idx in %rsi
+  leaq    (%rdi, %rsi, 4), %rax
+  ret
+  ```
+
+- **Following Linked List**
+
+```c
+struct rec {
+  int a[4];
+  int i;
+  struct rec *next;
+}
+
+void set_val(struct rec *r, int val)
+{
+  while (r)
+  {
+    int i = r->i;
+    r->a[i] = val;
+    r = r->next;
+  }
+}
+```
+
+![following_linked_list](./images/following_linked_list.png)
+
+| Register | Value |
+| -------- | ----- |
+| %rdi     | r     |
+| %rsi     | val   |
+
+```asm
+.L11:                             # loop:
+  movslq    16(%rdi), %rax        #   i = M[r+16]
+  movl      %rsi, (%rdi, %rax, 4) #   M[r+4*i] = val
+  movq      24(%rdi), %rdi        #   r = M[r+24]
+  testq     %rdi, %rdi            #   Test r
+  jne       .L11                  #   if !=0 goto loop
+```
 
 #### 6.2.3 Alignment
 
-### 6.3 Floating Point
+When a structure gets allocated, well the compiler will actually insert some blank unused bytes in the data structure in its allocation, just so that it can maintain this alignment.
+
+- **Unaligned Data**
+
+```c
+struct S1 {
+  char c;
+  int i[2];
+  double v;
+  *p;
+}
+```
+
+![unaligned_data](./images/unaligned_data.png)
+
+In general we'll see in the allocation we're going to make sure that the pointer to this data structure is itself multiple of 8.
+
+And the reason for that is because there's a `double` here. And it should reside on a boundary that its starting address should be a multiple of 8.
+
+As long as this is a multiple of 8, and this offset here is a multiple of 8, then this address will be a multiple of 8. That's the idea of alignment.
+
+![aligned_data](./images/aligned_data.png)
+
+**Aligment Principles:**
+
+- **Aligned Data**
+
+  - Primitive data type requires K bytes
+  - Address must be multiple of K
+  - Required on some machines; advised on x86-64
+
+- **Motivation of Aligning Data**
+
+  - Memory accessed by (aligned) chunks of 4 or 8 bytes (system dependent)
+    - Inefficient to load or store datum that spans quad word boundaries
+    - Virtual memory tricker when datum spans 2 pages
+
+- **Compiler**
+  - Insert gaps in structure to ensure correct alignment of fields
+
+Why is that true, it's really a hardware issue that the memory system or the actual hardware memory does not reference one byte at a time, it references --- actually in most machines nowadays --- about 64 bytes at a time. Depending on various widths within the hardware.
+
+In general if a particular piece of data across the boundaries between two blocks that are ... because of a misaligned address that will take extra steps by the hardware and potentially even the operating system to deal with.
+
+So just for efficiency reason they say do this aligment. In x86 machines if you have unalignment unaligned data it will execute just fine. It just might run a little bit more slowly.
+
+On some other machines if you try to do an unwind accss it will actually cause a memory fault.
+
+**Specific Cases of Alignment (x86-64)**
+
+- 1 byte: char, ...
+  - no restrictions on address
+- 2 byte: short, ...
+  - lowest 1 bit of address must be 0
+- 4 bytes: int, float,...
+  - lowest 2 bits of address must be $00_{u}$
+- 8 bytes: double, long, char \*, ...
+  - lowest 3 bits of address must be 000
+- 16 bytes: long double (GCC on Linux)
+  - lowest 4 bits of address must be 0000
+
+### 6.4 Floating Point
