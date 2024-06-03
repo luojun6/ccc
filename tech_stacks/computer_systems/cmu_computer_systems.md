@@ -3625,4 +3625,131 @@ On some other machines if you try to do an unwind accss it will actually cause a
 - 16 bytes: long double (GCC on Linux)
   - lowest 4 bits of address must be 0000
 
+**Satisfying Alignment with Structures**
+
+```c
+struct S1
+{
+  char c;
+  int i[2];
+  double v;
+} *p;
+```
+
+- **Within structure:**
+
+  - Must satisfy each element's alignment requirement
+
+- **Overall structure placement**
+  - Each structure has alignment requirement K
+    - K = Largest alignment of any element
+  - Initial address & structure length must be multiples of K
+
+![aligned_data](./images/aligned_data.png)
+
+As we showed in general the C compiler when it's creating the layout of `struct`. Will put in padding bytes in there to make the alignment work.
+
+**Meeting Overall Alignment Requirement**
+
+The other thing it will do is if it need be, it will add bytes to the end to make sure that the overall size of the data structure meets. Whatever underling alignment requirement there is.
+
+- **Overall structure length length**
+  - Overall structure length multiple of K
+  - Satisfy alignment requreiemtn for every element
+
+```c
+struct S2
+{
+  double v;
+  int i[2];
+  char c;
+} *p
+```
+
+This one example, because it contains a `double`, the overall data structure has to be aligned on an 8 byte doundary.
+
+![overall_alignment_req](./images/overall_alignment_req.png)
+
+- For largest alignment requirement K
+- Overall structure must be multiple of K
+
+**Arrays of Structures**
+
+And the reasoning for that is imagin I had an array of structs, of these structs in particular. Then if I can assume that if I can ensure that this array (address) is a multiple of 8.
+
+Then you can see each successive element of this array of these structs is a multiple of 8. And then within that struct I've ensured that each field that requires an alignment by 8, is positioned with an offset that's multiple of 8.
+
+```c
+struct s2
+{
+  double v;
+  int i[2];
+  char c;
+} a[10];
+```
+
+- **Overall structure length multiple of K**
+- **Satisfy alignment requirement for every element**
+
+And so it all works out. But if you try to tinker with this by making this too short, then you start getting misaligned references.
+
+![array_of_structures](./images/array_of_structures.png)
+
+** Accessing Array Elements**
+
+```c
+struct s3
+{
+  short i;
+  float v;
+  short j;
+} a[10];
+```
+
+- **Compute array offset 12\*idx**
+  - `sizeof(s3)`, including alignment spacers
+- **Element `j` is at offset 8 within structure**
+- **Assembler gives offset `a+8`**
+  - Resolved during linking
+
+So one thing you'll see is for every struct the actual alignment requirement depends on what's the sort of worst case alignment the maximum aligment of any element.
+
+So for this particular example, contains a float `v` which has a size of four and so this would be an alignment four.
+
+![access_aligned_struct](./images/access_aligned_struct.png)
+
+**Saving Space**
+
+**Pull large data types first**
+
 ### 6.4 Floating Point
+
+#### 6.4.1 Background
+
+- **History**
+
+  - X87 FP
+
+    - Legacey, very ugly
+
+  - SSE FP
+    - Supported by Shark machines
+    - Special case use of vector instruction
+
+  -AVX FP
+
+  - Newst version AVX FP
+  - Similar to SS
+  - Documentd in
+
+#### 6.5 Arguments passed into Xmm0, %xm
+
+- Arguments passed into Xmm0, %xm
+
+```
+Float (Fadd foloat X, florgda)
+BUt return as "fadded foad"
+```
+
+`scalar_SIMD`
+![Tan]
