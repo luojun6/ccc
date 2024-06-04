@@ -3720,7 +3720,37 @@ So for this particular example, contains a float `v` which has a size of four an
 
 **Saving Space**
 
-**Pull large data types first**
+Could I tell the compiler not to do the alignment, the better way is declare your fields in away that minimizes the amount of wasted space.
+
+- **Put large data types first**
+
+```c
+struct s4
+{
+  char c;
+  int i;
+  char d;
+} *p;
+```
+
+So by the case here, I wasted 3 bytes here and 3 bytes here to meet the alignment requirments. But if I just put `i` at the beginning and then `c` and `d`, I would only wasted 2 bytes in total.
+
+=>
+
+```c
+struct s4
+{
+  int i;
+  char c;
+  char d;
+} *p;
+```
+
+In general because all the alignment requirements are powers of 2, so the greedy algorithm works, it says if I just put the biggest stuff at the beginning and then successfully smaller elements. I will be able to minimize any wasted space.
+
+- **Effect (K = 4)**
+
+![save_space_alignment](./images/save_space_alignment.png)
 
 ### 6.4 Floating Point
 
@@ -3733,23 +3763,69 @@ So for this particular example, contains a float `v` which has a size of four an
     - Legacey, very ugly
 
   - SSE FP
+
     - Supported by Shark machines
     - Special case use of vector instruction
 
-  -AVX FP
+  - AVX FP
 
-  - Newst version AVX FP
-  - Similar to SS
-  - Documentd in
+  - Newst version
+  - Similar to SSE
+  - Documentd in book
 
-#### 6.5 Arguments passed into Xmm0, %xm
+#### 6.4.2 Programming with SSE3
 
-- Arguments passed into Xmm0, %xm
+![sse3](./images/sse3.png)
 
+#### 6.4.3 Scalar & SIMD Operations
+
+![scalar_and_smd_opts](./images/scalar_and_smd_opts.png)
+
+There is wasy I can do for adds all the same time, using this is what they call **SIMD** execution. Which stands for **Single Instruction Multiple Data**.
+
+#### 6.4.4 FP Basic
+
+- **Arguments passed in %xmm0**
+- **Result returned in %xmm0**
+- All XMM registers caller-saved
+
+Something like adding two floating point `int` numbers, will just look like a single floating point addition instructure.
+
+![FB0](./images/FB_0.png)
+
+#### 6.3.5 FP Memory Referencing
+
+- **Integer (and pointer) arguments passed in regular registers**
+- **FP** values passed in XMM registers
+- Different mov instructions to move between XMM registers, and between memory and XMM registers
+
+```c
+double dincr(double *p, double v)
+{
+  double x = *p;
+  *p = x + v;
+  return x;
+}
 ```
-Float (Fadd foloat X, florgda)
-BUt return as "fadded foad"
+
+->
+
+```asm
+# p in  %$rdi$,v in %xmm0
+movap   %xmm0, %xmm1      # copy v
+movsd   (%rdi),%xmm0      # x = *p
+addsd   %xmm0, %xmm1      # t = x + v
+movsd   %xmml, (%rdi)     # *p = t
+ret
 ```
 
-`scalar_SIMD`
-![Tan]
+#### 6.3.6 Other Aspects of FP Code
+
+- **Lots of instructions**
+  - Different operations, different formats,...
+- **Floating-point comparisions**
+  - Instructions `ucomiss` and `ucomisd`
+  - Set condition codes CF, ZF, and PF
+- **Using constant values**
+  - Set XMM0 register to 0 with instruction `xorpd %xmm0, %xmm0`
+  - Others loaded from memory
