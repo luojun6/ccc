@@ -11,7 +11,7 @@ What we want to understand is what is the bit level representation of numbers. A
 - **Each bit is 0 or 1**
 - **By encoding/interpreting sets of bits in various ways**
   - Computers determine what to do (instructions)
-  - ...and represent and manipulate nunbers, sets, strings, etc...
+  - ...and represent and manipulate numbers, sets, strings, etc...
 - **Why bits? Eletronic Inplementation**
   - Easy to store with bitstable elements
   - Reliably transmitted on noisy and inaccurate wires
@@ -86,7 +86,7 @@ It gets very annoying if you have say 32 or even 64-bit numbers to be writing th
 
 There's also a slightly obscure holdover from ancient days of floating point. Where there's a special representation in Intel machines that use a 10 bytes or 80 bit representation. And when you use that on a 64-bit machine they sort of waste an extra 6 bytes out of that. So that everything is aligned in 16 byte increment.
 
-The other thing and this is an important featuer is any address is defined to be the word size of the machine. When they say it's a 64-bit machine, what they really mean is that the addresses are 64-bit values or 8-byte values.
+The other thing and this is an important feature is any address is defined to be the word size of the machine. When they say it's a 64-bit machine, what they really mean is that the addresses are 64-bit values or 8-byte values.
 
 ### 1.2 Bit-level manipulations
 
@@ -258,7 +258,7 @@ There is a curious feature that left shifts are always the same, but there are t
 - Undefined Behavior
   - Shift amount < 0 or ≥ word size
 
-What should happen if I want to shift an 8-bit nunber 8 positions to the left: x << 8?
+What should happen if I want to shift an 8-bit number 8 positions to the left: x << 8?
 
 On most machines you'll get whatever x was, but not zero! Because what will do is it will compute this number mod(8). And the reason that happens is if you think about it, it's looking at just the lower two three bits of the shift amount and ignoring all the rest. So that's effectively like mod(8).
 
@@ -467,7 +467,7 @@ If you have a signed value in it unsigned in any kind of arithmetic, it will tur
   - X' = (x$_{w-1}$, ..., x$_{w-1}$), x$_{w-1}$, x$_{w-2}$, ..., x$_{0}$
     - () -> k copies of MB
 
-[sign_ext.png](./images/sign_ext.png)
+![sign_ext.png](./images/sign_ext.png)
 
 **Simple Example:**
 
@@ -2991,7 +2991,7 @@ So each block we use for a particular call then is called the **<span style="col
 
 ##### 5.3.3.2 Call Chain Example
 
-[call_chain_example.png](./images/call_chain_example.png)
+![call_chain_example.png](./images/call_chain_example.png)
 
 ##### 5.3.3.3 Stack Frames
 
@@ -3829,3 +3829,5 @@ ret
 - **Using constant values**
   - Set XMM0 register to 0 with instruction `xorpd %xmm0, %xmm0`
   - Others loaded from memory
+
+## 7 Machine-Level Programming V: Advanced Topics
