@@ -3831,3 +3831,224 @@ ret
   - Others loaded from memory
 
 ## 7 Machine-Level Programming V: Advanced Topics
+
+### 7.1 Memory Layout
+
+#### 7.1.1 x86-64 Linux Memory Layout
+
+![memory_layout.png](./images/memory_layout.png)
+
+_How to estimate $2^{64}?$_
+
+$2^{10} = 1024 \approx 1000$ => $2^{10} \approx 10^{3}$
+
+=> $2^{64} \approx 2^{60} = (2^{10})^{6} \approx 10^{18}$
+
+=> $16 * 10^{18}$
+
+Now the machines limit you to actually only 47 bits worth of address in the address space. So $2^{47}$ work that out, that's like $256*10^{12}$ bytes -> `0x00007FFFFFFFFFFF`.
+
+Exabytes > Petabytes > terabytes.
+
+On a typical system it will be limited to 8MB, you can tell that on a Linux system at least with the `limit` command, which used to be more interesting than it was now because a lot of things are unlimited.
+
+```sh
+limit
+```
+
+=>
+
+```sh
+cputime         unlimited
+filesize        unlimited
+datasize        unlimited
+stacksize       8MB
+coredumpsize    0kB
+addressspace    unlimited
+memorylocked    unlimited
+maxproc         1392
+descriptors     256
+```
+
+What that means is if you tried to access any memory via the stack pointer. That was outside of the range of this 8MB you diget segmention fault.
+
+The lower addresses what comes in what gets put into your program are the parts of the code. That come out of the executable file. For some obscure reason they call where the code is sitting ite executable program and the **text segment**.
+
+The data, first of all there'll be a section for the data that's allocated at the program begins. So any global variables that you've declared will be in that section.
+
+The `heap` is the part of memory that is `x` is allocated via `call` to `malloc` of one of its related functions. So that the varias dynamically as the program runs. It starts off with a very small allocations and everytime you call `malloc`. If you're not freeing memory and so your memory requirements keep growing, it will crease keep up moving larger and largeer addresses.
+
+Somewhere in the code too and this can vary by system is, hhe code that gets brought in that represents the libray functions thing like `printf` and `malloc` itself. Our own library code they're stored off on disk. And they get brought in and linked into your program when it first starts executing by a process known as "dynamic-linking".
+
+What you'll find in general that allocations will tend to be either at the these very low address or these very high addresses as your program is running.
+
+#### 7.1.2 Memory Allocation Example
+
+```c
+char big_array[1L<<24];     /*  16 MB */
+char huge_array[1L<<31]     /*   2 GB*/
+
+int global = 0;
+
+int useless() { return 0; }
+
+int main()
+{
+  void *p1, *p2, *p3, *p4;
+  int local = 0;
+  p1 = malloc(1L << 28);    /*  256 MB */
+  p2 = malloc(1L << 8);    /*  256 B */
+  p3 = malloc(1L << 32);    /*  4 GB */
+  p4 = malloc(1L << 8);    /*  256 B */
+  /* Some print statements ... */
+}
+```
+
+![memory_address_example.png](./images/memory_address_example.png)
+
+### 7.2 Buffer Overflow
+
+#### 7.2.1 Vulnerabilitys
+
+**Recall: Memory Referencing Bug Example**
+
+```c
+typedef struct {
+  int a[2];
+  double d;
+} struct_t;
+
+double fun(int i) {
+  volatile struct_t s;
+  s.d = 3.14;
+  s.a[i] = 1073741824       /* Possibly out of bounds */
+  return a.d;
+}
+```
+
+```c
+fun(0) -> 3.14
+fun(1) -> 3.14
+fun(2) -> 3.139999973271
+fun(3) -> 2.000000213798
+fun(4) -> 3.14
+fun(6) -> Segmentation fault
+```
+
+**_Such problems are aa BIG deal_**
+
+- **Generally called a "buffer overflow"**
+
+  - WHen exceeding the memory size allocated for an array
+
+- **Why a big deal?**
+
+  - It's the #1 technical cause of security vulnerabilties
+    - #1 overall cause is social engineering / user ignorance
+
+- **Most common form**
+  - Unchecked lengths on string input
+  - Particularly for bounded character arrays on the stack
+    - Sometimes referred to as stack smashing
+
+In general, when you're writing code, you should try to think about: can I trust this value? This a value that's been computed by my program and I'm sure that it's within bounds. Or it is something that's come from an external source. And there is potentially that risk of being a vulnerability.
+
+![memory_referencing.png](./images/memory_referencing.png)
+
+#### 7.2.2 String Library Code
+
+In particular there is a lot a huge class of errors that have to do with overflowing buffers where they're trying to store a string of some type that been read from a message, without knowing advance how big taht string is. It's possible that it will be too big for the buffer that's been allocated.
+
+- **Implementation of Unix function `gets()`**
+  ```c
+  /* Get string from stdin */
+  char *gets(char *dest)
+  {
+    int c = getchar();
+    char *p = dest;
+    while (c != EOF && c != '\n')
+    {
+      *p++ = c;
+      c = getchar();
+    }
+    *p = '\0';
+    return dest
+  }
+  ```
+  - No way to specify limit on number of chracters to read
+
+One ofthe culprits is there's a while class library function that let you store something a string somewhere without any kind of bounds checking even being possible.
+
+The `gets()`'an argument is just given a destination of where to store the result. All it does is reads one charactera at a time, looks for an end-of-file meaning that the input stream is closed or an end-of-line. But as long as it until it sees that it just keeps adding more things to the end of this buffer.
+
+But the function and it will just gets, we'll just fill that buffer up. It can potentially just keep going there's nothing in the function. There's not even an argument to the function, that tells the function when it has to stop when it's reached the limit of it. So it was written it actually gets is.
+
+If you try to compile code would gets it will flash up a big warning that says: "This is really an unsafe function, you probably shouldn't even be using it."
+
+Because it was written in the 1970s, when the early UNIX distribution were comming out, where people just weren't worried about security vulnerabilities. And they just assumed that if you allocated a big enough buffer. That's there's no reason why a string should be bigger than what you've allocated.
+
+- **Similar problems with other library functions**
+  - `strcpy`, `strcat`: Copy strings of arbitrary length
+  - `scanf`, `fscanf`, `sscanf`, when given `%s` conversion specification
+
+#### 7.2.3 Vulnerable Buffer Code
+
+`echo()` function is one that you just type something and prints it back out. It's a very uninteresting except it's very usefull to demonstrate things.
+
+```c
+/* Echo Line */
+void echo()
+{
+  char buf[4];      /* Way too small! */
+  gets(buf);
+  puts(buf);
+}
+```
+
+```c
+void call_ehco()
+{
+  echo();
+}
+```
+
+![buf_demo.png](./images/buf_demo.png)
+
+**Buffer Overflow Disassembly**
+
+![buf_overflow_disassembly.png](./images/buf_overflow_disassembly.png)
+
+- Codes for `echo()`
+
+  - The `echo()` calls `gets()` and `puts()`
+  - `sub $0x18, %rsp` is the part of the code where you can tell how much memory got allocate for the buffer
+    - It's allocating on the stack a region of 24 bytes
+    - `0x18` is 24 in decimal
+    - The thing actually segfaults with a input string of 24
+  - It's copying that into `%rdi` which is the argument for `gets()`
+    - `gets()` is being called with a pointer to a buffer of size 24 of maximum 24
+    - Even though the original declaration was just 4
+  - Then it calls `gets()` and `gets()` does it thing
+
+- In the `call_echo()`
+  - Keep in mind this red is the return address for `call_echo()`
+
+**Buffer Overflow Stack**
+
+![buffer_overflow_stack.png](./images/buffer_overflow_stack.png)
+
+In the memory layout, the buff is normally big enough for 4 characters, there's a sort of 20 bytes of unuesd or wasted space here.
+
+The actual return address which is the return address for back to call `echo()` is stored on the stack.
+
+![buf_demo_1.png](./images/buf_demo_1.png)
+
+When this program begins running when `echo()` starts to run, we found that `0x4006f6` is the value on the stack for the return pointer.
+
+![buf_demo_2.png](./images/buf_demo_2.png)
+
+If we ype in a string of up there of 23 charecters. You'll see that us uses up this entire buffer and remember a string is terminated with 00. But it still within the region that was allocated on the stack for that. Just barely fits into the stack.
+
+#### 7.2.5 Protection
+
+### 7.3 Unions
