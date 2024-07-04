@@ -4049,6 +4049,110 @@ When this program begins running when `echo()` starts to run, we found that `0x4
 
 If we ype in a string of up there of 23 charecters. You'll see that us uses up this entire buffer and remember a string is terminated with 00. But it still within the region that was allocated on the stack for that. Just barely fits into the stack.
 
-#### 7.2.5 Protection
+That's why technically we overflowed the buffer but we didn't really cause any harm because there was this extra space available. That's why we could type in that string of 23 characters and it worked fine.
+
+![buf_demo_3.png](./images/buf_demo_3.png)
+
+Once we go beyond the 23 characters plus the null character, you'll see what we are slowly starting to do is corrupt the byte representation of teh return address.
+
+What happens of this example here, is that rather than trying to return back to the where `call_echo()` was supposed to where it was supposed to back to, it goes back to some other part of your code, that may or may not be a valid address or might not have anything to do with the program you're trying to run.
+
+![buf_demo_4.png](./images/buf_demo_4.png)
+
+If we typed in the 24 characters, the `null` byte at the end actually corrupted the return address. It was supposed to return back to this address `0x4006f6`, and instead it will return back to the address `0x400600`. Which happens to be in some other weird function that's there and it just sort of landed at some place.
+
+![buf_demo_5.png](./images/buf_demo_5.png)
+
+It's doing various things but somehow it didn't really crash the program. But that's one of the frustrating things about this is that things can go wrong in a program, and they don't always cause crash. So often a bug that's working there might be doing some weird stuff that you don't even konw about.
+
+#### 7.2.4 Code Injection Attacks
+
+That's all fine if it's just a way of crashing program and I mean that's not great of it's controlling your pacemaker or something like that. But if it's just t homework assignment it's like not a big deal.
+
+But it gives an opportunity for a hacker or an attacker to inject code into the program and execute it. And that's what's called a code injection attack.
+
+The general scheme of this I have this buffer that I can fill up with whatever bytes I want, by feeding them to `gets()` or whatever function is doing this copying. And what I can do then is set up and pass to it some bytes of actually that encode an executable a little bit of executable code. You've seen an object dump it's printing out these byte code representations of instructions.
+
+So imagine you some of those bytes into your string, you encoded them in the string that you pass to `gets()`. Then you might have to add some more sort of padding characters that characters whose value doesn't matter. In order to then get a number back into the position where the return pointer is supposed to be -> number `B`. It's going to be an address. One of these ones with that representations represents a stack location.
+
+![code_injection_attacks.png](./images/code_injection_attacks.png)
+
+That value `B` that is the starting address of the buffer, which happens to be where your eploit code. Remember this is just executable instructions or stored here.
+
+So now what will happen is when the program does its `return` here. It was supposed to return back to wherever it got called from `P`.
+
+- **Input string contains byte representation of executable code**
+- **Overwrite return address A with address of buffer B**
+- **When `Q` executes `ret`, will jump to exploit code**
+
+By that means then you can inject code into a machine potentially somewhere else in the internet, if you could set up a scheme like this. You would feed these bytes into that machine. It would read it in with a function like `gets()`. And then it would try to do its `return` but it would start executing your code.
+
+#### 7.2.5 Exploits Based on Buffer Overflows
+
+- **<span style="color:red">Buffer overflow bugs can allow remote machines to execute arbitrary code on victime machines</span>**
+- Distressingly common in real programs
+  - Progreammers keep making the same mistakes
+  - Recent measures make these attacks much more difficult
+- **Examples acroos the decades**
+  - Original "INternet worm" (1988)
+  - "IM wars" (1999)
+  - Twilight hack on Wii (2000s)
+  - ...and many, many more
+
+#### 7.2.6 Protection
+
+**1. Avoid overflow vulnerabiltiesin Code(!)**
+
+```c
+void echo()
+{
+  char buf[4];    /* Way too small! */
+  fgets(buf, 4, stdin);
+  puts(buf);
+}
+```
+
+**For example, use library routines that limit string lengths**
+
+- `fgets` instead of `gets`
+  - `fgets` has a property that it passes a parameter which is the maximum number of bytes that the program should read
+  - If there's more bytes than that in the input it will just truncate the input
+- `strncpy` instead of `strcpy`
+  - Similarly a `sctrcpy` there is a version of it called `strncpy` where you can give a limit
+- Don't use `scanf` with `%s` conversion specification
+
+  - You can say percent a number. That's the maximum length of the string it should read.
+  - So these various places you can protect code to make sure it won't overflow buffers.
+  - Use `fgets` to read the string
+
+  - Or use `%ns` where `n` is a suitable integer
+
+Unfortunately a lot of code has been hardening, it's been people have gone through it and it's a lot of work. Because there's a lot of places in programs where you're copying strings from one place to another. And there are a lot of real subtleties like when you're converting from unicode to bytes and so forth. That you're going back and forth between different character encodings.
+
+**2. Empoly system-level protections**
+
+One of the system-level protection is called **stack randomization**, where it goes by a more general term that's abbreviated **ASLR**, which stands for **Address Space Layout Randomization**.
+
+The idea of it is to make it so every time a program runs the addresses change a little bit or a lot, so that you can't reliably know where things are going to be in the code.
+
+So imagine the program and the way it's implemented is before in th esort of run-up of your program when it first starts up. But before you main routine gets called, it will just do a allocition on the stack of some random number of bytes of storage.
+
+A fair amount like maybe a megabyte roughly of storage where the exact number randomly chosen. What that means is that the dress of the stack of all the different positions - all the local storage on the stack will shift up and down from one run to another.
+
+![randomized_stack_offsets.png](./images/randomized_stack_offsets.png)
+
+-> Check the example code and result.
+
+![randomized_stack_offsets_example.png](./images/randomized_stack_offsets_example.png)
+
+Relies on the fact that you can load up this buffer with some executable code, but somehow you have to know how to get to the start of that code, so this is relying the attacks, is relying on the fact that it can somehow predict what the address of the buffer is.
+
+So that it can store it in the right part of the string, put it encode it in the right part of the string, so it will show up where the return pointer is supposed to be, have jumped to that location.
+
+But now with this randomization, this number is varying by quite a bit sort of million over a range of a million or so values. So there is no way in advance even if I have an exact copy of the code not even had access to the system itself. That gives it sort of thoughts this particular attack to make it using this randomization.
+
+![nonexecutable_code_segments.png](./images/nonexecutable_code_segments.png)
+
+**3. Have compiler use "statck canaries"**
 
 ### 7.3 Unions
