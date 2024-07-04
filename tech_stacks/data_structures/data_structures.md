@@ -1,8 +1,8 @@
 # Data Structures
 
-## Big O Notation
+## 1 Big O Notation
 
-### What is Big O?
+### 1.1 What is Big O?
 
 **Big O from Wikipedia:**
 Big O notation is a mathematical notation that describes the limiting behavior of a function when the argument tends towards a particular value or infinite.
@@ -23,7 +23,7 @@ So, if that's what we need to do. Then we have to use another data structure cal
 
 So that's why you need to learn about the Big O Notation first before we can talk about various data structures.
 
-### O(1)
+### 1.2 O(1)
 
 Here is our example. This method takes an array of integers and paints the first item on the console.
 
@@ -79,7 +79,7 @@ Now when talking about the runtime complexity. We don't really care about the nu
 
 So in this example, whether we have one or one million items, our method runs in constant time. So we can simplify by writing down **O(1)**, meaning **<span style="color:#2874A6">constant time</span>**.
 
-### O(n)
+### 1.3 O(n)
 
 Here we have a slightly more complex example. Have a loop. So we are iterating over the items this array, and printing each item.
 
@@ -151,7 +151,7 @@ void logArray(int *parray, int size, int length)
 }
 ```
 
-### O($n^2$)
+### 1.4 O($n^2$)
 
 Here we have the nested loops. This is the algorithm that we use for printing all combinations of items in an array. So we need to use runtime complexity here?
 
@@ -221,7 +221,7 @@ void logArray(int *parray, int size)
 
 The the runtime complexity is now **O($n^3$)**. As you can imagine, this algorithm gets far slower than an algorithm with **O($n^2$)**.
 
-### O(log n)
+### 1.5 O(log n)
 
 ![log_n_curve](/figures/log_n_curve.png)
 
@@ -267,7 +267,7 @@ With this algorithm if we have one million items in this array, we can find a ta
 
 We don't have to inspect every item in our array, this is logarithmic time in action, we have logarithimic growth in algorithms where you reduce our work by half in every step.
 
-### O($2^n$)
+### 1.6 O($2^n$)
 
 O($2^n$) is the opposite of the O(log n) growth.
 
@@ -277,7 +277,7 @@ Remember these five curves.
 
 ![five_curves](./figures/five_curves.png)
 
-### Space Complexity
+### 1.7 Space Complexity
 
 You have seen how we can use the big **O** notation to describe the runtime complexity of our algorithms.
 
@@ -345,3 +345,209 @@ So if our input size is 1000, this array *`*new_names[]`\* will also have 1000 i
 By the way when we talk about space complexity, we only look at the addtional space that we should allocate relative to the size of the input.
 
 We always have the input of size n, so we don't count it, we just analyze how much extra space we need to allocate for this algorithm, so that's all about space.
+
+## 2 Arrays
+
+### 2.1 Introduction
+
+Arrays are built into most programming lanaguages and we use them to store a list of item sequentially.
+
+The topics in this section:
+
+- Vary the strengths and weaknesses of arrays
+- How to use arrays
+- Build an array
+
+### 2.2 Understanding Arrays
+
+We use arrays to store a list of items like a list of strings, numbers, objects and literally anything. These items are stored sequentially in memory.
+
+For example, if we allocate an array of 5 integers, these integers get stored in memory like this.
+
+| 0x100 | 0x104 | 0x108 | 0x10A | 0x10C |
+| ----- | ----- | ----- | ----- | ----- |
+| 10    | 20    | 30    | 40    | 50    |
+
+Let's say the address of the first item in memory is 0x100, as you probably know, integers in C take 4 bytes of memory. So the 2nd item would be stored at the memory location 104, the 3rd item would be stored at the memory location 108.
+
+For this very reason, looking up items in an array is super fast. We give our array an index and it will figure out where exactly in memory we should access.
+
+Now what do you think is the runtime complexity of this operation? -> **O(1)**
+
+Because the calculation and the memory address is very simple, it doesn't involve any loops or complex logic. So if you need to store the list of items and access them by their index, arrays are the optimal data structures for your.
+
+Now let's look at the limitation or weaknesses of arrarys. In C/C++ or Java, arrays are static which means when we allocate them, we should specify their size and this size cannot change later on, so we need to know ahead of time, how many items we want to store in an array.
+
+Now, what if you don't know? You have to make a guess. If our guess is too large, we'll waste memory, because we'll have cells that are never filled. If our guess is too small, our aray gets filled quickly.
+
+Then to add another item, we'll have to resize the array. Which means we should allocate a large array and then copy all the items in the old array into the new array.
+
+| 0x100 | 0x104 | 0x108 | 0x10A | 0x10C |
+| ----- | ----- | ----- | ----- | ----- |
+| 10    | 20    | 30    | 40    | 50    |
+
+=>
+
+| 0x400 | 0x404 | 0x408 | 0x40A | 0x40C | 0x40E | 0x50 | 0x54 |
+| ----- | ----- | ----- | ----- | ----- | ----- | ---- | ---- |
+| 10    | 20    | 30    | 40    | 50    |       |      |      |
+
+This operation can be costly. This operation you guess the runtime complexity of this object?
+
+Let's say our item has 5 items, now we want to add a 6th item, you have to allocate a new array, and copy all of these five items into that new array.
+
+So the runtime complexity of this operation is **O(n)**, which means the cost of copying these items into the new array increases linearly and in direct proportion to the size of the array.
+
+Now let's talk about removing an item, here we have another couple scenarios, if you want to remove the **_last item_**, that's pretty easy, you can look it up by it's index and clear the memory. So here we have **O(1)**.
+
+![array_0](./images/array_0.png)
+
+Which is our best case scenario. But when doing **O** analysis, we should think about the worst case scenario. What is the worse case scenario here? This is when we want to remove an item from the beginning of the array, you have to shift all of the items on the right one step to the left to fill in the hole.
+
+**Worst Case**
+| 0x100 | 0x104 | 0x108 | 0x10A | 0x10C |
+| ----- | ----- | ----- | ----- | ----- |
+| 10 | 20 | 30 | 40 | 50 |
+
+=>
+
+| 0x100 | 0x104 | 0x108 | 0x10A | 0x10C |
+| ----- | ----- | ----- | ----- | ----- |
+|       | 20    | 30    | 40    | 50    |
+
+=>
+
+| 0x100 | 0x104 | 0x108 | 0x10A | 0x10C |
+| ----- | ----- | ----- | ----- | ----- |
+| 20    | 30    | 40    | 50    |       |
+
+The more items we have the more the shifting operation is going to cost. So for the worst case scenario, deletion is **O(n)**.
+
+So because arrays have a fixed size, in situation where we don't know ahead of time, how many items we want to store in them, or when we need to add or remove a lot of items from them, they don't perform well. In those cases, we use LinkedList.
+
+### 2.3 Working with Arrays
+
+```c
+#include <stdio.h>
+
+#define ARRAY_SIZE 4
+
+void printArray(int *array, int size)
+{
+    for (int i = 0; i < size; i++)
+        printf("%d ", array[i]);
+    printf("\n");
+}
+
+int main()
+{
+    int arr[ARRAY_SIZE] = {0};
+
+    printf("The address of arr: %p\n", arr);
+    printArray(arr, ARRAY_SIZE);
+    printf("Updated the array: \n");
+    arr[1] = 40;
+    printArray(arr, ARRAY_SIZE);
+    return 0;
+}
+```
+
+_Output:_
+
+```sh
+The address of arr: 0x7ffe546529c0
+0 0 0 0
+Updated the array:
+0 40 0 0
+```
+
+### 2.4 Exercise - Creating Array Struct
+
+**C Version**
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct IntArrayList IntArrayList;
+
+struct IntArrayList
+{
+    int *items;
+    int length;
+};
+
+IntArrayList *createIntArrayList(const int len)
+{
+    IntArrayList *intArrayList = malloc(sizeof(IntArrayList));
+    int *array = malloc(sizeof(int) * len);
+    intArrayList->items = array;
+    intArrayList->length = len;
+
+    return intArrayList;
+}
+
+void printIntArrayAll(IntArrayList *intArrayList)
+{
+    for (int i = 0; i < intArrayList->length; i++)
+        printf("%d ", intArrayList->items[i]);
+    printf("\n");
+}
+
+int main()
+{
+    IntArrayList *intList = createIntArrayList(4);
+    printIntArrayAll(intList);
+
+    return 0;
+}
+```
+
+**C++ Version**
+
+```cpp
+#include <iostream>
+
+class IntArrayList
+{
+private:
+    int *_items;
+    int _length;
+public:
+    IntArrayList(int length)
+    {
+        this->_length = length;
+        this->_items = new int[length];
+    }
+    ~IntArrayList()
+    {
+        delete this->_items;
+    }
+
+    void print()
+    {
+        for(int i = 0; i < this->_length; i++)
+            std::cout << this->_items[i] << " ";
+        std::cout << std::endl;
+    }
+
+};
+
+int main()
+{
+    IntArrayList intList = IntArrayList(4);
+    intList.print();
+
+    return 0;
+}
+```
+
+### 2.5 Exercise - insert()
+
+### 2.6 Exercise - removeAt()
+
+### 2.7 Exercise - indexOf()
+
+### 2.8 Dynamic Arrays
+
+### 2.9 Summary
