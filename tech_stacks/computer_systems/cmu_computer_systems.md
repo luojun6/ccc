@@ -4153,6 +4153,136 @@ But now with this randomization, this number is varying by quite a bit sort of m
 
 ![nonexecutable_code_segments.png](./images/nonexecutable_code_segments.png)
 
+Why is there supposed to be code on the stack in the first place, the code supposed to be located down in the text segment, where it can be sort of specially identified as being executable.
+
+In the original x86, there's a one bit flag for each region of memory, saying is it actually to two one-bit flags.
+
+- One is can this be written to, so that way you can prevent over write of things like string constants.
+- The other is readable, which means access thoes bytes. It was interpreted that readable and executable were the same thing. I can read it -> I can executeit, that was the rules.
+  - In a sort of last 20 years, starting first with AMD and then Intel, have added a 3rd bit that says is this executable or not. Similarly to the permissions you have on a file on Unix is it readable, writable, executable. Those are three separate permissions bits that are alone.
+
+So simply marking the stak is not executable, it'll also fort this particular attack, because I have to be able to execute these bytes that I've injected into the system.
+
 **3. Have compiler use "statck canaries"**
 
+- **Idea**
+  - Place special value ("canary") on stack just beyond buffer
+  - Check for corruption before exiting function
+- **GCC Implementation**
+  - `-fstack-protector`
+  - Now the default (disable earlier)
+
+**Protected Buffer Disassembly**
+
+![echo_diassembly.png](./images/echo_diassembly.png)
+
+- It was complied with this deck protecting enabled because that's the default.
+- In particular this code shows it's allocating as before 24 bytes on the stack.
+- Storing it at position 8 offset from the stack pointer. And then the rest of the code and then it zeros it out.
+- It's passing a pointer to the stack - the top of the stack as the arguments to `gets`.
+- `gets` gets called and then `puts` gets called.
+- But now there's some more code here that is it involves this strange looking register. And then there's some kind of test and then if that test fails, it will call this code that printed out an error message.
+
+**=> Let's see what that means:**
+
+**1. setting up cannary**
+![setting_up_canary.png](./images/setting_up_canary.png)
+
+At offset 8 from the stack pointer, it's putting in 8 bytes a value. That it's retrieving from a special register. `fs` is a reference to a type of register that was created for the original 8086. It's now completely obsolete but it's still there for backward compatibility mode.
+
+It's able to read from a part of memory a set of values that you can't otherwise get to. And so that's the canary it's getting a somehow it's grabbing 8 bytes from somewhere, storing it as this canary value.
+
+**2. Checking Canary**
+
+![checking_canary.png](./images/checking_canary.png)
+
+Then if you give like a 7 characters input, you would affect the canary and so what happens when it returns from the two calls - from `gets` and `puts` before it exits.
+
+What it's trying to detect is has anything as this buffer somehow overflowed. And potentially at risk of corrupting some other part of the stack.
+
+Potentially at risk of corrupting some other part of the stack. So basically what it does is it retrieves back from the stack. What is the current value of this canary. It's comparing it to what it should be by retrieving that back from this special region.
+
+If they're equal it says fine, but if they're not equal, it's detecting this got corrupted so just like the canary in the coalmine. If these bytes get corrupted in any form, it's an indication that something went wrong.
+
+Now that example shows that if I have a seven characters string, then I'm not going to corrupt the canary. But if I just got away with an 8 character string.
+
+#### 7.2.7 Return-Oriented Programming Attacks
+
+- **Challenge (for hackers)**
+  - Stack randomization makes it hard to predict buffer location
+  - Marking stack nonexecutable makes it hard to insert binary code
+- **Alternative Strategy**
+  - Use existing code
+    - E.g., library code from `stdlib`
+  - String together fragments to achieve overall desired outcome
+  - _Does not overcome stack canaries_
+- **Construct program from gadgets**
+  - Sequence of instruction ending in `ret`
+    - Encoded by single byte `0xc3`
+  - Code positions fixed from run to run
+  - Code is executable
+
+![gadget_example_1.png](./images/gadget_example_1.png)
+
+![gadget_example_2.png](./images/gadget_example_2.png)
+
+![gadget_example_3.png](./images/gadget_example_3.png)
+
+- **Triger with `ret` instruction**
+  - Will start executing Gadget 1
+- **Find `ret` each gadget will start next one**
+
 ### 7.3 Unions
+
+#### 7.3.1 Union Allocation
+
+- Allocate according to larget element
+- Can only use one field at a time
+
+![union_allocation.png](./union_allocation.png)
+
+A struct what happens is it allocates enough memory for all the fields to coexit. And potentionaly adding padding bytes.
+
+For what a union does is, only allocate enough storage for the maximum field in it. And it assumes that you're only going to be using one of the possible fields.
+
+And it will literally store on top of it, these fileds get stored on top of each other. So that if you try to use multiple fields you can mess things up.
+
+#### 7.3.2 Using Union to Access Bit Patterns
+
+![union_example.png](./images/union_example.png)
+
+It's not for that purpose of doing multiple values, it's for the purpose for example if I know I'm going to use one of these. Or it's another also a way to create essentially an alias that will let you reference in different ways.
+
+If we used union where the union either view this field of four bytes is unsigned or is a float. So we can convert from unsigned to its float representation by just storing the unsigned value in this union. And retrieving it as if it were float.
+
+This is a fundamentally different operation than casting, because you recall when you take a unsigned value and you cast it to a float. You actually changed the bits. You changed it into the floating point number that's the closed a match to this particular member.
+
+But this one actaully doesn't change bits it jyst changes the numeric value changes quite a bit. It's a useful technique to do that to be able to override the type system and get two bit representations.
+
+#### 7.3.3 Byte Ordering Revisited
+
+- **Idea**
+
+  - Short/long/quad wirds stored in memory as 2/4/8 consecutive bytes
+  - Which byte is most (least) significant?
+  - Can cause problems when exchanging binary data between machines
+
+- **Big Endian**
+  - Most significant byte has lowest addresses
+  - Sparc
+- **Little Endian**
+
+  - Least significant byte has lowest address
+  - Intel x86, ARM Android and IOS
+
+- **Bi Endian**
+  - Can be configured either way
+  - ARM
+
+![byte_ordering_example_0.png](./images/byte_ordering_example_0.png)
+
+So in particular with this Union, I can viewa block of eight bytes. As 8 characters, 4 shorts, 2 ints and 1 long. On a 64-bit machine, the long has 64 bits.
+
+#### 7.3.4 Byte Ordering on x86-64
+
+![byte_ordering_example_1.png](./images/byte_ordering_example_1.png)
