@@ -432,19 +432,72 @@ Bias in ground truth data is often non-intentional. It sometimes stems from impl
 
 ### 2.2 How to import data in Python
 
-### 2.3 Chapter Quiz
+...
 
 ## 3 Understanding Data for Machine Learning
 
 ### 3.1 Describe your data
 
+- How many rows and columns are in the data?
+- What type of data do we have?
+- Are there missing, inconsistent, or duplicate values in the data?
+
+In machine learning we use certain key terms to describe the structure and nature of our data.
+
+- The term **instance** refers to a row of data
+  - An instance is an individual independent example of the concept represented by the data set.
+  - A data set consists of several instances.
+  - An instance is sometimes referred to as a record or an observation.
+  - In this example, each loan application is represented by an instance. Each instance is described by a set of attributes or features.
+
+![foundation_39](./images/foundation_39.png)
+
+- A **feature** refers to a column of data.
+  - A feature is a property or characteristic of an instance. 
+  - Features are sometimes referred to as variables.
+  - In this example, a customer name, the loan amount, the loan grade, the loan purpose, and the loan outcome are all features of a loan instance.
+
+- Feature can be **categorized** based on the data they hold.
+  - A feature can be described as **categorical**.
+  - A **categorical feature** is an attribute that holds data stored in discreet form. 
+  - Categorical features are typically limited to a reasonable set of possible values.
+  - In this example, customer name, grade, purpose, and default are categorical features.
+  ![foundation_40](./images/foundation_40.png)
+
+- A feature can also be described as **continuous**. 
+  - A continuous feature is an attribute that holds data stored in the form of an integer or real number.
+  - A continuous feature has an infinite number of possible values between its lower and upper bounds.
+  - In this example, the loan amount is a continous feature.
+  ![foundation_41](./images/foundation_41.png)
+  - Other examples of continuous features include features such as temperature, height, weight, and age.
+  - Please note that not all numeric values are continuous. A numeric scale such a Likert scale that goes from 1 to 5 is categorical and not continuous. It does not have an infinite number of possible values between its lower bound o f1 and its upper bound of 5.
+  ![foundation_42](./images/foundation_42.png)
+
+- Feature can also be categorized base on their function - **class or response**. 
+  - Use the values of a set of features known as independent variables to predict the value of another feature known as the dependent variable.
+  - If the dependent variable is categorical, we referred to it as the **class**.
+  - However, if it is continuous, we refer to it as a **response**.
+
+- The **dimensionality** of a data set represents the number of features in the dataset.
+  - The higher the dimensionality of a dataset, the more detail we have about each instance.
+  - High dimensionality also means higher computational complexity.
+  ![foundation_43](./images/foundation_43.png)
+
+- **Sparsity** and **Density** describe degree to which data exists for the features in the dataset.
+  - For example, if 20% of the values in the dataset are missing or undefined, we say that data set is 20% sparse.
+  - Density is the complement of sparsity. Therefore, a data set that is 20% sparse, is 80% dense.  
+
 ### 3.2 How to summarize data in Python
+
+Check the jupyter notebook.
 
 ### 3.3 Visualize your data
 
+Check the jupyter notebook.
+
 ### 3.4 How to visualize data in Python
 
-### 3.5 Chapter Quiz
+Check the jupyter notebook.
 
 ## 4 Preparing Data for Machine Learning
 
