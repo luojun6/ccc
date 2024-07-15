@@ -4286,3 +4286,4 @@ So in particular with this Union, I can viewa block of eight bytes. As 8 charact
 #### 7.3.4 Byte Ordering on x86-64
 
 ![byte_ordering_example_1.png](./images/byte_ordering_example_1.png)
+

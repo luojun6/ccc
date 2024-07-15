@@ -13,11 +13,11 @@ So just because your code executes quickly on your computer doesn't mean it's go
 
 So that's why we use the **Big O Notation** to describe the performance of an algorithm. Now what does have to do with data structures? Certain operations can be more or less costly depending on what data structures we use.
 
-![normal_array_01](./figures/normal_array_01.png)
+![normal_array_01](./images/normal_array_01.png)
 
 For example, access an array element by it's index is super fast. But arrays have a fixed length and if you want constantly add or remove items, they have to get resized, and this will get costly as the size of our input grows very large.
 
-![normal_linked_list_00](./figures/normal_linked_list_00.png)
+![normal_linked_list_00](./images/normal_linked_list_00.png)
 
 So, if that's what we need to do. Then we have to use another data structure called a **linked-list**. These data structures can grow or shrink very quickly, but accessing a **linked-list** element by its index is slow.
 
@@ -170,7 +170,7 @@ void logArray(int *parray, int size)
 
 In our outer loop, we're iterating over out input array, so here we have to **O(n)**. In each iteration, once again you're iterating over all the items in this array, in another example of **O(n)**. So the runtime complexity of this method is **O($n^2$)**.
 
-![spend_time_diagram](./figures/spend_time_diagram.png)
+![spend_time_diagram](./images/spend_time_diagram.png)
 
 We say this algorithm runs in quadratic time. As you can see in this diagram. Algorithms that run in the **O($n^2$)**, is slower than algorithms that run in **O(n)**. Of course this depends on the size of the input.
 
@@ -223,7 +223,7 @@ The the runtime complexity is now **O($n^3$)**. As you can imagine, this algorit
 
 ### 1.5 O(log n)
 
-![log_n_curve](/figures/log_n_curve.png)
+![log_n_curve](/images/log_n_curve.png)
 
 Here is the logarithmic curve, compare this with a linear curve, the linear grows at the same rate, but the logarithmic curve slows down at some point.
 
@@ -231,11 +231,11 @@ So the algorithm that runs in logarithmic time is more efficient and more scalab
 
 Let's see an example here. We have an array of sorted numbers from one to ten and you want to find the number 10.
 
-![ten_items_array](./figures/ten_items_array.png)
+![ten_items_array](./images/ten_items_array.png)
 
 one way to find the 10 is iterate over this array using a _`for`_ loop, going forward until we find a 10. This is called the **_linear search_** because it runs in a linear time.
 
-![ten_items_array_linear_search](./figures/ten_items_array_linear_search.png)
+![ten_items_array_linear_search](./images/ten_items_array_linear_search.png)
 
 In the worst case scneario, if the number we're looking for is at the end of an array. we have inspect every cell in this array to find a target number.
 
@@ -243,7 +243,7 @@ The moe items we have, the longer this operation is going to take. So the run ti
 
 Now, we have another searching out for them called binary search, and this algorithm runs logarithmic time. It's much faster than the linear search.
 
-![ten_items_array_linear_search](./figures/binary_search_ten_items_array.png)
+![ten_items_array_linear_search](./images/binary_search_ten_items_array.png)
 
 **_Assuming that our array is sorted_**, we start off by booking at the middle item. If is this item smaller or greater than the value we're looking for? It's smaller, so our target number, in this case 10, must be in the right partition of this array. So we don't need to inspect any of the items in the left partition of this array.
 
@@ -251,17 +251,17 @@ Assuming that out array is sorted, we start off by looking at the middle item. I
 
 So our target number, int this case, must be in the light.
 
-![binary_search_demo_0](./figures/binary_search_demo_0.png)
+![binary_search_demo_0](./images/binary_search_demo_0.png)
 
 So partition of this array? So we don't need to inspect any of the items in the left part of the partition, in partition and with this, we can narrow down our search by half. With this we can narrow down our search by half.
 
-![binary_search_demo_1](./figures/binary_search_demo_1.png)
+![binary_search_demo_1](./images/binary_search_demo_1.png)
 
 Now, in the right partition, again, we look at the middle item, is it smaller or greater than the target value? It's smaller, so again ignore the items on the left, and focus on the items on the right.
 
 So every step, we're essentially narrowing down our search by half.
 
-![binary_search_demo_2](./figures/binary_search_demo_2.png)
+![binary_search_demo_2](./images/binary_search_demo_2.png)
 
 With this algorithm if we have one million items in this array, we can find a target item with a maximum of 19 comparaisons.
 
@@ -271,11 +271,11 @@ We don't have to inspect every item in our array, this is logarithmic time in ac
 
 O($2^n$) is the opposite of the O(log n) growth.
 
-![2_sqaure_n_vs_log_n](./figures/2_sqaure_n_vs_log_n.png)
+![2_sqaure_n_vs_log_n](./images/2_sqaure_n_vs_log_n.png)
 
 Remember these five curves.
 
-![five_curves](./figures/five_curves.png)
+![five_curves](./images/five_curves.png)
 
 ### 1.7 Space Complexity
 
