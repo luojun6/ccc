@@ -346,7 +346,7 @@ By the way when we talk about space complexity, we only look at the addtional sp
 
 We always have the input of size n, so we don't count it, we just analyze how much extra space we need to allocate for this algorithm, so that's all about space.
 
-## 2 Arrays
+## 2 ArrayList
 
 ### 2.1 Introduction
 
@@ -547,156 +547,157 @@ int main()
 - If the array is full, resize it
 - Add the new item at the end
 
-**C Version**
-
-```c
-#include <stdio.h>
-#include <stdlib.h>
-
-typedef struct IntArrayList IntArrayList;
-
-struct IntArrayList
-{
-    int *items;
-    int length;
-    int count;                      // Added for insert()
-};
-
-IntArrayList *createIntArrayList(const int len)
-{
-    IntArrayList *intArrayList = malloc(sizeof(IntArrayList));
-    int *array = malloc(sizeof(int) * len);
-    intArrayList->items = array;
-    intArrayList->length = len;
-    intArrayList->count = 0;        // Added for insert()
-
-    return intArrayList;
-}
-
-void *destroyIntArrayList(IntArrayList *intArrayList)
-{
-    free(intArrayList->items);
-}
-
-void printIntArrayAll(IntArrayList *intArrayList)
-{
-    for (int i = 0; i < intArrayList->length; i++)
-        printf("%d ", intArrayList->items[i]);
-    printf("\n");
-}
-
-
-void insert(IntArrayList *intArrayList, int item)
-{
-    if (intArrayList->count == intArrayList->length)
-    {
-        // Create a new array (twice the size)
-        int *newArray = malloc(2 * sizeof(int) * intArrayList->count);
-        int newLength = 2 * intArrayList->length;
-        intArrayList->length = newLength;
-
-        // Copy all the existing items
-        for (int i = 0; i < intArrayList->count; i++)
-        {
-            newArray[i] = intArrayList->items[i];
-        }
-        free(intArrayList->items);
-        intArrayList->items = newArray;
-
-    }
-
-    intArrayList->items[intArrayList->count] = item;
-    intArrayList->count++;
-}
-
-int main()
-{
-    IntArrayList *intList = createIntArrayList(4);
-    insert(intList, 0);
-    insert(intList, 1);
-    insert(intList, 2);
-    insert(intList, 3);
-    insert(intList, 4);
-    printIntArrayAll(intList);
-    destroyIntArrayList(intList);
-
-    return 0;
-}
-```
-
-**C++ Version**
-
-```cpp
-#include <iostream>
-
-class IntArrayList
-{
-private:
-    int *_items;
-    int _length;
-    int _count;             // Added for insert()
-public:
-    IntArrayList(int length)
-    {
-        this->_length = length;
-        this->_items = new int[length];
-        this->_count = 0;
-    }
-    ~IntArrayList()
-    {
-        delete this->_items;
-    }
-
-    void print()
-    {
-        for(int i = 0; i < this->_length; i++)
-            std::cout << this->_items[i] << " ";
-        std::cout << std::endl;
-    }
-
-    void insert(int item)
-    {
-        // Create a new array (twice the size)
-        if (this->_length == this->_count)
-        {
-            int newLength = 2 * this->_length;
-            this->_length = newLength;
-
-            int *newItems = new int[newLength];
-
-            for (int i = 0; i < this->_count; i++)
-                newItems[i] = this->_items[i];
-
-            delete this->_items;
-            this->_items = newItems;
-        }
-
-        this->_items[this->_count++] = item;
-    }
-
-};
-
-int main()
-{
-    IntArrayList intList = IntArrayList(4);
-    intList.insert(0);
-    intList.insert(1);
-    intList.insert(2);
-    intList.insert(3);
-    intList.insert(4);
-    intList.print();
-
-    return 0;
-}
-```
-
 ### 2.6 Exercise - removeAt()
 
 - Validate the index
 - Shift the items to the left to fill the hole
+- **O(n)**
 
 ### 2.7 Exercise - indexOf()
+
+- If we find it, return index
+- Otherwise, return -1
+- **O(n)**
 
 ### 2.8 Dynamic Arrays
 
 ### 2.9 Summary
+
+**YOU LEARNED...**
+
+- Simplest data structure
+- Static vs dynamic
+- Java - ArrayList
+- Cpp - Vector
+- Great when you know how many items you have
+
+**RUNTIME COMPLEXITIES**
+
+- **Lookup by Index** - O(1)
+- **Lookup by Value** - O(n)
+  - We have to iterate over all the item to find a given value
+  - In the worst case scenario, this item is going to be the last item in the array
+- **Insert** - O(n)
+- **Delete** - O(n)
+  - Both **Insert** and **Delete** have to be copied to a new array, and shifted to left in cae of deletion
+
+## 3 LinkedList
+
+### 3.1 Introduction
+
+### 3.2 What are Linked Lists
+
+We use Linked Lists to store a list of objects in sequence. But unlike Array Lists, Linked Lists can grow and shrink automatically.
+
+As you can a Linked List consists of a group of nodes in sequence. Each node holds two pieces of data, one is a value, and the other is the address of the next node in the list.
+
+![linkedlist_0.png](./images/linkedlist_0.png)
+
+So we say each node points to or references the next node. That's why we refer to these structure as Linked List. Because these nodes are linked togehter.
+
+We call the first node **_the head_** and the last node **_the tail_**.
+
+**RUNTIME COMPELEXITY**
+
+let's say you want to find out if our list contains a given number. We have to traverse the list, starting from the head all the way to the tail.
+
+-> **By Value - O(n)** -> Because the value of what we're looking for maybe stored in the last node, that is our worst case scenario.
+
+What about looking up by index? Unlike Array Lists, where items are stored sequentially, the nodes of a linked lists can be all over the place in memory, they may not be next to each other.
+
+That's why each node needs to keep a reference to the next node. For this reason, unlike Array Lists, we cannot look up an item by it's item. We have to traverse the list until we find that item. In the worst case scenario, that item can be at the end of the list.
+
+-> **By Index - O(n)**
+
+What about insertion? It depends where we want to insert an item, if you want to insert a new item at the end, you simply want to create a new node and have the last node or the tail point to it.
+
+![linkedlist_0.png](./images/linkedlist_0.png)
+
+We should have a reference to the last node somewhere, so we don't have to traverse the list every time. Now we need to have the tail reference this new node.
+
+![linkedlist_2.png](./images/linkedlist_2.png)
+
+So **inserting a new item at the end of O(1)** opearation.
+
+What about inserting at the beginning? -> **At the beginning - O(1)** -> We should have a reference to the head of the first node, so to insert a new item at the beginning of the list we create a new node, link it to the first node.
+
+![linkedlist_3.png](./images/linkedlist_3.png)
+
+We create a new node, link it to the first node, and then change the head to point this new node, again this is very fast.
+
+![linkedlist_4.png](./images/linkedlist_4.png)
+
+Unlike Array Lists, we don't have to copy or shift items around, we simply update the links or references.
+
+Now what if you want to insert an item somewhere in the middle. Let's say after the 10th node, first we need to find the node, that's an **O(n)** opeartion. We have to update the links which is an **O(1)** operation.
+
+- **INSERT**
+  - From the Beginning - O(1)
+  - From the End - O(1)
+  - From the Middle - O(n)
+
+So inserting an item in the middle is an **O(n)** opeartion.
+
+Now let's talk about deletions:
+
+- **DELETE**
+  - From the Beginning - O(1)
+  - From the End - O(n)
+  - From the Middle - O(n)
+
+Deleting the first item is super fast. We simply set the head to point to the second node. That's **O(1)**. Now we should also remove the link from the previous head, so it doesn't reference the second node anymore, and then free the memory of the previous head.
+
+![linkedlist_5.png](./images/linkedlist_5.png)
+
+What about deleting the last item, this one is a bit tricky. We can easily get the trail, but we need to know the previous node, so we can have the tail point to that node.
+
+We have to traverse the list from the head all the way to the tail, as soon as we get to the node before the last node. We keep a reference to it as the previous node, the n we'll unlink this node. Then finally have the tail point to the previous node and free the previous tail node.
+
+![linkedlist_6.png](./images/linkedlist_6.png)
+
+So the runtime complexity here is **O(n)**, because we have to traverse the list all the way until the end.
+
+What about deleting from the middle? Again, we have to traverse the list to find out the node, as well as its previous node. We should link the previous node to the node after this node. And then remove this link and free this node in memory.
+
+![linkedlist_7.png](./images/linkedlist_7.png)
+
+-> **Deleting from the middle - O(n)**
+
+### 3.3 Working with Linked Lists
+
+### 3.4 Exercise - Building a Linked List
+
+- **C Implementation**
+
+  - **Node Structure:** First, define a structure for the nodes that will make up the linked list.
+  - **Create a Node:** Implement a function to create a new node with a given value.
+
+- **C++ Implementation**
+  - **Node Class:** Define a class for the nodes that will make up the linked list.
+  - **Linked List Class:** Define a class for the linked list that will use the Node class.
+
+### 3.5 addLast
+
+### 3.6 AddFirst
+
+### 3.7 indexOf
+
+### 3.8 contains
+
+### 3.9 removeFirst
+
+### 3.10 removedLast
+
+### 3.11 Implmenting size()
+
+### 3.12 Converting Linked List to Arrays
+
+### 3.13 Cheat Sheets
+
+### 3.14 Array Lists vs Linked Lists
+
+### 3.15 Reversing a Linked List
+
+### 3.16 Kth Node from the End
+
+### 3.17 Summary
