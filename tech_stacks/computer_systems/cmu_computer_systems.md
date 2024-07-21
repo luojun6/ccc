@@ -4287,3 +4287,319 @@ So in particular with this Union, I can viewa block of eight bytes. As 8 charact
 
 ![byte_ordering_example_1.png](./images/byte_ordering_example_1.png)
 
+## 8 Program Optimization
+
+### 8.1 Overview
+
+You have to have some understanding and appreciation for what compilers are good at, and what they're not good at to be able to do that.
+
+And we describe these is the kind of things that you should just be in the habit of, when you write program writing this code that I'll describe is compiler friendly.
+
+And then the next level is okey given that we've sort of take away the things that really shouldn't have been there in the first place. Now how can I make program run faster. In particular how can I adapt it to the capabilities of the types of machines that this program is going to run on.
+
+And then can again go from ones that will generally make programs run fast across wide variety of machines to ones that become very specific.
+
+#### 8.1.1 Performance Realities
+
+- **_There's more performance than asymptotic complexity_**
+
+- **Constant factors matter too!**
+
+  - Easily see 10:1 performance range depending on how code is written
+  - Must optimize at multiple levels;
+    - algorithm
+    - data representation
+    - precedures
+    - loops
+
+- **Must understand system to optmize performance**
+  - How programs are compiled and executed
+  - How modern processors + memory systems operate
+  - How to measure program performance and identify bottlenecks
+  - How to improve performance without destroying code modulation generality
+
+#### 8.1.2 Optimizing Compilers
+
+- **Provide efficient mapping of program to machine**
+
+  - register allocation
+  - code selection and ordering (scheduling)
+  - dead code elimination
+  - eliminating minor inefficiencies
+
+- **Don't(usually) improve asymptotic efficiency**
+
+  - up to programmer to select best overall algorithm
+  - big-O savings are (often) more important than constant factors
+    - but constant factors also matter
+
+- **Have difficulty overcoming "optimization blockers"**
+  - potential memory aliasing
+  - potential procedure side-effects
+
+#### 8.1.3 Limitations of Optimizing Compilers
+
+- **Operate under fundamental constraint**
+
+  - Must not cause any change in program behavior
+    - Except, possibly when program making use of nonstandard language features
+  - Often prevents it from making optimizations that would only affect behavior under pathological conditions
+
+- **Behavior that may be obvious to the programmer can be obfuscated by languages and coding styles**
+
+  - e.g. Data ranges may be more limited than variable types suggest
+
+- **Most analysis is performed only within procedures**
+
+  - Whole-program analysis is too expensive in most cases
+  - Newer versions of GCC do interprocedural analysis within individual files
+    - But, not between code in different files
+
+- **Most analysis is based only on static information**
+
+  - Compiler has difficulty anticipating run-time inputs
+
+- **<span style="color:red">When in doubt, the compiler must be conservave</span>**
+
+### 8.2 Generally Useful Optimizations
+
+#### 8.2.1 Code motion/precomputation
+
+- **Optimizations that you or the compiler should go regardless of process / compiler**
+
+- **Code Motion**
+  - Reduce frequency with which computation performed
+    - If it will always produce same result
+    - Especially moving code of loop
+
+![program_optimization_0.png](./images/program_optimization_0.png)
+
+**Compiler-Generated Code Motion (-O1)**
+
+![program_optimization_1.png](./images/program_optimization_1.png)
+
+#### 8.2.2 Strength reduction
+
+When gcc turns a multiplication or a division by shifting and adding an operations like mutiplication or division by constants.
+
+- **Replace costly operation with simpler one**
+- **Shift, add instead of multiply or divide**
+  - `16 * x` --> `x << 4`
+  - Utility machine dependent
+  - Depends on cost of multiply or divide instruction
+    - On Intel Nehalem, integer multiply requires 3 CPU cycles
+  - Recognize sequence of products
+
+![program_optimization_2.png](./images/program_optimization_2.png)
+
+If we took that code we boosted the `n*i` in the left side. The inner loop is good but you realize that this multiplication isn't necessary either. Because we could just increase the parameter `ni` by we're adding into it.
+
+That's so called a reduction in strength we've taken a multiplication and turned into addtion. Because there's some preductable pattern of how this variable `ni` is going to be updated.
+
+#### 8.2.3 Sharing of common subexpressions
+
+- **Reuse portions of expressions**
+- **GCC will do this with -O1**
+
+![program_optimization_4.png](./images/program_optimization_4.png)
+
+Imagie we had an image that we represent as a two-dimensional array of pixel values. We want to do something that's what a filtering opeartion.
+
+Where we want to take the sum of the four neighbors of a given pixel north, south, east and west. And average those together or sum them together.
+
+In general, the multiply used to be a very expensive instruction. Nowadays is enough hardware resource that it takes about three clock cycles, so it's not a huge deal.
+
+### 8.3 Optimization Blockers
+
+#### 8.3.1 Optimization Blocker #1: Procedure Calls
+
+In general compilers are pretty good at doing those low-level optimizations like that if you write the code in a way that's reasonable. But there's other ones that the fance compiler you can buy might not be able to figure it out.
+
+**Precedure to Convert String Lower Case**
+
+```c
+// Problem codes
+void lower(char *s)
+{
+  size_t i;
+  for (i = 0; i < strlen(s); i++)
+    if (s[i] >= 'A' && s[i] <= 'Z')
+      s[i] -=  ('A' - 'a')
+}
+```
+
+- Time quadruples when double string length
+- Quadratic performance
+
+![program_optimization_4.png](./images/program_optimization_4.png)
+
+```c
+// Revised codes
+void lower(char *s)
+{
+  size_t i;
+  const int len = strlen(s);
+  const int offset = 'A' - 'a'
+  for (i = 0; i < len; i++)
+    if (s[i] >= 'A' && s[i] <= 'Z')
+      s[i] -=  offset
+}
+```
+
+**Calling Strlen**
+
+```c
+// Professor's version of strlen
+size_t strlen(const char *s)
+{
+  size_t length = 0;
+  while (*s ! = '\0')
+  {
+    s++;
+    length++;
+  }
+  return length;
+}
+```
+
+- **Strlen performance**
+  - Only way to determine length of string is to scan uts entire length, looking for null character
+- **Overall perforamce, string of length N**
+  - N calls to `stren()`
+  - Require times N, N-1. N-3, ..., 1
+  - Overall O($N^{2}$) performance
+
+![program_optimization_3.png](./images/program_optimization_3.png)
+
+**Lower Case Conversion Performance**
+
+- Time doubles when double string length
+- Linear performance of lower 2
+
+![program_optimization_4.png](./images/program_optimization_4.png)
+
+#### 8.3.2 Optimization Blocker: Procedure Calls
+
+- **_Why couldn't compiler move `strlen` out of inner loop?_**
+
+  - Procedure may have side effects
+    - Alters global state each time called
+  - Function may not return same value for given arguments
+    - Depends on other parts of global state
+    - Procedure `lower` could interact with `strlen`
+
+There is a coupe reasons one is actually if you look at the code for `strlen`, you see that it's actually modifying the string -> calling `strlen` on it.
+
+You'd have to be pretty careful to do the analysis the compiler would to figure out that even though the string is changing. The result you're going to get from `strlen` not going to change.
+
+The second reason, how can the compiler be sure which version of `strlen` is actually going to get used. You remember and see each of the files gets compiled separately. Only afterwards does it all get brought together in the linking phase. And some of that even happens after the program gets started.
+
+So even though there's a standard `strlen` function, it's not necessarily the case that that's the one that will actually get used in the final program. So the compiler really can't be sure of that.
+
+```c
+size_t lencnt = 0;
+size_t strlen(const char *s)
+{
+  size_t length = 0;
+  while (*s ! = '\0')
+  {
+    s++; length++;
+  }
+  lencnt += length; // potential side effect
+  return length;
+}
+```
+
+- **<span style="color:red">Warning</span>**
+
+  - Compiler treats procedure call as a black box
+  - Weak optimization near them
+
+- **Remedies:**
+  - Use of inline functions
+    - GCC does this with `-O1`
+      - Within single file
+    - Do your own code motion
+
+#### 8.3.3 Memory Matters
+
+This is another bad example. Of imagine I want to compute for a two-dimensional array `a` and a one-dimensional array `b`, `b[i]` to be the sum of all the elements in row `i` of `a`.
+
+![program_optimization_5.png](./images/program_optimization_5.png)
+
+Remember that the main feature of `move` instructions is the `move` instruction look like the `move` ones you're familiar with, except when we put floating point data in one of these `%xmm` registers.
+
+The main thing you see here it's reading from memory, and adding something to it and then it's writing back to memory. What that memory location corresponding to `b[i]`.
+
+So what it means is every time through this loop, it's having to do a memory read and a memory write of `b`, in addition to the memory read of `a`. Even though presumably `b[i]` is the same of value that you just updated it to the previous execution of this loop.
+
+- Code updates `b[i]` on every iteration
+- Why couldn't compiler optimize this away?
+
+#### 8.3.4 Memory Aliasing
+
+So why do you have to read it and write it out, and then read it back in increment then again copy it back out. Why does it have to go keep jumping back and forth between memory and register over and over again?
+
+The reason is because in C you can't be sure that there isn't what's known as aliasing.
+
+![program_optimization_6.png](./images/program_optimization_6.png)
+
+Imagine you can do in C, this is leagal C code, you can make one memory data structure overlay another data structure. That is refered to as aliasing when too soon as separated parts of the program are referring to the same location in memory.
+
+The C compiler has no way on knowing whether there's a lot of work and optimizing compilers to detect aliasing passibilities. But in general as to assume aliasing might happen.
+
+So imagine this aliasing happened so that array `b` can corresponds then to this row of array `a`. Well then its initial value is 4, 8, 16. But if you trace through what this code will do, it has a sort of odd behaviour that is probably not useful anything.
+
+But it just demonstrates that what will happen is as this as `b` gets update. It's effectly changing `a` and it's changing then what's being real during teh summation.
+
+It's possible in C, so the compiler when it's given code like this, it has to assume that these two memory locations might court overlap each other. So that why it's carefully writing it out and then reading it back in over and over again.
+
+- Code updates `b[i]` on every iteration
+- Must consider possiblity that these updates will affect program behavior
+
+#### 8.3.5 Removing Aliasing
+
+```c
+/***************************************************************
+Sum rows is of n x n matrix a
+and store in vector b
+************************************************************** */
+void sum_rows(double *a, double *b, long n)
+{
+  long i, j;
+  for (i = 0; i < n; i++)
+  {
+    double val = 0;
+    for (j = 0; j < n; j++)
+      val += a[i*n + j];
+    b[i] = val;
+  }
+}
+```
+
+- No need to store intermediate results
+
+So if I just rewrite this code by introducing againa a local variable, and accumulating in that local variable, and then only at the end do I assign that to `b[i]`.
+
+![program_optimization_7.png](./images/program_optimization_7.png)
+
+Then you'll see this exact same loop all of a sudden gets a lot simpler. It's just a read floating point, read and add to do that.
+
+#### 8.3.6 Removing unnecessary procedures calls
+
+- **Aliasing**
+  - Two different memory reference specify single location
+  - Easy to have happen in C
+    - Sine allowed to do address arithmetic
+    - Direct access to storage structures
+  - Get in habit of introducing local variables
+    - Accumulating with loops
+    - <span style="color:red">Your way of telling compiler not to check for aliasing</span>
+
+### 8.4 Exploiting Instruction-Level Parallelism
+
+### 8.5 Dealing with Conditionals
+
+```
+
+```
