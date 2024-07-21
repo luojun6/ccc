@@ -228,6 +228,157 @@ int main() {
 
 ## 2 Pointers
 
+### 2.1 What is a Pointer?
+
+**Pointer is a special variable that hold the address of another variable in memory.**
+
+![pointers1_0.png](./images/pointers_0.png)
+
+**The reasons for using pointers:**
+
+- Efficently passing large objects
+- Dynamic memory allocation
+- Enabling polymorphism
+
+### 2.2 Delcaring and Using Pointers
+
+```cpp
+#include <iostream>
+
+int main() {
+
+    int number = 10;
+    std::cout << "&number: " << &number << std::endl;
+
+    int* ptr = &number;
+
+    std::cout << "ptr: " << ptr << std::endl;
+    std::cout << "*ptr: " << *ptr << std::endl;
+
+    // Indirection (de-referencing) operator
+    *ptr = 20;
+    std::cout << "*new ptr : " << *ptr << std::endl;
+
+    int* newPtr = nullptr;  // NULL - conventional C
+                            // 0 - ealier C++
+
+    std::cout << "nullptr: " << newPtr << std::endl;
+
+
+    return 0;
+}
+```
+
+### 2.3 Constant Pointers
+
+**3 Scenarios**
+
+1. Data is constant
+2. Pointer is constant
+3. Both data and pointer are constant
+
+```cpp
+/* Scenario 1: Data is constant */
+
+#include <iostream>
+
+int main() {
+
+    const int x = 10;
+    // int* ptr = &x; // Error
+    const int* ptr = &x;
+
+    int y = 20;
+    ptr = &y; // Pointer is not constant
+
+    return 0;
+}
+```
+
+```cpp
+/* Scenario 2: Pointer is constant */
+
+#include <iostream>
+
+int main() {
+
+    int x = 10;
+    int* const ptr = &x;
+
+    int y = 20;
+    // ptr = &y; // Error
+
+    *ptr = 20;
+
+    return 0;
+}
+```
+
+```cpp
+/* Scenario 3: Pointer and Data are constant */
+
+#include <iostream>
+
+int main() {
+
+    const int x = 10;
+    const int* const ptr = &x;
+
+    int y = 20;
+    // ptr = &y; // Error
+
+    // *ptr = 20; // Error
+
+    return 0;
+}
+```
+
+### 2.4 Passing Pointers to Functions
+
+```cpp
+#include <iostream>
+
+void increasePrice(double* price) {
+    *price *= 1.2;
+}
+
+int main() {
+
+    double price = 100;
+    double *ptr = &price;
+    increasePrice(ptr);
+
+    std::cout << "Price: " << price << std::endl;
+
+    return 0;
+}
+```
+
+```cpp
+#include <iostream>
+
+void swap(int* first, int* second) {
+    int temp = *first;
+    *first = *second;
+    *second = temp;
+}
+
+int main() {
+
+    int a = 40;
+    int *ptr_a = &a;
+    int b = 80;
+    int *ptr_b = &b;
+
+    std::cout << "a = " << a << ", b = " << b <<std::endl;
+
+    swap(ptr_a, ptr_b);
+    std::cout << "a = " << a << ", b = " << b <<std::endl;
+
+    return 0;
+}
+```
+
 ## 3 String
 
 ## 4 Struct
