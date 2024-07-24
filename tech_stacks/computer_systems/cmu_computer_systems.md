@@ -4598,8 +4598,183 @@ Then you'll see this exact same loop all of a sudden gets a lot simpler. It's ju
 
 ### 8.4 Exploiting Instruction-Level Parallelism
 
+This feature become somewhat more system dependent but pretty much nowadays all processors are have similar implementation. They all do what's known as out of order execution. Except for the most primitive micro-controllers.
+
+So this is the kind of optimization on sure, you'll find well this general approach will work across quite a variety machines.
+
+- **Need general understanding of modern processor design**
+  - Hardware can execute multiple instruction in parallel
+- **Performance limited by data dependencies**
+- **Simple transformations can yield dramatic performance improvement**
+  - Compilers often cannot make these transformations
+  - Lack of associativity and distributivity in floating-point arithmetic
+
+#### 8.4.1 Benchmark Example: Data Type for Vectors
+
+![program_optimization_8.png](./images/program_optimization_8.png)
+
+- **Data Types**
+  - Use different declarations for `data_t`
+  - `int`
+  - `long`
+  - `float`
+  - `double`
+
+```c
+/*retrive vector element and store at val*/
+int get_vec_element (*vec v, size_t idx, data_t *val)
+{
+  if (idx >= v->len)
+    return 0;
+  *val = v-> data[idx];
+    return 1;
+}
+```
+
+**Benchmark computation**
+
+```c
+/* Compute sum or product of vector elements */
+
+void combinel (vec_ptr v, data_t *dest)
+{
+  long int i;
+  *dest = IDENT;
+  for (i = 0l i < vec_length(v); i++)
+  {
+    data_t val;
+    get_vec_element(v, i, &val);
+    *dest = *dest OP val;
+  }
+}
+```
+
+- **Operations**
+  - Use different definition of `OP` and `IDENT`
+  - `+` / `0`
+  - `*` / `0`
+
+#### 8.4.2 Cycles Per Elements (CPE)
+
+The idea is that usually when you write code that say steps through a vector, anything that has sort of some linear performance as you get bigger. You don't really want to know for exactly it takes thismany seconds or microseconds of nanoseconds to do an operation. You kind of want to know often more what's its overall performance that characterics.
+
+It turns out when you're doing low-level code optimization. It's much more usefule to think in terms of clock cycles of the inner clock of the processor, rather than an absolute term such as nanoseconds.
+
+Because wheether a processor is running at 2 GHz or 2.3 GHz. I don't really have no control over that as a programmer. But I can control sort of the low-level how many clock cycles are bing used for different parts of the computation.
+
+So that's why it's called **Cycles Per Elements (CPE)**.
+
+- **Convenient way to express performance of program that operates on vectors or lists**
+- **Length = n**
+- **In our case: <span style="color:red">CPE = cycles per OP</span>**
+- **T = CPE\*n + Overhead**
+  - CPE in slope of line
+
+![program_optimization_9.png](./images/program_optimization_9.png)
+
+But typically a function like this get what I showed the combine will have some overhead. A fixed amount that's associated with setting up the loop doing the top of a call and and all that stuff.
+
+And then some componet that's linear in the size. The slope will determine the **Cycles Per Elements (CPE)**.
+
+#### 8.4.3 Benchmark Performance
+
+```c
+/* Compute sum or product of vector elements */
+
+void combinel (vec_ptr v, data_t *dest)
+{
+  long int i;
+  *dest = IDENT;
+  for (i = 0l i < vec_length(v); i++)
+  {
+    data_t val;
+    get_vec_element(v, i, &val);
+    *dest = *dest OP val;
+  }
+}
+```
+
+![program_optimization_10.png](./images/program_optimization_10.png)
+
+#### 8.4.4 Basic Optimizations
+
+```c
+void combine4(vec_ptr v, data_t *dest)
+{
+  long i;
+  long length = vec_length(v);
+  data_t *d = get_vec_start(v);
+  data_t t = IDENT;
+  for (i = 0; i < length; i++)
+    t = t OP d[i];
+  *dest = t;
+}
+```
+
+- **Move vec_length out of the loop**
+- **Avoid bounds check on each cycle**
+- **Accumulate in temporary**
+
+![program_optimization_11.png](./images/program_optimization_11.png)
+
+- **Eliminates sources of overhead in loop**
+
+Try to understand what is it about these numbers 3, 5, and 1.27, this seems to be something close to 1.25. There those numbers coming from and does that indicate fundamental limitations in my program.
+
+#### 8.4.5 Modern CPU Design
+
+The basic idea is you think about a program as the computer just reads in an instruction does whatever it says to do. Raads in another instruction does what that says to do. And that has nothing to do with how programs actually execute.
+
+What they've built up is this massive hardware infrasture to make a program run way faster than it would if it were just doing one instruction at a time.
+
+And it employs a technique that's called superscalar out of order execution. The idea is roughly speaking at it takes your program if you think of your program as a linear sequence of instructions. And it just sucks in as many of those as it can, it pulls it apart to realize that certain operations.
+
+Don't really depend on each other so I can start one even though it's later in the program, than the one I'm working on right now, because they're independent of each other. And it's extracting what they call instruction level parallelism, place is where even though your program is a linear sequence of instruction, burried in there is actually a sort of forest of different computations that need to be done. Some which depend on each other and some which don't.
+
+And then it has a bunch of hardware, so that's up here this upper part shows this idea of fetching instructions. So there's a cache memory - a high performance high speed local memory. That is just pulling in our instructions as faster as it can.
+
+And those instructions are then feeding a bog pie of hardware that will extract out of it. These low-level operations and figure out which ones depend on which others.
+
+Then there is a set of functional units in this part of it. That are able to perform these who-leve operations to do arithmetic floating point of operation. To read data from memory to store data back to memory.
+
+Or using a cache which is something you're going to learn about fairly soon - how wha all this cache is but thinking of this a high.
+
+![program_optimization_12.png](./images/program_optimization_12.png)
+
+And so what this ligic tries to do is tkeep a forking out, spawning off operations based on your program. And keeping these as busy as they can be, doing different fragments of your code, doing different instructions in a different order from before.
+
+It turns out you think of a register as a little set of registers is a part of memory that get read and written. It turns out that in executing a register now just becomes the name of something that one instruction produces and some other instructions consume. It's a destination for some, it's a source for other.
+
+This whole bunch of stuff here just sort of magically passes. The results of one computation to the input to another computation. Based on registere names without ever storing them in an explicit register file. There is a register file when things kind of settle down they get stored away.
+
+The main thing do think about is our machine has resources to do multiple operations all at the same time. If you can someow structure your program so that those can all get used.
+
+#### 8.4.6 Superscalar Processor
+
+- **<span style="color:red">Definition:</span> A supoerscalar processor can issue and execute <span style="color:red">multiple instructions in one cycle</span>. The instructions are retrieved from a sequential instruction stream and are usually scheduled dynamically.**
+
+- **Benefit: without programming effort, superscalar processor can take advantage of the <span style="color:red">instruction level parallelism</span> that most programs have.**
+
+- **Most modern CPUs are superscalar.**
+- **Intel: since Pentium (1993)**
+
+![program_optimization_13.png](./images/program_optimization_13.png)
+
+- Divide computation into stages
+- Pass partial computations from stage to stage
+- Stage `i` can start on new computation once values passed to `i+1`
+- E.g., complete 3 multiplications in 7 cycles, even though each requries 3 cycles
+
+![program_optimization_14.png](./images/program_optimization_14.png)
+
+#### 8.4.7 x86-64 Compiliation of Combine4
+
+- **Inner Loop (Case: Integer Multiply)**
+
+![program_optimization_15.png](./images/program_optimization_15.png)
+
+These characteristics then provide a limit on how fast our program can run our original program. And the reason off we need the result of one,multiplication before I can in the next. `So there's 3 clock cycele bound here.
+
+You'll see that in fact my measurements all corresponding to what's calling the latency bound of these machines which is just what's I'm calling the latenyc bound of these s
+
 ### 8.5 Dealing with Conditionals
-
-```
-
-```
