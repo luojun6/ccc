@@ -4775,6 +4775,48 @@ The main thing do think about is our machine has resources to do multiple operat
 
 These characteristics then provide a limit on how fast our program can run our original program. And the reason off we need the result of one,multiplication before I can in the next. `So there's 3 clock cycele bound here.
 
-You'll see that in fact my measurements all corresponding to what's calling the latency bound of these machines which is just what's I'm calling the latenyc bound of these s
+You'll see that in fact my measurements all corresponding to what's calling the latency bound of these machines which is just based on how much time it takes from a beginning of an operation of the end.
+
+![program_optimization_16.png](./images/program_optimization_16.png)
+
+It's doing a series of multiplications, it requires the result of one multiplication before I can start the next.
+
+In general if you look at this loop code. I have to compute `%ecx`, the updated value of it before it can now start the next one. And so that's why even though this I have a pipelined multiplier.
+
+My program itself limits me to of the sequential execution of all the multiplies.
+
+#### 8.4.8 Loop Unrolling (2x1)
+
+Let's see if we can't get beyond that bound that latency bound, well there's a faily common technique that you might have heard of before that's called loop unrolling.
+
+The idea of loop unrolling is just that rather than executing one value within a loop you execute a multiple ones.
+
+![program_optimization_17.png](./images/program_optimization_17.png)
+
+What it says I'm going to step through this array two elements at a time. And within each of the inner group I'm going to combine the values from `d[1]` and `d[i+1]`, and I have to put in some extra code to finish off.
+
+What happens if the original rate was very large, but you get the idea and this idea showed this code of 2\*1. But you could imagine this applying for different values of loop unrolling.
+
+When I run it, I get that the integer addition got a little faster, but the other ones didn't improve at all.
+
+- **Perform 2x more useful work per iteration**
+
+![program_optimization_18.png](./images/program_optimization_18.png)
+
+The `add` is going faster because basically the old code is the overhead ofthe loop indexing and incrementing was enough to be slowing me down. Becuse it's already does to be a clock cycle.
+
+So I just managed to knock that down to be at the latency bound of this particular instruction. But didn't have the other ones because I still have this sequential dependency.
+
+In order to get my new value or x I have to firsst do one computation and then do the other before I can begin another one.
+
+![program_optimization_19.png](./images/program_optimization_19.png)
+
+![program_optimization_20.png](./images/program_optimization_20.png)
+
+I'll call that transformation unrolling by two computing a one element at a time.
+
+![program_optimization_21.png](./images/program_optimization_21.png)
+
+You can see now that this critical path which is what determines. In this case the performance limitation. Just got shorter by a factor of two.
 
 ### 8.5 Dealing with Conditionals
