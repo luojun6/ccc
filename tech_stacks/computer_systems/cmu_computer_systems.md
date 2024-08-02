@@ -4817,6 +4817,123 @@ I'll call that transformation unrolling by two computing a one element at a time
 
 ![program_optimization_21.png](./images/program_optimization_21.png)
 
-You can see now that this critical path which is what determines. In this case the performance limitation. Just got shorter by a factor of two.
+So that I'm changing the computation to pairwise combiniig each element of pair of elements of the array, and then accumulated those into the overall computation.
+
+So I've actually that shifting of the parentheses fundamentally changed how I'm doing my computation. And you can see now that this critical path which is what determines in this case the performance limitation, just got shorter by a factor of two. That's why I'm runing twice faster.
+
+For the operation not for integer addtion. But for the other 3 operations I've gct by a factor or two, just by that shift.
+
+There are one good news and one bad news. We know alrady that two's comlement arithmetic is associative and commutative. So it really doesn't matter for both multiplication and addition. So it really doesn't matter what order I combine these elements in. I'm going to get the exact same answer no matter what.
+
+But you also solve for floating point that's not the case, so with floating point that shifting these parentheses. Because of rouding possibilities and even potentially overflow. You might get different values results from these computations.
+
+There is a new set of bounds what would appear to be sort of the best you can do beased on some contraint in the program. And before it was saying well the latency the total time through a given for a given operation was abound.
+
+There's an even more fundamental bound which I'll call the throughout bound which is just based on I only have so much hardware out there.
+
+![program_optimization_20.png](./images/program_optimization_20.png)
+
+So for example these two that the thourghput bound is one because I only have that actually becomes limited by the requirement that I'm having to read from memory. And I have one multiplier for integers in one for addition.
+
+The throughput bound for these two actually is just a half, because it turns out there's some odd part of the hardware design that has two floating point multipliers. But only one floating point adder, and we'll see that we can actually make this multiplication code run faster than additional code.
+
+And over here again my limit will be that I only have two load units, now I have to read for every element from memory I'm computing. So I can't below that (0.5).
+
+#### 8.4.9 Loop Unrolling with Separate Accumulators (2 x 2)
+
+Now let us break out of this latency limitation and get something closer to throughput. Here is another technique that can be used to again sort of get more parallelism going - we call this "multiple accumulators".
+
+The idea is let's imagine that we have the odd numbered elements and the even-numbered elements in the array. We can compute separate sums or products of those two sets of elements. Then the very end combine them together.
+
+![program_optimization_22.png](./images/program_optimization_22.png)
+
+- **Different form of reassociation**
+
+You were changing the order in which we combine things together. It's just taht we're doing it in the suit of odd-even manner. Or in general every I do it by some parameter `i`.
+
+![program_optimization_23.png](./images/program_optimization_23.png)
+
+- **Int + makes use of two load units**
+
+  ```c
+  x0 = x0 OP d[i];
+  x1 = x1 OP d[d+i];
+  ```
+
+- **2x speedup (over unroll2) for Int \*, FP \+, FP \***
+
+![program_optimization_24.png](./images/program_optimization_24.png)
+
+Look the left of the picture, of what gets computed, you see what we're doing is we're computing here all the even numbers. Even numbered elements being combined and here all the odd ones. And very end we're combining those together.
+
+#### 8.4.10 Unrolling & Accumulating
+
+- **Idea**
+
+  - Can unroll to any degree L
+  - Can accumulate K results in parallel
+  - L must be multiple of K
+
+- **Limitations**
+
+  - Diminishing returns
+    - Cannot go beyond throughput limitations of execution units
+  - Large overhead for short lengths
+    - Finish off iterations sequentially
+
+- **Unrolling & Accumulating: Int +**
+
+  - Intel Haswell
+  - Integer addition
+  - Latency bound: 1.00. Throughput bound: 1.00
+
+  ![program_optimization_25.png](./images/program_optimization_25.png)
+
+![program_optimization_26.png](./images/program_optimization_26.png)
+
+- **Limited only by throughput of functional units**
+- **Up to 42X improvement over orignal, unoptimized code**
 
 ### 8.5 Dealing with Conditionals
+
+#### 8.5.1 Programming with AVX2 - YMM Registers
+
+Remember about the floating-point, that there is the special set of registers. That are on x86 that we're called `d% %xmm` registers on the shark kmachines.
+
+Now this has well this new generation have something called %`ymm` registers. So this has well this newer generation have something called `%ymm` registers. Which have been feature being twice a big as `#xmm` registers.
+
+So in particular these registers are 32 bytes long. And there's a new version coming out within a year or something they call AVX2, where the register is 512 bits so that's 64 bytes long. So it'll be twice as ig as these.
+
+![program_optimization_27.png](./images/program_optimization_27.png)
+
+#### 8.5.2 SIMD Operations: Single Precision
+
+You can think of these as a way of operating on 32 individual characters, or I can treat them as floating point. Nowadays the reguular floating point makes use of the low order 4, 8 bytes of these read register.
+
+But there's also instructions called vector addition, where on instruction has the effect of doing eight floating point additions at once and float data. And on double precision this couterpart does 4 of them at once of these. And the hardware is there it's just sitting there waiting to use and i seldom gets fired up to really make use of it.
+
+![program_optimization_28.png](./images/program_optimization_28.png)
+
+But so that floating point multiplier that can do a floating point multiplication in 3 clock cycles and is fully pipeline. You can actually do 8 floating point multiplications in parallel and piplined in 3 clock cycles.
+
+#### 8.5.3 Using Vector Instructions
+
+The shark machines has an earlier version where the numbers are half of these. So it can do 4 single precision or two double precision at once.
+
+![program_optimization_29.png](./images/program_optimization_29.png)
+
+And if I write code that uses that what I call vector code then you can see I can drop by a factor of about 4 across the board here. And make it run much faster. So this 0.06 is really 0.0625 right it's doing 16 operations per clock cycle on that.
+
+An can't quite hit the vector throughput bound, but in general making this thing run much faster. And so the people really worry about, you can imagine these instructions were introduced for things like video processing, image process, sound processing, sort of signal processing where a performance really matters.
+
+How faster you can display an image, how fast you can rotate something. How fast you can perform graphics makes a big difference. In video games were one of the big drivers but even for sort of order operations you might do an image.
+
+So these instructions were really designed to do it. And people write code for those kind of applications. Get pretty good at writing code in a way that they can do this vector I wahts called vectorizing.
+
+Unfortunately so the Intel compiler will actually automatically do some of this for you. A GCC they attempted to implement it and it didn't work very well, so I think discontinoued it.
+
+It turns out there's a web aside, so this is on the web from the books web page that describes how to do this programming if you're interested. There's extensions to GCC that are very funky really weird stuff. But you can write code that then will get compiled down to make use of these kind of instructions. That's how we've got these performance results.
+
+- **Make use of AVX Instructions**
+  - Parallel opeartions on multiple data elements
+  - See Web Aside OPT:SIMD on CS:APP web page
