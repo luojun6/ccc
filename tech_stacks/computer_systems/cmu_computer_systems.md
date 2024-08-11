@@ -4937,3 +4937,90 @@ It turns out there's a web aside, so this is on the web from the books web page 
 - **Make use of AVX Instructions**
   - Parallel opeartions on multiple data elements
   - See Web Aside OPT:SIMD on CS:APP web page
+
+#### 8.5.4 Branch Outcomes and Prediction
+
+If you think of your program as a very long linear sequence of instructions, then the thing is trying to grap as many of those and pull them apart as fast as it can.
+
+But of course you know your program is actually typically a loop, and there aren't many instructions in that loop. So how is it turning that into a linear sequence. Well that relies on an idea of how do you handle branches.
+
+So typically the program you know feteching ahead grabbing instructions and it will will come to a branch instruction a conditional jump of some sort. And there is a dilemma because in general this branch could either be taken, meaning it will go to the branch target. Or it could do what's called fall through te test failes, so it just continues execution. And there's no way a priorty to know what will happen these can often be data dependent.
+
+- **Challenge**
+
+  - <span style="color:red">Instruction Control Unit</span> must work well ahead of <span style="color:red">Execution Unit</span> to generate enough operations to keep EU busy
+    ![program_optimization_30.png](./images/program_optimization_30.png)
+  - When encounters conditional branch, cannot reliably determine where to continue fetching
+
+The way this is handled on modern processor is by doing what is known as "branch prediction" which is essential just gueses - which ways this branching going to go, is going to be taken or not?
+
+![program_optimization_12.png](./images/program_optimization_12.png)
+
+You predict and then you start executing along the predicted direction. But do it in a way that if you make a mistanke that you haven't caused reparable harm to the program.
+
+What really happens then is up here there's a lot of logic that's trying to suck out instructions, and then there's a branch unit that's being basically coming along later and saying:" yeah, you're okey, you predicted that correctly so you can keep going." Or it throw up a flag and say:" oh, wait a minute, stop." You miss predicted this branch way back 100 clock cycles ago. Some number of clock cycles ago you've got to fix it.
+
+- **When encounter conditional branch, cannot determine where to continue fetching**
+  - Branch Taken: Transfer control to branch target
+  - Branch Not-Taken: Continue with next instruction in sequence
+- **Cannot resolve until outcome determined by branch/integer unit**
+  ![program_optimization_32.png](./images/program_optimization_32.png)
+
+So the hand-way jumps then becomes more a case of guessing up here and then either confirming or denying that guess down below. So in general then if you it will predict it one way and begin executing.
+
+- **Idea**
+  ![program_optimization_31.png](./images/program_optimization_31.png)
+  - Guess which way branch will go
+  - Begin executing instructions at predicted position
+    - But don't actually modify register or memory data
+
+#### 8.5.5 Branch Prediction Through Loop
+
+This loop show you that you predict that the branch will be taken that you'll go back to the start of the loop again. That's a pretty good guess. It's a good guess extol you hit the end of the loop.
+
+![program_optimization_33.png](./images/program_optimization_33.png)
+
+The program will just keep guessing that the branhh will be taken, and by that means by all those guesses basically create this long linear sequence of instructions. That can be pulled in and executed.
+
+#### 8.5.6 Branch Misprediction Invalidation
+
+In general some of instructions will be fetched and some of them you'll actually have done the operations that are called for in the instruction.
+
+![program_optimization_34.png](./images/program_optimization_34.png)
+
+Then what happens is if the flag goes up they say no this was invalid. That will hapen is it will go back and cancel all the instructions that have been fetched and executed. The way it does that is you'll notice all these instructions only modify registers, and it has multiple copies of all the registers.
+
+These registers are the values that I'm sure of these are sort of sepculative values appeding updates to them. So when it comes to cancel out all those pending updates. And goes back to values that it's certain of.
+
+The conceptual way is a pretty simple idea, that it just races off does a lot of things based purely on speculation and then only if it makes a mistake - it goes "oh". And it sorts of rolls back to as if it had only executed up to a certain point. Then moves forward and starts in going the correct way.
+
+#### 8.5.7 Branch Misprediction Recovery
+
+Remember the difference between conditional moves and conditinal jumps to implement conditional operations:
+
+- Conditional moves can take place to totally within the struction to this pipeline.
+- Conditional jump if it's an unpredictable branch.
+  - The problem is it might go off executing and make do a lot of wasted work.
+  - But even worse than when it gets back and has to restart.
+  - It takes a while to sort of fill up all the buffers in the system.ß
+
+![program_optimization_35.png](./images/program_optimization_35.png)
+
+- **Performce Cost**
+
+  - Multiple clock cycles on modern processor
+  - Can be a major performance limiter
+
+- **Getting High Performance**
+
+  - Good compiler and flags
+  - Don't do anything stupid
+    - Watch out for hidden algorithmic inefficiencies
+    - Write compiler-friendly code
+      - Watch out for optimization blockers: procedure calls & memory references
+    - Look carefully at innermost loops (where most work is done)
+
+- **Tune code for machine**
+  - Exploit instruction-level parallelism
+  - Avoid unpredctable branches
+  - Make code cache friendly (Covered later in course)
