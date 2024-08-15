@@ -5024,3 +5024,128 @@ Remember the difference between conditional moves and conditinal jumps to implem
   - Exploit instruction-level parallelism
   - Avoid unpredctable branches
   - Make code cache friendly (Covered later in course)
+
+## 9 The Memory Hierarchy
+
+### 9.1 Storage technologies and trends
+
+#### 9.1.1 Random-Access Memory (RAM)
+
+- **Key features**
+
+  - <span style="color:red">RAM</span> is traditionally package as a chip.
+  - Basic storage unit is normally a <span style="color:red">cell</span> (one bit per cell).
+  - Multiple RAM chips form a memory.
+
+- **RAM comes in two varieties:**
+  - SRAM (Static RAM)
+  - DRAM (Dynmaic RAM)
+
+**SRAM vs DRAM Summary**
+
+| Attributes          | SRAM           | DRAM                         |
+| ------------------- | -------------- | ---------------------------- |
+| Transistors per bit | 4 or 6         | 1                            |
+| Access time         | 1X             | 10X                          |
+| Needs refresh?      | No             | Yes                          |
+| Needs EDC?          | Maybe          | Yes                          |
+| Cost                | 100X           | 1X                           |
+| Application         | Cache memories | Main memories, frame buffers |
+
+**EDC:** Error Detection and Correction
+
+#### 9.1.2 Nonvolatile Memories
+
+- **DRAM and SRAM are volatile memories**
+  - Lose information if powered off.
+- **Nonvolatile memories retain value even if powered off**
+
+  - Read-only memory (ROM): programmed during production
+  - Programmable ROM (PROM): can be programmed once
+  - Eraseable PROM (EPROM): can be bulk erased (UV, X-Ray)
+  - Electrically earaseable PROM (EEPROM): eletronic erase capability
+  - Flash memory: EEPROMs. with partial (block-level) erase capability
+    - Wears out after about 100,000 erasing
+
+- **Uses for Nonvolatile Memories**
+  - Firmware programs stored in ROM(BIOS, controlllers for disks, network cards, graphic accelerators, security subsystems, ...)
+  - Solid state disks (replace rotating disks in thumb drives, smart phones, mp3 players, tablets, laptops, ...)
+  - Disk caches
+
+#### 9.1.3 Traditional Bus Structure Connecting CPU and Memory
+
+- **A <span style="color:red">bus</span> is collectio of parallel wires that carry address, data, and controls signals.**
+
+- **Buses are typically shared by multiple devices.**
+
+![memory_hierarchy.png](./images/memory_hierarchy.png)
+
+#### 9.1.4 Memory Read Transaction
+
+**1. CPU places address A on the memory bus.**
+![memory_hierarchy_1.png](./images/memory_hierarchy_1.png)
+
+The 8 bytes at address `A` into `%rax`-> we are loading data from memory into the CPU. When the CPU executes `movq` instruction like this, it first places the address of `A` on the memory bus.
+
+And then the main memory senses that address and it reads the contents the eight bytes at address `A`. So it retrieves the word 8 bytes from address `A` and places it back on the bus.
+
+**2. Main memory reads `A` from the memory bus, retrieves word `x`, and plcaes it on the bus.**
+
+![memory_hierarchy_2.png](./images/memory_hierarchy_2.png)
+
+Those bits travel through the [I/O bridge] to the [bus interface].
+
+**3. CPU read word `x` from the bus and copies it into register `%rax`**
+
+![memory_hierarchy_3.png](./images/memory_hierarchy_3.png)
+
+The CPU reads the word `x` from the data bus and in composition to register `%rax`.
+
+#### 9.1.5 Memory Write Transaction
+
+**1. CPU places address `A` on bus. Main memory reads it and waits for the corresponding data word to arrive.**
+
+![memory_hierarchy_4.png](./images/memory_hierarchy_4.png)
+
+**2. CPU places data word `y` on the bus.**
+
+![memory_hierarchy_5.png](./images/memory_hierarchy_5.png)
+
+**3. Main memory reads data word `y` from the bus and stores it at address A.**
+
+![memory_hierarchy_6.png](./images/memory_hierarchy_6.png)
+
+The point of all this is that operations that occur -> reads and writes of registers. Because the register file is very close to the ALU, these happen in on the order of a vew cycles. So the operations are very happened very quickly.
+
+Whereas memory actually tis is a set of chips that are very far away relatively speaking from the CPU. There is a lot of going on in when if you have to read or write memory there's. If you have to do multiple operations on the bus, data has to travel propagate across that bus, all this stuff takes time.So
+
+So memory operations reads and writes are typically maybe 50ns ~ 100ns whereas operations that occur between registers are sub nanosecond. On the order of so you're talking about one to two orders of magnitude difference.
+
+#### 9.1.6 What's Inside A Disk Drive
+
+![memory_hierarchy_7.png](./images/memory_hierarchy_7.png)
+
+- **Disk consist of platters, each with two surfaces.**
+- **Each surface consists of concentric rings called tracks.**
+- **Each track consists of sectors separated by gaps.**
+
+![memory_hierarchy_8.png](./images/memory_hierarchy_8.png)
+
+- **Aligned tracks from a cylinder.**
+
+![memory_hierarchy_9.png](./images/memory_hierarchy_9.png)
+
+#### 9.1.7 Disk Capcacity
+
+- **Capacity**: maximum number of bits that can be stored.
+
+  - Vendors express in units of giga bytes (GB), where 1GB = 10$^{9}$ Bytes.
+
+- **Capacity is determined by these technology factors:**
+  - Recording density (bits/in): number of bits that can be squeesed into 1 inch segment of a track.
+  - Track density (tracks/in): number of tracks that can be sequeeze
+  - **Areal density**(bits/in2): product of recording and trank density.
+
+### 9.2 Locality of reference
+
+### 9.3 Caching in the memory hierarchy
