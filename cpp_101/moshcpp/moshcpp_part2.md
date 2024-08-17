@@ -379,6 +379,230 @@ int main() {
 }
 ```
 
+### 2.5 Understanding size_t
+
+Both the `size` function as well as the `sizeof` operator return a value of type `size_t`. `t` here is short for type, or a data type defined in the standard library that is used for representing the size of objects. It's guaranteed to be large enough to contain the size of the largest object the system can handle.
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int number[] = { 10, 20, 30 };
+    cout << "sizeof(int): " << sizeof(int) << endl;
+    cout << "sizeof(size_t): " << sizeof(size_t) << endl;
+    cout << "sizeof(long long): " << sizeof(long long) << endl;
+
+    return 0;
+}
+```
+
+```sh
+sizeof(int): 4
+sizeof(size_t): 8
+sizeof(long long): 8
+```
+
+An integer takes 4 bytes, but the `size_t` value takes 8 bytes, so it takes more memory and can store larger values. This is equivalent to the `long long` type, which takes 8 bytes of memory.
+
+The difference is that `long long` values are signed by default, so they can be negative or positive, but `size_t` values are always positive, so they can store larger values.
+
+```cpp
+#include <iostream>
+#include <limits>
+
+using namespace std;
+
+int main() {
+    int number[] = { 10, 20, 30 };
+    cout << "sizeof(int): " << sizeof(int) << endl;
+    cout << "sizeof(size_t): " << sizeof(size_t) << endl;
+    cout << "sizeof(long long): " << sizeof(long long) << endl;
+    cout << "std::numeric_limits<long long>::min()" << std::numeric_limits<long long>::min() << endl;
+    cout << "std::numeric_limits<long long>::max()" << std::numeric_limits<long long>::max() << endl;
+    cout << "std::numeric_limits<size_t>::min()" << std::numeric_limits<size_t>::min() << endl;
+    cout << "std::numeric_limits<size_t>::max()" << std::numeric_limits<size_t>::max() << endl;
+
+    return 0;
+}
+```
+
+```sh
+sizeof(int): 4
+sizeof(size_t): 8
+sizeof(long long): 8
+std::numeric_limits<long long>::min()-9223372036854775808
+std::numeric_limits<long long>::max()9223372036854775807
+std::numeric_limits<size_t>::min()0
+std::numeric_limits<size_t>::max()18446744073709551615
+```
+
+| `size_t` equivalent | machine type |
+| ------------------- | ------------ |
+| unsing int          | 32 bit       |
+| unsing long long    | 64 bit       |
+
+There is nothing magical about it, it's just a data type for representing the sizes, this type is guaranteed to be large enough to contain the size of the largest object the system can handle.
+
+### 2.6 Unpacking Arrays
+
+- C++: structured binding
+- JavaScript: destructuring
+- Python: unpacking
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    int values[] = { 10, 20, 30 };
+    auto [x, y, z] = values;
+
+    // int x = values[0];
+    // int y = values[1];
+    // int c = values[2];
+
+    cout << "x: " << x << endl;
+    cout << "y: " << y << endl;
+    cout << "z: " << z << endl;
+
+    return 0;
+}
+```
+
+### 2.7 Searching Arrays - Linear Searching
+
+![arrays_0](./images/arrays_0.png)
+
+![arrays_1](./images/arrays_1.png)
+
+**EXERCISE**
+
+Implement the linear search algorithm.
+
+Create a function for finding a value in an integer array. If the target value exists, return its index; otherwise return -1.
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int find(int *numbers, int size, int target);
+
+int main() {
+
+    int numbers[] = { 10, 20, 30 };
+
+    int index = find(numbers, 3, 20);
+
+    cout << index << endl;
+
+    return 0;
+}
+
+int find(int *numbers, int size, int target) {
+
+    for (size_t i = 0; i < size; i++) {
+        if (numbers[i] == target)
+            return i;
+    }
+
+    return -1;
+}
+```
+
+### 2.8 Sorting Arrays - Bubble Sorting
+
+![arrays_2](./images/arrays_2.png)
+
+Let's say we have an area of integers and we want to sort this array in an increasing order with bubble sort algorithm.
+
+We scan the array from left to right, and if items are out of order we swap them. So we start off by comparing the items at index 0 and 1, if the right item is smaller than the left item, we swap them because we want to sort this aray in ascending order.
+
+![arrays_3](./images/arrays_3.png)
+
+So here 2 is smaller than 9 and we have to swap them, now we compare the items at index 1 and 2.
+
+![arrays_4](./images/arrays_4.png)
+
+Again the right item is smaller, so we have to swap these items as well.
+
+![arrays_5](./images/arrays_5.png)
+
+One more time, again we have to swap these items.
+
+![arrays_6](./images/arrays_6.png)
+
+And one last time.
+
+![arrays_7](./images/arrays_7.png)
+
+This was our first iteration or first pass, we need multiple passes to fully sowrdness array, at the end of each pass, the next largest item moves to its correct position. So here 8 is in the correct position.
+
+![arrays_8](./images/arrays_8.png)
+
+This is why we call this algorithm "Bubble Sword". Because after each pass, the next largest item bubbles up, and moves to its correct position.
+
+![arrays_9](./images/arrays_9.png)
+
+So in the next pass, the next largest item which is 4 will bubble up. Once again we compare the items at index 0 and 1, these items are in the right order, because 4 is greater than 2, so we don't need to swap them.
+
+![arrays_10](./images/arrays_10.png)
+
+Let's look at the next 2 items, 1 is smaller than 4, so we should swap these items.
+
+![arrays_11](./images/arrays_11.png)
+
+And one more time, again these items are out of order, so we need to swap them.
+
+![arrays_12](./images/arrays_12.png)
+
+And the last items are in the right order, so we're done with the second pass, now 4 is in the right position.
+
+![arrays_13](./images/arrays_13.png)
+
+As you can see, our array is almost sorted, we just need one more pass to swap 2 and 1, and then our array will be fully sorted.
+
+![arrays_14](./images/arrays_14.png)
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+void swap(int *numbers, int i, int j);
+void sort(int *numbers, int size);
+
+int main() {
+
+    int numbers[] = { 8, 2, 4, 1, 3 };
+    int size = sizeof(numbers) / sizeof(int);
+    sort(numbers, size);
+
+    for (int i = 0; i < size; i++)
+        cout << numbers[i] << endl;
+
+    return 0;
+}
+
+void swap(int *numbers, int i, int j) {
+    int temp = numbers[i];
+    numbers[i] = numbers[j];
+    numbers[j] = temp;
+}
+
+void sort(int *numbers, int size) {
+    for (int pass = 0; pass < size; pass++) {
+        for (int i = 1; i < size; i++) {
+            if (numbers[i] < numbers[i - 1])
+                swap(numbers, i, i-1);
+        }
+    }
+}
+```
+
 ## 3 String
 
 ## 4 Struct
