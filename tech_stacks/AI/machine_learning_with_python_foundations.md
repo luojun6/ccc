@@ -226,7 +226,7 @@ This definition presents 3 components:
 **Reword the supervised machine leaning definition as:  **
 ![foundation_24](./images/foundation_24.png)
 
-### 1.5 What reinforcement learning?
+### 1.5 What is reinforcement learning?
 
 Reinforcement learning is the science of learning to make decisions from interaction.
 
@@ -493,7 +493,44 @@ Check the jupyter notebook.
 
 ### 3.3 Visualize your data
 
-Check the jupyter notebook.
+#### 3.4.1 Data Exploration 
+
+- **Understand your data by describing and visulizing**
+  - How many rows and columns are in the data?
+  - What type of data do we have?
+  - Are thre missing, inconsistent, or duplicate values in the data?
+  - 
+
+During data exploration, even after using sophisticated statistical techniques to analyze data, certain patterns are best understood when represented with visualization.
+
+1. **Comparison**
+  Comparison visualization illustrate the difference between two or more items
+  <br>![foundation_44](./images/foundation_44.png)
+  <br>Comparison visulization provide insights:
+     - Is a feature important?
+     - Does the median value of feature differ between subgroups?
+     - Does a feature have outliers?
+
+2. **Relationship**
+   Relationship visulizations illustrate the correlation beween two or more variables
+    <br>![foundation_45](./images/foundation_45.png)
+    <br>Comparison visulization provide insights:
+       - Is a feature important?
+       - How do two features interact with each other?
+       - Does a feature have outliers?
+
+3. **Distribution**
+   Distribution visualizations show the statistical distribution of the values of a feature
+    <br>![foundation_46](./images/foundation_46.png)
+    <br>Distribution visulization provide insights:
+      - Does a feature have outliers?
+
+4. **Composition**
+   Composition visualizations show the component makeup of the data
+    <br>![foundation_47](./images/foundation_47.png)
+    <br>Composition visulization provide insights:
+      - How much does a subgroup contribute to the total?
+      - The relative or absolute change in the composition of a subgroup over time?
 
 ### 3.4 How to visualize data in Python
 
@@ -503,9 +540,110 @@ Check the jupyter notebook.
 
 ### 4.1 Common data quality issues
 
+Data preparation is a process of making sure that our data is suitable for the machine learning approach that we choose to use. 
+
+In computing, the saying, "Garbage in, garbage out," is used to express the idea that incorrect or poor quality input will invariably result in incorrect or poor quality output.
+
+If proper care is not taken on the front-end to properly deal with data quality issues before building the model, then the model output will be unreliable, misleading, or simply wrong.
+
+#### 4.1.2 Missing Data
+
+One of the most commonly encountered data quality issues is that of missing data.
+
+![foundation_48](./images/foundation_48.png)
+
+There are several reasons why data could be missing. They include changes in data collection methods, human error, bias, or simply the lack reliable input.
+
+Before we resolve the missing data, we should attempt to understand why the data is missing and if there is a pattern to the missing values.
+
+There are several approaches to dealing with missing data:
+- Simply remove all instances with features that have a missing value.
+  ![foundation_49](./images/foundation_49.png)
+- Use an indicated value, so just NA, unknown, ir negative one to represent missing value.
+  ![foundation_50](./images/foundation_50.png)
+
+#### 4.1.3 Imputation
+
+An alternative approach is to use a method known as imputation. Imputation is this use of a systematic approach to fill in missing data by using the most probable substitute values.
+
+There are several approaches to imputation:
+- Median imputation
+  - With using median imputation, we can resolve the missing value in the amount column by replacing the missing value with a median of the non-missing values.
+    ![foundation_51](./images/foundation_51.png)
+
+#### 4.1.4 Outliers
+
+An outlier is a data point that is significantly different from other observations within the dataset. 
+
+Outliers manifest either as instances with characteristics different from most other instances, or as values of a feature that are unusual.
+
+![foundation_52](./images/foundation_52.png)
+
+Supervised machine learning algorithms learn by identify rules or estimating the function that explains the value of dependent varaiable, based on the values of independent variables.
+
+![foundation_53](./images/foundation_53.png)
+
+If the values of the dependent variable are categorical, we refer to them as **class** labels, and the proportion of examples belongs to each class label is known as a class distribution.
+- **Class** means the attribute or feature that is described by the other features within an instance
+    ![foundation_54](./images/foundation_54.png)
+
+#### 4.1.5 Class Imbalance
+
+For most real world problems, the class distribution of the historical data is not uniform. For example, the vast majority of people who take oout loans pay them back.
+
+This means the historical loan datasets will typically have a lot more examples of people will repay their loans than examples of people who default on their loans.
+
+**Class Imbalance:** 
+- Occurs when the distribution of values for the class is not uniform.
+- Class imbalance is a well-known problem in machine learning
+- If not properly accounted for, class imbalance can lead to rather misleading predictions
+
+There are several ways to resolve class imbalance:
+
+1. Under sample the majority class.
+  - Randomly remove some of the instances of the majority class in an attempt to even the class distribution.
+
 ### 4.2 How to resolve missing data in Python
 
+... 
+
 ### 4.3 Normalizing your data
+
+#### 4.3.1 Introduction
+
+![foundation_55](./images/foundation_55.png)
+
+Data preparation is a process of making sure that our data is suitable for the machine learning approach.
+
+Specifically data preparation involves modifying or transforming the structure of our data in order to make it easier to work with.
+
+One of the most common ways to transform this structure a data is known as **normalization** or **standardization**.
+
+- Normalization ensures that values share a common property
+- Normalization often involves scaling data to fall within a small or specified range
+- Normalization is often required, reduces complexity, and improves interpretability
+
+#### 4.3.2 Z-Score Normalization
+
+- Transform the data so that it has a mean of 0 and standard deviation of 1. The normalized value *v$^{'}$* is computed as: 
+  ![foundation_56](./images/foundation_56.png)
+  ![foundation_57](./images/foundation_57.png)
+
+![foundation_58](./images/foundation_58.png)
+
+#### 4.3.3 Min-Max Normalization
+
+![foundation_59](./images/foundation_59.png)
+
+![foundation_60](./images/foundation_60.png)
+
+### 4.3.4 Log Transformatino
+
+- Transform the data by replacing the values of original data with its logarithm, such that:
+
+![foundation_61](./images/foundation_61.png)
+
+![foundation_62](./images/foundation_62.png)
 
 ### 4.4 How to normalize data in Python
 
