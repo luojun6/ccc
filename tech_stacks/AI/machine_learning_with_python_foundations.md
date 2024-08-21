@@ -637,7 +637,7 @@ One of the most common ways to transform this structure a data is known as **nor
 
 ![foundation_60](./images/foundation_60.png)
 
-### 4.3.4 Log Transformatino
+### 4.3.4 Log Transformation
 
 - Transform the data by replacing the values of original data with its logarithm, such that:
 
@@ -647,7 +647,34 @@ One of the most common ways to transform this structure a data is known as **nor
 
 ### 4.4 How to normalize data in Python
 
+...
+
 ### 4.5 Sampling your data
+
+![foundation_63](./images/foundation_63.png)
+
+In supervised machine learning, our goal is to create a model that maps a given input, which we call independent variables, to the given output, which we call the dependent variable.
+
+![foundation_64](./images/foundation_64.png)
+
+In order to properly evaluate whether our model is learning, we have to get an unbiased estimation of its performance, using data that it has not previously seen. To do this, we must first split out previously labeled historical data into training and test datasets. We hold out the test data and use the training data to build or train our model. Then we evaluate our models performance using the test data.
+
+There are several ways to split data for this purpose. The most common approach is known as **sampling**.
+
+- This is the process of selecting a subset of the instances in a dataset as a proxy for the whole.
+- The orignal dataset is referred to as the population, while the subset is known as a sample.
+
+Sampling comes in several flavors, example of 20 students: 12 women and 8 men. From this population, we intend to create a sample of 5 students.
+
+![foundation_65](./images/foundation_65.png)
+
+![foundation_66](./images/foundation_66.png)
+
+This may seem like an odd way to sample data, but it actually is a very important technique in machine learning known as **bootstrapping**. Bootstrap is often used to evaluate and estimate the feature performance of a supervised machine learning model when we have very little data.
+
+![foundation_67](./images/foundation_67.png)
+
+Stratified random sampling is a modification of the simple random sampling approach and ensures that the distribution of values for a particular feature within the sample matches the distribution of values for the same feature in the overall population. To do this, the instances in the origial data, the population, are first divided into homogenous subgroups known as strata.
 
 ### 4.6 How to sample data in Python
 
