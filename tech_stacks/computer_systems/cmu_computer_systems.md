@@ -5137,14 +5137,203 @@ So memory operations reads and writes are typically maybe 50ns ~ 100ns whereas o
 
 #### 9.1.7 Disk Capcacity
 
-- **Capacity**: maximum number of bits that can be stored.
+- **<span style="color:red">Capacity</span>**: maximum number of bits that can be stored.
 
   - Vendors express in units of giga bytes (GB), where 1GB = 10$^{9}$ Bytes.
 
 - **Capacity is determined by these technology factors:**
-  - Recording density (bits/in): number of bits that can be squeesed into 1 inch segment of a track.
-  - Track density (tracks/in): number of tracks that can be sequeeze
-  - **Areal density**(bits/in2): product of recording and trank density.
+  - <span style="color:red">Recording density</span> (bits/in): number of bits that can be squeesed into 1 inch segment of a track.
+  - <span style="color:red">Track density</span> (tracks/in): number of tracks that can be sequeeze
+  - <span style="color:red">Areal density</span>(bits/in2): product of recording and trank density.
+
+#### 9.1.8 Recording zones
+
+![memory_hierarchy_10.png](./images/memory_hierarchy_10.png)
+
+#### 9.1.9 Computing Disk Capacity
+
+**Capacity = (# bytes/secotr) x (avg. #sectors/track) x (# tracks/surface) x (# surfaces/platter) x (# platters/disk)**
+
+**Example:**
+
+- 512 bytes/sector
+- 300 sector/track (on average)
+- 20,000 tracks/surface
+- 2 surface/platter
+- 5 platter/disk
+
+**Capacity = 512 x 300 x 20000 x 2 x 5 = 30,720,000,000 = 30.72GB**
+
+#### 9.1.10 Disk Operation
+
+**Disk Operation (Single-PlaXer View)**
+
+These surfaces are spinning at a fixed rotational rate, now typical rate may be 7200 rpm is a fairly common rotational rate.
+
+![memory_hierarchy_11.png](./images/memory_hierarchy_11.png)
+
+It's spining around counter clockwise and then the arm moves radially, and it can go over any of the tracks.
+
+**Disk Operation (Multi-Platter View)**
+
+![memory_hierarchy_12.png](./images/memory_hierarchy_12.png)
+
+#### 9.1.11 Disk Access
+
+**Disk Structure - top view of single platter**
+
+![memory_hierarchy_13.png](./images/memory_hierarchy_13.png)
+
+**Disk Access - Read**
+
+![memory_hierarchy_14.png](./images/memory_hierarchy_14.png)
+
+![memory_hierarchy_15.png](./images/memory_hierarchy_15.png)
+
+![memory_hierarchy_16.png](./images/memory_hierarchy_16.png)
+
+**Disk Access - Service Time Components**
+
+![memory_hierarchy_17.png](./images/memory_hierarchy_17.png)
+
+There are 3 components going on here that determine how long it takes to read one of these sectors.
+
+- When we move the head, that's called a **seek**.
+- When we waited the red track to sort of rotate around
+  - -> rotational latency -> how often it takes.
+  - On average it will be haff of the half the time. It takes for the entire to circle all the way around.
+- The **data transfer** is of how long it takes for that track to pass under the read/write head.
+
+#### 9.1.12 Disk Access Time
+
+- Average time to access some target sector approximated by:
+  - Taccess = Tavg seek + Tavg rotation + Tavg transfer
+- <span style="color:red">Seek time</span> (Tavg seek)
+  - Time to position heads over cylinder containing target sector.
+  - Typical Tavg seek is 3 - 9 ms
+- <span style="color:red">Rotation latency</span> (Tavg rotation)
+  - Time waiting for first bit of target sector to pass under r/w head.
+  - Tavg rotation = 1/2 x 1/RPMs x 60 sec/1 min
+  - Typical Tavg rotation - 7200 RPMs
+- <span style="color:red">Transfer time</span> (Tavg transfer)
+  - Time to read the bits in the target sector.
+  - Tavg transfer = 1/RPM x 1/(avg # sectors/track) x 60 secs/1 min.
+
+**Disk Access Time Example**
+
+- **Given:**
+
+  - Rotational rate = 7200 RPM
+  - Average seek time = 9 ms
+  - Avg # sectors/track = 400
+
+- **Derived:**
+
+  - Tavg rotation = 1/2 x (60 secs/7200 RPM) x 1000 ms/sec = 4ms
+  - Tavg transfer = 60/7200 RPM x 1/400 secs/track x 1000ms/sec = 0.02ms
+  - Taccess = 9ms + 4ms + 0.02ms
+
+- **Important points:**
+  - Access time dominated by seek time and rotational latency.
+  - First bit in a sector is the most expensive, the rest are free.
+  - SRAM access time is about 4ns/doubleword, DRAM about 60ns
+    - Disk is about 40,000 times slower than SRAM
+    - 2,500 times slower then DRAM
+
+#### 9.1.13 Logical Disk Blocks
+
+- **Modern disks present a simpler abstract view of the complex sector geometry:**
+  - The set of available sectors is modeled as a sequence of b-sized <span style="color:red">logical blocks</span> (0, 1, 2, ...)
+- **Mapping between logical blocks and actual (physical) sectors**
+
+  - Maintained by hardware/firmware device called disk controller.
+  - Converts requests for logical blocks into (surface, track, sector) triples.
+
+- **Allows controller to set aside spare cylinders for each zone.**
+  - Account for the difference in "formatted capacity" and "maximum capacity".
+
+#### 9.1.14 Reading a Disk Sector
+
+This is actually not representative of modern systems, it's representative of what was called the PCI bus about many years ago (before 2010). PCI bus ia a broadcast bus meaning it's just a single set of wires. So if any device us changes the values on those wires, every device on that bus can see those values. It's a simplest kind of way to hook things together.
+
+Modern systems use a bus structure called PCI-Express which although it has the word "PCI" and it's completely different. It's point-to-point, so devices are connected by a set of point-to-point connections. Arbitrated by some of a switch. It's much faster but it provides the same capability mainly it just attaches up, it allows you to attach all of your devices to your CPU.
+
+![memory_hierarchy_18.png](./images/memory_hierarchy_18.png)
+
+![memory_hierarchy_19.png](./images/memory_hierarchy_19.png)
+
+![memory_hierarchy_20.png](./images/memory_hierarchy_20.png)
+
+![memory_hierarchy_21.png](./images/memory_hierarchy_21.png)
+
+What this mechanism allows? The reason they do this is because disks are just so god-awfule slow. Within 10ms a system (CPU) coud be executing millions and millions of instructions, it will be a terrible waste if the CPU waited for the data to come off the disk.
+
+So what it does is it issues this request to the disk controller (1), and then while that really slow laborious process is going on, the CPU can be executing other instructions and doing other useful work.
+
+#### 9.1.15 Solid State Disks (SSDs)
+
+SSD is kind of halfway between rotating and rotating dics and DRAM memories. In a solid-state disk to the CPU, it looks exactly like a rotating disk it has the same socket plug, it has the same physical interface that has the same packaging. It looks like a rotating disk.
+
+But instead of having all these mechanical parts it's actually built entirely out of flash memory. And firmware that acts as the controller, so inside of a SSD there's a firmware a set of firmware called the flash **translation layer**. Which serves the purpose as the same purpose as teh disk controller does in the rotating disk.
+
+![memory_hierarchy_22.png](./images/memory_hierarchy_22.png)
+
+Then the memory itself the read - data can be read and written from the flash memory into units pages. Which depending on the technology can be 512KB to 4KB.
+
+And then a sequence of pages forms a block, which is different from the logical blocks that the CPU does. It's kind of an overlap of terms.
+
+- **Pages: 512KB to 4KB, Blocks: 32 to 128 pages**
+- **Data read/written in units of pages.**
+- **Page can be written only after its block has been erased.**
+- **A block wears out after about 100,000 repeated writes.**
+
+If you want to write to a page, you have to find a block somewhere that's been erased, have to copy all of the other pages in our target block over to that new block ten you can do the right.
+
+#### 9.1.16 SSD Performance Characteristics
+
+|                      |          |                       |          |
+| -------------------- | -------- | --------------------- | -------- |
+| Sequential read tput | 550 MB/s | Sequential write tput | 470 MB/s |
+| Random read tput     | 365 MB/s | Random write tput     | 303 MB/s |
+| Avg seq read time    | 50 us    | Avg seq write time    | 60s      |
+
+- **Sequential access faster than random access**
+  - Common theme in the memory hierachy
+- **Random write are somewhat slower**
+  - Erasing a block takes a long time (~1 ms)
+  - Modifying a block page requires all other pages to be copied to new block
+  - In earlier SSDs, the read/wrie gap was much larger
+
+#### 9.1.17 Tradeoffs vs Rotating Disks
+
+- **Advantages**
+
+  - No moving parts -> faster, less power, more rugged
+
+- **Disadvantages**
+
+  - Have the potential to wear out
+    - Mitigated by "werae leveling logic" in flash translation layer
+    - E.g. Intel SSD 730 guarantees 128 petabyte (128 x 10$^{15}$ bytes) of writes before they wear out
+  - In 2015, about 30 tiems more expensive per byte
+
+- **Applications**
+  - MP3 players, smart phones, laptops
+  - Beginning to appear to desktops and servers
+
+#### 9.1.18 The CPU-Memory Gap
+
+**<span style="color:red">The gap widens between DRAM, disk, and CPU speeds.</span>**
+
+![memory_hierarchy_23.png](./images/memory_hierarchy_23.png)
+
+There is a huge gap between DRAM, SSD, disk in and CPUs, in some cases it's even getting worse as time goes by, so that's a problem right now.
+
+Our programs all need data, our data is stored in the memory and disk. So if our computer are getting faster, but our storage devices are staying relatively the same or relatively slower.
+
+Then we've got a problem right increase in our computer performance won't make our program run faster. Because we'll be limited by the time it takes to access the data. That's that sort of the fundamental problam that we have to deal with.
+
+It turns out that the key to bridging this CPU-Memory, this is very baisc fundamental property of programs called **locality**.
 
 ### 9.2 Locality of reference
 
