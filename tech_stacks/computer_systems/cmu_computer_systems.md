@@ -5337,4 +5337,327 @@ It turns out that the key to bridging this CPU-Memory, this is very baisc fundam
 
 ### 9.2 Locality of reference
 
+#### 9.2.1 Locality
+
+- **<span style="color:red">Principle of Locality:</span>: Programs tend to use data and instructions with address near or equal to those they have used recently**
+
+If a program access is a data item, the chances are very high, that it's going to access that data item or a nearby data item sometime in the near future. That likelyhood that the program is going to access that data item or nearby a data item in the near future. That is this property called **locality**.
+
+- **<span style="color:red">Temporal locality:</span>**
+
+  - Recently referenced items are likely to be referenced again in the near future
+  - If you read a variable, chances are you're going to read that variable again. For example supposed you're running into a variable inside of a loop.
+  - ![memory_hierarchy_24.png](./images/memory_hierarchy_24.png)
+
+- **<span style="color:red">Spatial locality:</span>**
+  - Items with nearby address tend to be referenced close together in time
+  - If we access one item, chances are high we're going to access nearby item
+  - ![memory_hierarchy_25.png](./images/memory_hierarchy_25.png)
+
+#### 9.2.3 Locality Example
+
+```c
+sum = 0;
+for (i = 0; i < n; i++)
+  sum += a[i];
+return sum;
+```
+
+- **Data references**
+
+  - Reference array elements in succession (stride-1 reference pattern) -> **<span style="color:red">Temporal locality</span>**
+  - Reference variable `sum` each iteration -> **<span style="color:red">Spatial locality</span>**
+
+- **Instruction references**
+
+  - Reference instructions in sequence -> **<span style="color:red">Spatial locality</span>**
+  - Cycle through loop repeartedly -> **<span style="color:red">Temporal locality</span>**
+
+- **<span style="color:red">Claim<:</span> Being able to look at code and get a qualitative sense of it locality is a key skill for a professional programer.**
+
+- **<span style="color:red">Question:</span> Does this function have good locality with repect to array `a`?**
+
+#### 9.2.2 Qualitative Estimates of Locality
+
+```c
+int sum_array_rows(int a[M][N])
+{
+  int i, j, sum = 0;
+
+  for (i = 0; i < M; i++)
+     for (j = 0; j < N; j++)
+        sum += a[i][j]
+
+  return sum;
+}
+```
+
+**An awful example: the worse locality**
+
+<span style="color:red">Question:</span> Does this function have good localty with respect to array `a`?
+
+```c
+int sum_array_cols(int a[M][N])
+{
+  int i, j, sum = 0;
+
+  for (j = 0; j < N; j++)
+      for (i = 0; i < M; i++)
+        sum += a[i][j]
+
+  return sum;
+}
+```
+
+**A 3 dimension example**
+
+<span style="color:red">Question:</span> Can you permute the loops so that the function scans the 3-d array `a` with a stride-1 reference pattern (and thus good spatial locality)?
+
+```c
+int sum_array_3d(int a[M][N][N])
+{
+  int i, j, sum = 0;
+
+  for (i = 0; i < N; i++)
+      for (j = 0; j < M; j++)
+         for (k = 0; k < N; k++)
+            sum += a[k][i][j]
+
+  return sum;
+}
+```
+
+#### 9.2.3 Memory Hierarchies
+
+- **Some fundamental and enduring properties of hardware and software:**
+
+  - Fast storage technologies cost more per byte, have less capacity, and require more power (heat!).
+  - The gap between CPU and main memory speed is widening.
+  - Well-written programs tend to exhibit good locality.
+
+- **These fundamental properties complement each other beautifully.**
+
+- **They suggest an approach for organizing memory and storage systems known as a <span style="color:red">memory hierarchy</span>**
+
 ### 9.3 Caching in the memory hierarchy
+
+![memory_hierarchy_26.png](./images/memory_hierarchy_26.png)
+
+#### 9.3.1 Caches
+
+- **_<span style="color:red">Cache:</span>_ A smaller, faster storage device that acts as a staging area for a subset of the data in a larger, slower device.**
+
+- **Fundamental idea of a memory hierarachy:**
+
+  - For each k, the faster, smaller device at level k serves as a cache for the larger, slower device at level k+1.
+
+- **WHy do memory hierarchies work?**
+
+  - Because of locality, programs tend to access the data at level k more often than they access the data at level k+1.
+  - Thus, the storage at level k+1 can be slower, and thus larger and cheaper per bit.
+
+- **_<span style="color:red">Big Data:</span>_ The memory hierarchy creates a large pool of storage that costs as much as the cheap storage near the bottom, but that serves data to programs at the rate of the fast storage near the top.**
+
+#### 9.3.2 General Cache Concepts
+
+This memory is partitioned into blocks of some fixed size. That's the way cache is at nearly near the upper part of the hierarchy work.
+
+Now at the lower levels like if you're accessing data say from a web server. Then the data is partitioned into files typically. But the upper levels the data is partitioned into blocks, just suppose the lower levels is the main memory. And then above that we have a that consists of a bunch of these blocks, so we just take the memory and partition into blocks where each block is the same number of bytes.
+
+![memory_hierarchy_28.png](./images/memory_hierarchy_28.png)
+
+And then data will be transferred between memory and the cache in block size transfer units, if you need data from the memory if the cache needs data from the memory, it'll grab a whole block.
+
+At any point time the cache holds a subset of the blocks in main memory, so this cache is much faster but it's also much smaller, because it's much more expensive.
+
+![memory_hierarchy_29.png](./images/memory_hierarchy_29.png)
+
+Now suppose the cache wants to reference say that the CPU asks for data that's contained in block [4]. So it looks to see if the data in the cache or not. So the cache asks the memory to give it block [4].
+
+So that block is copied from memory into the cache. Overwriting the one of the existing in this case block [8], it will overwrite block [8].
+
+![memory_hierarchy_30.png](./images/memory_hierarchy_30.png)
+
+![memory_hierarchy_31.png](./images/memory_hierarchy_31.png)
+
+Now suppose the CPU asks for a some data that's in block [10]. That gets copied up and we overwrite that block.
+
+![memory_hierarchy_27.png](./images/memory_hierarchy_27.png)
+
+Now the whole idea of storing it in the cache is that we're hoping that the program that's executing on the CPU. Will reuse one of those blocks we just spent all the time. We went to all this trouble to copy it from memory to this cache and we know that's slow.
+
+#### 9.3.3 General Cache Concepts: Hit
+
+Now suppose that the CPU needs some data in block b in this case 14, it needs a memory word that's sorted that was originally stored in memory it in block 14.
+
+![memory_hierarchy_32.png](./images/memory_hierarchy_32.png)
+
+Now this cache can just return that's what we called **_hit_**. Block that we access is in the cache so that's good hits are good. Because now we can return that block directly to CPU. This memory is much faster than if we had to go all the way to main memory to the DRAM.
+
+The SRAM is much faster than the DRAM, so the CPU gets that block 14 much faster than it would have if it had just gone all the way to memory.
+
+#### 9.3.4 General Cache Concepts: Miss
+
+The opposite of a **_hit_** is a **_miss_**.
+
+![memory_hierarchy_33.png](./images/memory_hierarchy_33.png)
+
+That takes longer so the CPU has to wait for that block to be extracted to be fetched from memory. So **_missies_** are slow, **_hits_** are good because they are fast, **_missies_** are bad because they're slow.
+
+#### 9.3.5 General Caching Concepts: Types of Cache Misses
+
+- **<span style="color:red">Cold (compulsory) miss</span>**
+  - Cold misses occur because the cache is empty.
+- **<span style="color:red">Conflict miss</span>**
+
+  - Most caches limit blocks at level k+1 to a small subset (sometimes a singleton) of the block positions at level k.
+    - E.g. Block is at level k+1 must be placed in block(i mod 4) at level k.
+  - Conflit misses occur when the level k cache is large enough, but multiple data objects all map to the same level k block,
+    - E.g. Referencing blocks 0, 8, 0, 8, 0, 8, ... would miss every time.
+
+- **<span style="color:red">Capacity miss</span>**
+  - Occurs when the set of active cache blocks (working set) is larger than the cache.
+
+#### 9.3.6 Examples of Caching in the Mem. Hierarchy
+
+![memory_hierarchy_34.png](./images/memory_hierarchy_34.png)
+
+### 9.4 Summaary
+
+- **The speed gap between CPU, memory and mass storage continues to widen.**
+
+- **Well-written programs exhibit a property called _locality_.**
+
+- **Memory hierarchies based on _caching_ close the gap by exploiting locality.**
+
+## 10 Cache Memories
+
+![memory_hierarchy_26.png](./images/memory_hierarchy_26.png)
+
+### 10.1 Cache Memory Organization and Operation
+
+#### 10.1.1 Cache Memories
+
+There's a very important class of caches these so called **_cache memories_**. Which are contained in the CPU chip itself, and are managed compeltely by hardware. They are implemented using fast SRAM memories.
+
+The idea for this cache which right next to the **_register file_**, is to hold frequently access blocks or blocks from main memory that are accessed frequently.
+
+![memory_hierarchy_35.png](./images/memory_hierarchy_35.png)
+
+So hopeful because of the principle of locality, most of our requests for data will actually be served out of this cache memory and a few cycles, rather than from this slow main memory.
+
+#### 10.1.2 General Cache Organization (S, E, B)
+
+Now cache memories are managed completely in hardware, this means that the heart there's, here has to be hardware logic that knows how to look for blocks in the cache and determine whether or not a particular block is contained there.
+
+So cache memories are have to be organized in very kind of strict simple way. So that logic the lookup logic can be pretty simple. So this is very all cache memories are organized in the following way.
+
+![memory_hierarchy_36.png](./images/memory_hierarchy_36.png)
+
+A **_valid_** bit which indicates whether these data bits are actually that the bits anddata block are actually meaningful. It's possible they could just be random bits like when you first turn on the machine, there is nothing in the cache.
+
+There are an additional bits called the **_tag_** bits which help us search for the blocks.
+
+Regarding the cache size, we're referring to the numer of data bytes that are contained in blocks, and each cache has there's **_S_** sets, **_E_** blocks per set, **_B_** bytes per block. So the total cache size **_C = S \* E \* B_**
+
+Now let's look at in general how the cache hardware implementss a **_read_**. When our program accesses, when our program executes an instruction that reference some word in memory. The CPU sends that address to the cache and asks the cache to return the word at that address.
+
+![memory_hierarchy_37.png](./images/memory_hierarchy_37.png)
+
+So the cache takes that address, which should be a 64-bit address in case of x86-64. It divides the address into a number of regions, which are determined by the organization of the cache:
+
+- **S**: the number of sets
+- **E**: the number of lines per set
+- **B**: the size of each data block
+
+The lower order bits there are **`b`** low-order bits which determine the offset in the block that that word starts at.
+
+The next **`s`** bits are treated as an unsigned integer which serves as an index into the array of sets. Remember we just think of these as think of this cache as an array of **_set_**. The set index bits provide the index into thi array of sets.
+
+Then all of the remaining bits consitute what we call **`tag`**, which will help us when we do our search.
+
+So the cache logic takes this address, and it first extracts the set index, and uses that to as an index into this array to identify the set that. If the block that contains the data word at theis address in the cache. It's going to be in the set denoted by the set index.
+
+#### 10.1.3 Example: Direct Mapped Cache (E = 1)
+
+![memory_hierarchy_37.png](./images/memory_hierarchy_37.png)
+
+Now we suppose our program references the data item, and a particular address the CPU sense that address to the cache. The cache takes that address breaks in up into these fields. For this particular addresss **`t bits`** For this particular address the block offset is four.
+
+![memory_hierarchy_38.png](./images/memory_hierarchy_38.png)
+
+So the cache extracts the set index which is one, so the cache extracts the set index which is 1, and then it uses that as the index into the **`set`**. And then it just ignores all the other the sets.
+
+![memory_hierarchy_39.png](./images/memory_hierarchy_39.png)
+
+If the block we are looking for is going to be in cache, it's going to be in this inset number one. Then it does the comparison of the tag bits and the valid bits. And assume that they assume valid bits on and that it matches.
+
+![memory_hierarchy_40.png](./images/memory_hierarchy_40.png)
+
+Then it looks at the block offset which is four, and which tells it that the four bit in suppose that that's what the instruction was referencing.
+
+Now the cache takes this `int` and it sends it back to the CPU which puts it in the register.
+
+**<span style="color:red">If tag doesn't match:</span> old line is evicted and replaced**
+
+If the tag doesn't match then the old-line, if the that doesn't match then there's a miss. In that cache the cache hass to fetch the block the corresponding block from memory. And then overwhite this block in the line.
+
+And then it can serve, then it can serve then it can fetch, it can get the word out of the block and send it back to the processor,
+
+#### 10.1.4 Direct-Mapped Cache Simulation
+
+This is a simple memory system consists of 16 bytes, it's not a very useful system with 4-bit addresses. It is broken up into blocks of 2 bytes each. Our cache consists of 4 sets with 1 Blocks/set.
+
+Now our 4-bits addresse, because B=2, that's 2^1, we only need 1 block offset bit. There's only 2 byes into a block so the byte we're looking for is either at 0 or 1.
+
+Because we have 4 sets we need seet index bits, then the remaining bits are always tag bits in this case there's just one tag bit. Let's suppose that our program executes instructions, that reference the following memory address is 0, 1, 7, 8 and 0. These reference are reads that they're reading once byte per read - a really simple system.
+
+![memory_hierarchy_41.png](./images/memory_hierarchy_41.png)
+
+We start tag initially, cache is empty, valid bits are all set to 0. Now the cache receives the requests for the byte that's at address 0. So it extracts the set index bits which in this case are 00.
+
+In this case since valid is 0, it's just a **_miss_**. So it feteches that block from memory sticks the block.
+
+The tag bit is 0 and the valid bit is 1. The next address that comes by is for address 1. That's a hit because that block and block that contains the byte at address 1 is areally in the cache.
+
+This is using array notation for memory. So this is like the bytes that extend from offset 0 to offset 1 inclusive in memory.
+
+In the address of 7, the tag and the tags match OK so we're good that's a hit. We get address 7. So the cache extracts the set index bits, which in this case are 11 or 4 or 3 rather.
+
+Looks in set 3 there's no valid bit, so that's a miss and it loads the data from memory. They spans bytes 6~7. In this case, the tag bit is 0, so we record that in our metadata.
+
+The next reference that comes by it's 8. Now 8 has a set index of 0,00, but this currently occupied by block 01. And we can tell that because address 8 has a tag of 1. And the existing block at the ealier address 0 has a tag of 0, so that's a miss. So now we have to go fetech the block containing byte number 8 into memory.
+
+Now the next instruction is for byte 0, we had that in our cache and we just replaced it. So it's another miss. The only reason we missed it, is because we've got one line per set. So we were forced to overwrite that block that containing bytes. The block [0-1] when we missing on block [8-9].
+
+There's plenty room in our cache we've still got 2 lines that we haven't even access. Our cache is very big, but just because of the low associativity of our cache, and the sort of the access pattern that we were presented with. We've got a miss that really was kind of unnecessary.
+
+#### 10.1.5 E-way Set Associative Cache (Here: E = 2)
+
+According the simulation, we know the reason why we have caches higher associativity higher values of E. Let's look at for values of E > 1. We refer to them as **E-way-set-associative-caches**. Here E=2, it's a 2-way associative.
+
+![memory_hierarchy_42.png](./images/memory_hierarchy_42.png)
+
+Let's suppose we have a 2-way associative cache, So here we have an array of sets (right top) and now each set contains two lines instead of one line. Suppose we're presented with an address with the following form, we're looking for the word that begins at an offset of 4 (b100) inside our block.
+
+At within set number 1, so the cache expects tracts that set index. So these are set 0, set 1 and set 2, throws away all the other sets.
+
+![memory_hierarchy_43.png](./images/memory_hierarchy_43.png)
+
+Now in parallel it searches the tag, it searches for a matching tag in both of these. And a valid bit, so if we geting a matching tag and a valid bit ture. Then we've got a hit.
+
+![memory_hierarchy_44.png](./images/memory_hierarchy_44.png)
+
+Once we've identified a match, we use the set offset bits. In this case, we're accessing a short int, so [4] is the offset within the block of this, the 2-byte-short-int which then we can return to the processor.
+
+#### 10.1.5 2-Way Set Associative Cache Simulation
+
+Now instead of 2 sets, we have 4 sets. So the cache, this is the same sized cache. But we're just going to organize it differently, instead of 1-way instead of a direct mapped cache.
+
+![memory_hierarchy_45.png](./images/memory_hierarchy_45.png)
+
+### 10.2 Performance Impact of Cahces: The memory mountain
+
+### 10.3 Performance Impact of Cahces: Rearranging Loops to improve spatial locality
+
+### 10.4 Performance Impact of Cahces: Using blocking to improve temporal locality
