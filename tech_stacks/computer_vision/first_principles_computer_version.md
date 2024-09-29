@@ -1,6 +1,6 @@
 # First Principles of Computer Vison
 
-## 1 Imaging: Image Formation, Sensing, Processing
+## 1 Imaging: Image Formation
 
 ### 1.1 Image Formation Overview
 
@@ -9,9 +9,7 @@
 - By geometric, we mean given a point in the scene. We need to understand where it ends up in the image.
 - By photometric, we mean the brightness and appearance of a point in this scene would be in the image.
 
-**<span style="color:#2874A6">
-Topics:
-</span>**
+**<span style="color:#2874A6">Topics:</span>**
 
 - **(1) Pinhole and Perspective Projection**
 
@@ -728,20 +726,236 @@ Actually this technique for imaging is called catadioptrics. Catoptrics is the u
 
 **Question:** How do we enlarge the field of view of the real caream? We do this by using curved mirrors.
 
-Here is an example, a design that uses a hyperbolic camera. We know that a hyperbola has two foci.
+Here is an example, a design that uses a hyperbolic camera. We know that a hyperbola has two foci: the focus 1 and focus 2. The interesting thing that happens is that all the rays of light that coming in the direction of the first focus (focus 1), gets reflected by this hyperbolic mirror towards focus 2.
 
 ![hyperbolic_mirror.png](./images/hyperbolic_mirror.png)
 
+So that is where you would place the center projection or pinhole of your lens camera, right in the [image of world point] above the focus 2. And that would ensure that you would capture an image which is the relfection from this hyperbolic camera, but it is a reflection of the scene, as scene from a single point which is from focus 1.
+
+The thing to note here is that you can go well beyond a hemisphere in this case. So consider this ray of light, the \*\*<span style="color:#2874A6">blue line</span> here. It corresponds to a scenery that comes in from beneath the equator, benath the line that passes through focus 1.
+
+![hyperbolic_mirror_1.png](./images/hyperbolic_mirror_1.png)
+
+So you can manipulate, you can choose the parameters of your hyberbola, so as to control the field of view of your wide-angle system based on the application at hand.
+
 #### 1.6.5 Parabolic Mirror Camera
 
-![syytem_blogge](./images/syyytem_blogge.png)
+The another design to enlarge the field of view is to use a parabolic mirror. The parabola has a single focus. You can say it has a second focus which too, which is at infinity. But it does is it take all the rays of light that coming in the directio of its focus from the [world point] to the focus. And it reflects these rays to be parallel to one another -> straight up all the rays, if I had a ray coming in from other place against [world point], it would also go parallel to the optical axis.
 
-![parablic_xinchangyui.png](./images/parablic_xinchangyui.png)
+![parabolic_mirror_camera_0.png](./images/parabolic_mirror_camera_0.png)
 
-## 2 Features: Edges, Boundaries, SIFT, Applications
+So in this case, you don't use a perspective lens or camera. You use what's called an orthographic lens or a telecentric lens to capture these parallel rays of light, and then create an image in the [image of world point].
 
-## 3 Reconstruction 1: Shading, Focus, Active Illumination
+**Example:**
 
-## 4 Reconstruction 2: Stereo, Optical Flow, SFMoptical folding
+Since in the center, this actually respresents one of the downsides of using mirror based wide-angle cameras. This is where the mirror sees the lens itself. This is where the mirror sees the lens itself.
 
-## 5 Perception: Segmentation, Tracking, Recognition
+![parabolic_mirror_camera_1.png](./images/parabolic_mirror_camera_1.png)
+
+- The black disc in the center, this actually represents of of the downsides of using mirror based wide-angle cameras.
+  - This is where the mirror sees the lens itself.
+  - This is sort of the blind spot of your imaging system.
+- On the positive side, you have a field of view here, which goes well beyond 180 degress.
+- Since we have satisfied the single viewpoint constract, which means that the viewpoint of this imaging system lies at the focus of the parabola.
+
+  - You can take any part of this image and convert it into a perspective image.
+  - Or you can map this peripheral part of this image, this annilus right here, and map it into cylindrical panorama that something like this.
+
+![parabolic_mirror_camera_2.png](./images/parabolic_mirror_camera_2.png)
+
+For the certain domains, wide-angle imaging, panoramic imaging is very useful and has become very popular. In fact, today you can find various devices that have attachments that convert the camera of the device into a panoramic camera that use mirrors.
+
+![parabolic_mirror_camera_3.png](./images/parabolic_mirror_camera_3.png)
+
+#### 1.6.6 Cancave Mirrors and Telescopes
+
+In the case of a telescope, what you are trying to do is to look at an object that is really far away. So you're really talking about a very narrow field of view, but since the object is really far away, it's really dim, and you would like to be able to collect as much light as possible from the object.
+
+For this, yo use a wide aperture, and so that's where curved mirrors come in. In this case, you're not using a convex parabola, but rather a concave parabola.
+
+![concave_mirrors_0.png](./images/concave_mirrors_0.png)
+
+In the case of the James Webb Space Telescope, it happens to be 21 feet in diameter. And so there is no known method for manufacturing a single mirror that's 21 feet curved mirror that's 21 feet in diameter.
+
+So the way this is done in practice is to create these small little segments. That's what you're seeing here, these little hexagonal segments. Each one is a shallow curved mirror. And these are then put together, tied togehter to create the complete mirror.
+
+This mirror focuses the light coming in almost parallel onto its focus, which is where you would place the image sensor. That's the complete imaging system. This turns out to be golden in color because it's gold plated because in this particular application, one is more interested in certain wavelengths of light that are best reflected by gold plating.
+
+#### 1.6.7 The World in an Eye
+
+Here is a high-resolution image of a person.
+
+![eye_0.png](./images/eye_0.png)
+
+If the image is of really high resolution, what you should be able to do after the fact is zoom into one of the eyes of this person.
+
+![eye_1.png](./images/eye_1.png)
+
+The point here is the cornea of your eye, which is what you're seeing here, has a thin film of tear on it, which makes it behave like a reflective surface, a curved mirror.
+
+Not a highly reflective mirror, but a mirror all the same. It turns out that the shape of this mirror, the cornea, is pretty well known. It's studied in physiology, it's **ellipsoidal** in shape with pretty strict parameters for a normal adualt cornea, so we know the shape of this mirror.
+
+So what you can do is find this border which is called the **limbus**, between the cornea and the white part which is called the **sclear**.
+
+![eye_2.png](./images/eye_2.png)
+
+Once you found this limbus in any photograph, if you're able to do this, it's a high enough resolution, high quality photograph, if you're able to find the limbus of any eye in there, a normal, adault cornea, then you have found the location, the position and orientation of this ellipsoidal mirror with respect to the camera that was used to capture the image. And now you can go in and take the information inside the cornea and map it into a wide-angle image of the world around the person.
+
+Here are eyes looking of in different directions. In each case, we find limbus. The parameters of the limbus which is an ellipse, woudld depend on which direction the person is looking in with respect to the camera.
+
+![eye_3.png](./images/eye_3.png)
+
+So we can take the informaiton inside the cornea and map it into a wide-angle image or an environment image.
+
+![eye_4.png](./images/eye_4.png)
+
+You can see here that these images have different shapes. In other words, they have different fields of view. And the reason is the field of view of this system, which we will call the corneal iamging system, depends on the direction that the person is looking in with respect to the camera. That is, it depends on the orientation of your ellipsoidal mirror with respect to the camera. That's why they have different shapes.
+
+But interestingly the field of view itself of each one of thee images is actually quite a bit larger than the field of view of your eye itself, the light that enters the eye and the field of view of the eye itself.
+
+As we said, the parameters of the limbus tells us which direction the person is looking in with respect to the camera. That information can be used in conjuntion with this very large field of view environment image to get an estimate of the image that is falling on the fovea of the person's eye.
+
+In other words, without implanting a chip inside this person's eye, you're able to just form a photograp of them figure out what they are looking at. And these are called retinal images right here.
+
+![eye_5.png](./images/eye_5.png)
+
+### 1.7 Animal Eyes
+
+#### 1.7.1 Fossilized Eye of Trilobite
+
+![animal_eyes_0.png](./images/animal_eyes_0.png)
+
+#### 1.7.2 Primitive Eyes
+
+![animal_eyes_1.png](./images/animal_eyes_1.png)
+
+#### 1.7.3 Evolution of Eye: A Simulation
+
+![animal_eyes_2.png](./images/animal_eyes_2.png)
+
+#### 1.7.4 Image Formation in the Eye
+
+![animal_eyes_3.png](./images/animal_eyes_3.png)
+
+#### 1.7.5 Optics in Human Eye
+
+![animal_eyes_4.png](./images/animal_eyes_4.png)
+
+In the human eye we have first of cornea, protective layer, transparanet, which also happens to have some bending power and therefore acts a little bit like a lens.
+
+Behind that you have the iris and the pupil, and then you have the lens of the human eye. This lens is actually a bag of fluid. It has the gelatinous material inside of it. And there are these muscles that are used to tug on it and apply forces to the periphery of the lens so as to change the shape of the lens and therefore change tis focal length, its bending power.
+
+And the image formed by the eye falls on the retina back the yellow circle part. That's the retina, it's a curved image sensor which has the rods and cones on it - the pixels of eye.
+
+The fovea, is the part of the retina, which has maximum resolution. When you look at something that something is actually falling on your fovea that's where you have maximum resolution and then the resolution falls off as you go to the periphery of the retina.
+
+The image captured by the retina is passed through the optic nerve and makes its way to the visual cortex, where it's analyzed.
+
+What i fascinating about the iris, which is equivalent to the diaphragm that you have that's used to adjust the aperture diameter in a lens, that iris changes it's the size of the pupil based on how much light is entering the eye. So when you walk out into bright sunlight, the eye is flooded with light and therefore the iris closes up and letting in less light and if you walk into a dark room it opens up, so you can capture more light.
+
+#### 1.7.6 Human Eye: Iris Control System
+
+The control system that drives the iris of the human eye. Here is an experienment that's been conducted, here you have the len, you have the retina in the back here, you have the pupil the opening, and the iris.
+
+And so just at the edge of the pupil on the iris, you can see that there's a narrow beam hitting there. As long as it is just outside the pupil, the eye doesn't receive the light so eye sees darkness. As a result of which, the iris opens up, the pupil gets larger.
+
+![animal_eyes_5.png](./images/animal_eyes_5.png)
+
+At some point, all of this light from the narrow beam just floods the eye and so it's not really bright. And then the iris closes and the pupil gets smaller. So what has been done is to study the response of the iris, so by looking at both the frequency and the amplitude of these oscillations and because this simple experiment is going to make the iris osicllate and goes back and forth.
+
+By studying the frequence and amplitude of the oscillation you can understand the characterstics of the control system that drives the iris.
+
+#### 1.7.7 Accommodation (Focusing) in the Eye
+
+When your eye is relaxed, you are focusing on something really far away that's your kind of normal state right here "the lens of eye". Of course you don't sense that your eye is relaxed, there are very small changes that happened inside your eye, it's not something that you sense when it happens.
+
+![animal_eyes_6.png](./images/animal_eyes_6.png)
+
+But if you wanted to actually read something which is up close like a book then the shape of the lenses change, the lenses squished using these ciliary muscles to make it shorter in focal length more bending power, and now you can focus on the book.
+
+That whole process is called accommodation, it's basically another word for focusing.
+
+Our ability to accommodate, it goes down as a function of time, that's why we end up wearing glasses.
+
+![animal_eyes_7.png](./images/animal_eyes_7.png)
+
+Talking about the glass, there are some very common issues or problems that one faces with vision. One of them is myopia near sightedness.
+
+#### 1.7.8 Myopia (Near-Sightedness)
+
+In this case when your eye is so-called relaxed, you are looking at something really far awary, it turns out that the image is formed in front of the retina.
+
+![animal_eyes_8.png](./images/animal_eyes_8.png)
+
+In other words, the lens of the eye has hardened into a shape, which has too much bending power. So the way correct this is by using glasses that include concave lenses in front of it.
+
+![animal_eyes_9.png](./images/animal_eyes_9.png)
+
+So the concave lens would actually diverge there is a little bit before they go into the lens of the eye itself, thereby, then forming an image on the retina.
+
+#### 1.7.9 Hyperopia (Far-Sightedness)
+
+The opposite of myopia is the hyperopia of far sightedness. So when you are looking at something really far away, the image is being formed behind the retina.
+
+![animal_eyes_10.png](./images/animal_eyes_10.png)
+
+So in other words, the lens does not have enough bending power.
+
+![animal_eyes_11.png](./images/animal_eyes_11.png)
+
+In this case, you would use a convex lens to aid the len of the eye and then form an image on the retina.
+
+#### 1.7.10 Liquid Lens
+
+The lens of the eye, we know is a liquid lens, it has this gelatinous material in it, it has these ciliary muscles and you can tug on the lens to change its shape. Just an amazing design that nature has come up with.
+
+Well it turns out that most cameras, as we have seen really use solid lenses made of glass or plastic, and a series of such lenses in order to change the focus or the zoom or the magnification.
+
+![animal_eyes_12.png](./images/animal_eyes_12.png)
+
+This is a liquid lens by a company called Varioptic which is acquired by Corning. What you're seeing here is a process called eletro wetting. If you apply an electric filed to this liquid, it changes the curvature of its surface.
+
+![animal_eyes_13.png](./images/animal_eyes_13.png)
+
+## 2 Imaging: Sensing
+
+### 2.1 Imaging Sensing Overview
+
+**Need to convert Optical Images to Digital Images**
+**(numbers) for conputer representation and use.**
+
+**<span style="color:#2874A6">Topics:</span>**
+
+1. A Brief History of Imaging
+
+2. Types of Image Sensors
+
+3. Resolution, Noise, Dynmaic Range
+
+4. Sensing Color
+
+5. Camera Response and HDR(High Dynamic Range) Imaging
+
+### 2.2 A Brief History of Imaging
+
+#### 2.2.1 Pinhole
+
+All this dates back to the pinhole camera, which is a concept that Chinese Philosophers were talking about back in 500 BC.
+
+And then somewhere around 1000 AD, Arabian philosophers and scientists described the pinhole camera and its properties in a great amount of detail.
+
+It's only in the 16th century that it came to the West and became very popular among artists.
+
+![image_sensing_0](./images/image_sensing_0.jpeg)
+
+#### 2.2.2 Lens Based Camera Obscura
+
+## 3 Imaging: Binary Images
+
+## 4 Features: Edges, Boundaries, SIFT, Applications
+
+## 5 Reconstruction 1: Shading, Focus, Active Illumination
+
+## 6 Reconstruction 2: Stereo, Optical Flow, SFMoptical folding
+
+## 7 Perception: Segmentation, Tracking, Recognition

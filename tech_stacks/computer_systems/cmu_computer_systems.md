@@ -5656,6 +5656,63 @@ Now instead of 2 sets, we have 4 sets. So the cache, this is the same sized cach
 
 ![memory_hierarchy_45.png](./images/memory_hierarchy_45.png)
 
+#### 10.1.6 What about writes?
+
+- **Multiple copies of data exist:**
+
+  - L1, L2, L3, Main Memory, Disk
+
+- **What to do on a write-hit?**
+
+  - <span style="color:red">Write-through</span> (write immediately to memory)
+  - <span style="color:red">Write-back</span> (defer write to memory until replacement of line)
+    - Need a dirty bit (line different from memory or not)
+    - Algorithm: WHen the cache identifies a particular line to overwrite, it checks the dirty bit on that line if it's set, then it writes the data to back to disk.
+    - If the data hasn't written, there's no point need to write it back, because it has the same value as the copy of the block on disk
+
+- **What to do on a write-miss?**
+
+  - <span style="color:red">Write-allocate</span> (load into cache, update line in cache)
+    - Good if more writes to the location follow
+  - <span style="color:red">New-Write-allocate</span> (writes straight to memory, does not load into cache)
+
+- **Typical**
+  - Write-through + No-write-allocate
+  - **Write-back + Write-allocate**
+
+#### 10.1.7 Intel Core i7 Cache Hierarchy
+
+![memory_hierarchy_46.png](./images/memory_hierarchy_46.png)
+
+These processor cores can each execute their own independent instruction stream in parallel. And each proccesor core can contains general-purpose-register which that's level 0 in the cache.
+
+Then two different kinds of L1 caches: The data cache, the L1[L1-cache] and the [L1 d-cache]. And the i-cache is which is the instruction cache.
+
+The next of the hierard help.
+
+#### 10.1.8 Cache Performance Metrics
+
+- **Miss Rate**
+
+  - Fraction of memory reference not found in cache (missed / accesses) = 1 - hit rate
+  - Typical numbers (in percentages):
+    - 3-10% for L1
+    - can be quite small (e.g., < 1%) for L2, depending on size, etc.
+
+- **Hit Time**
+
+  - Time to deliver a line in the cache to the processor
+    - includes time to determine whether the line is in the cache
+  - Typical numbers:
+    - 4 clock cycle for L1
+    - 10 clock cycles for L2
+
+- **Miss Penalty**
+  - Additional time required because of a miss
+    - Typically 50-200 cycles for main memory (Trend: increasings)
+
+#### 10.1.8 Cache Performance
+
 ### 10.2 Performance Impact of Cahces: The memory mountain
 
 ### 10.3 Performance Impact of Cahces: Rearranging Loops to improve spatial locality
