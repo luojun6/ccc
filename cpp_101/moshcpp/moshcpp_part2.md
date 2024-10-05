@@ -750,10 +750,673 @@ int main() {
 
 A unique pointer is a kind of pointer that owns the piece of memory points to, so we cannot have 2 unique pointers pointing to the same memory location -> for that we have to use the share pointer.
 
-**_To `#include <memory>`_**
+![smart_ptr_1.png](./images/smart_ptr_1.png)
+
+- **_To `#include <memory>`_**
+- In this cpp file, we have a type called unique pointer `uniuqe_ptr` which is a class.
+- This is a generic class, so we can work with different data types, so right after the class name, we type `<>`.
+- In side the `<>`, we are specified the type of pointer we want to create - `<int>`.
+- Now we need to give our variable a name, like `x`, then we type a pair of `()`.
+- Inside the `()` we use the new operator to create an integer pointer `(new int)`.
+- Enssentially we're creating an integer pointer here and then passing that to the variable `x` which is called an object.
+- Now this object is an instance of the unique pointer class.
+- So in this class we have a bunch of code we have some functions and one of this functions is going to be responsible for deleting this integer pointer that we have created over here.
+
+```cpp
+#include <iostream>
+#include <memory>
+
+using namespace std;
+
+int main()
+{
+    // unique_ptr<int> x(new int);
+    auto x = make_unique<int>();
+    // unique_ptr<int> y = make_unique<int>();
+    auto y = make_unique<int>();
+
+    auto numbers = make_unique<int[]>(10);
+
+    *x = 10;
+    cout << *x << endl;
+
+    cout << numbers[0] << endl;
+
+    return 0;
+}
+```
+
+#### 3.2 Working with Shared Pointers
+
+Using share pointer, we can have to pointers pointing to the same memory location.
+
+![smart_ptr_0.png](./images/smart_ptr_0.png)
+
+```cpp
+#include <iostream>
+#include <memory>
+
+using namespace std;
+
+int main()
+{
+    // shared_ptr<int> x = make_shared<int>();
+    auto x = make_shared<int>();
+
+    *x = 10;
+
+    shared_ptr<int> y(x);
+
+    if (x == y)
+        cout << "Equal" << endl;
+
+    return 0;
+}
+```
 
 ## 3 String
 
-## 4 Struct
+### 3.1 C Strings
+
+### 3.2 C++ Strings
+
+### 3.3 Modifying Strings
+
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main()
+{
+    string name = "Jun";
+
+    name.append(" Luo");
+    cout << name << endl;
+
+
+    name.insert(0, "I am ");
+    cout << name << endl;
+
+    name.erase(0, 4);
+    cout << name << endl;
+
+    name.replace(0, 4, "I am");
+    cout << name << endl;
+
+    return 0;
+}
+```
+
+```sh
+Jun Luo
+I am Jun Luo
+ Jun Luo
+I am Luo
+```
+
+### 3.4 Searching Strings
+
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main()
+{
+    string name = "Jun Luo";
+
+    cout << name.find('L') << endl;
+
+    if (name.find("Ant") == -1)
+        cout << "Doesn't Exist!" << endl;
+
+    cout << name.find("Jun") << endl;
+
+    cout << name.find_last_of('u') << endl;
+
+    cout << name.find_last_not_of('u') << endl;
+
+    return 0;
+}
+```
+
+### 3.5 Extracting Substrings
+
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main()
+{
+    string name = "Jun Luo";
+    size_t index = name.find(' ');
+    string firstName = name.substr(0, index);
+    string lastName = name.substr(index + 1);
+
+    cout << "(" << firstName << ")" << endl;
+    cout << "(" << lastName << ")" << endl;
+
+    return 0;
+}
+```
+
+### 3.6 Working with Characters
+
+```cpp
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+int main()
+{
+    string name = "Jun Luo";
+
+    cout << islower(name[0]) << endl;
+    cout << isupper(name[0]) << endl;
+    cout << isalpha(name[0]) << endl;
+    cout << isdigit(name[0]) << endl;
+    cout << isspace(name[0]) << endl;
+    // ...
+
+    return 0;
+}
+```
+
+**EXERCISE**
+
+Given the following format for customer numbers:
+
+2 alphabetic characters
+4 digits
+
+Write a function to validate a customer number
+
+```cpp
+bool isValid(const string customerNumber);
+```
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+bool isValid(const string customerNumber)
+{
+    if (customerNumber.length() != 6)
+        return false;
+
+    for (int i = 0; i < 2; i++)
+        if(!isalpha(customerNumber[i]))
+            return false;
+
+    for (int i = 2; i < customerNumber.length(); i++)
+        if(!isdigit(customerNumber[i]))
+            return false;
+
+    return true;
+
+}
+
+int main()
+{
+    string customerNumber = "AB1234";
+
+    cout << isValid(customerNumber) << endl;
+
+    return 0;
+}
+```
+
+### 3.7 String_Numeric Conversion Functions
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+
+int main()
+{
+    double price = stod("19.99");
+
+    cout << price << endl;
+
+    cout << to_string(19.99) << endl;
+
+    return 0;
+}
+```
+
+### 3.8 Escape Sequence
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+
+int main()
+{
+    string str = "c:\my folder";
+
+    cout << str << endl;
+
+    return 0;
+}
+```
+
+![string_0.png](./images/string_0.png)
+
+```cpp
+string str = "c:\\my folder";
+string str = "\"Hello World\"";
+```
+
+### 3.9 Raw Strings
+
+```cpp
+string str = R"("Hello World")";
+```
+
+## 4 Structures and Enumerations
+
+### 4.1 Defining Structures
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+struct Customer {
+    int id;
+    string name;
+    string email;
+};
+
+int main()
+{
+    Customer customer;
+
+    cout << "ID: ";
+    cin >> customer.id;
+
+    cout << "Name: ";
+    cin >> customer.name;
+
+    cout << "Email: ";
+    cin >> customer.email;
+
+    cout << customer.id << " " << customer.name << " " << customer.email << endl;
+
+    return 0;
+}
+```
+
+### 4.2 Initializing Structures
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+struct Movie {
+    string title = "";
+    int releaseYear = 0;
+    bool isPopular = false;
+};
+
+
+int main()
+{
+    Movie movie = {"Terminator", 1984};
+
+    cout << movie.title << " " << movie.releaseYear << endl;
+
+    return 0;
+}
+```
+
+### 4.3 Unpacking Sturctures
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+struct Movie {
+    string title = "";
+    int releaseYear = 0;
+    bool isPopular = false;
+};
+
+
+int main()
+{
+    Movie movie = {"Terminator", 1984, true};
+
+    auto [title, releaseYear, isPopular] {movie};
+
+    cout << title << " " << releaseYear << " " << isPopular << endl;
+
+    return 0;
+}
+```
+
+```sh
+g++ ./src/struct_unpacking.cpp -o ./bin/struct_unpacking -std=gnu++17
+```
+
+### 4.4 Array of Structures
+
+```cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Movie {
+    string title = "";
+    int releaseYear = 0;
+    bool isPopular = false;
+};
+
+
+int main()
+{
+    vector<Movie> movies;
+    // Movie movies[5];
+    movies.push_back({"Movie A", 2001});
+    movies.push_back({"Movie B", 2002});
+    movies.push_back({"Movie C", 2003});
+    movies.push_back({"Movie D", 2004});
+
+    for (const auto& movie: movies)
+        cout << movie.title << endl;
+
+    return 0;
+}
+```
+
+### 4.5 Nesting Structures
+
+```cpp
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+struct Date {
+    short year = 1900;
+    short month = 1;
+    short day = 1;
+};
+
+struct Movie {
+    string title = "";
+    Date releaseDate = {1970, 1, 1};
+    bool isPopular = false;
+};
+
+
+int main()
+{
+    Movie movie {"Terminator", {1984, 6, 1}, true};
+
+    cout << movie.releaseDate.year << endl;
+
+    return 0;
+}
+```
+
+### 4.6 Comparing Structures
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+struct Date {
+    short year = 1900;
+    short month = 1;
+    short day = 1;
+};
+
+struct Movie {
+    string title = "";
+    Date releaseDate = {1970, 1, 1};
+    bool isPopular = false;
+
+    bool equals (const Movie& movie) {
+        // movie.title = "A"; // Error
+        return (
+            title == movie.title &&
+            releaseDate.year == movie.releaseDate.year &&
+            releaseDate.month == movie.releaseDate.month &&
+            releaseDate.day == movie.releaseDate.day
+        );
+    }
+};
+
+
+int main()
+{
+    Movie movieA {"Movie A", {1984, 6, 1}, true};
+    Movie movieB {"Movie B", {1985, 6, 1}, true};
+    Movie movieCopy {"Movie A", {1984, 6, 1}, true};
+
+    cout << movieA.equals(movieB) << endl;
+    cout << movieA.equals(movieCopy) << endl;
+
+
+    return 0;
+}
+```
+
+### 4.7 Operator Overloading
+
+#### 4.7.1 Solutiuon inside the Structure
+
+```cpp
+struct Movie {
+    string title = "";
+    Date releaseDate = {1970, 1, 1};
+    bool isPopular = false;
+
+    bool equals (const Movie& movie) {
+        // movie.title = "A"; // Error
+        return (
+            title == movie.title &&
+            releaseDate.year == movie.releaseDate.year &&
+            releaseDate.month == movie.releaseDate.month &&
+            releaseDate.day == movie.releaseDate.day
+        );
+    }
+
+    bool operator==(const Movie& movie) const {
+        // title = "A"; // Error
+        return (
+            title == movie.title &&
+            releaseDate.year == movie.releaseDate.year &&
+            releaseDate.month == movie.releaseDate.month &&
+            releaseDate.day == movie.releaseDate.day
+        );
+    }
+};
+```
+
+#### 4.7.2 Solution outside the Structure
+
+```cpp
+bool operator==(const Movie& first, const Movie& second) {
+        // title = "A"; // Error
+        return (
+            first.title == second.title &&
+            first.releaseDate.year == second.releaseDate.year &&
+            first.releaseDate.month == second.releaseDate.month &&
+            first.releaseDate.day == second.releaseDate.day
+        );
+    }
+```
+
+#### 4.7.3 Implementation of Stream Operator
+
+```cpp
+ostream& operator<<(ostream& stream, Movie& movie) {
+    stream << movie.title;
+    return stream;
+}
+```
+
+#### 4.7.4 Implementation of Point Structure
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+struct Point {
+    float x;
+    float y;
+};
+
+bool operator==(Point& first, Point& second) {
+    return (
+        first.x == second.x &&
+        first.y == second.y
+    );
+}
+
+ostream& operator<<(ostream& stream, Point& point) {
+    stream << "(" << point.x << " " << point.y << ")";
+    return stream;
+}
+
+int main()
+{
+    Point pointA = {4.4, 8.8};
+    Point pointB = {4.4, 8.8};
+    Point pointC = {4.8, 8.4};
+
+    cout << (pointA == pointB) << endl;
+    cout << (pointA == pointC) << endl;
+    cout << pointA << endl;
+    cout << pointC << endl;
+
+    return 0;
+}
+```
+
+### 4.8 Pointers to Structures
+
+```cpp
+Movie getMovie() {
+    return {"Terminator", 1984};
+}
+
+void showMovie(Movie* movie){
+    cout << movie->title << endl;
+}
+
+int main()
+{
+    auto movie = getMovie();
+    showMovie(&movie);
+
+    return 0;
+}
+```
+
+### 4.9 Defining Enumerations
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+enum Action {
+    List = 1,
+    Add,
+    Update
+};
+
+int main() {
+
+    cout <<
+         "1: List invoices" << endl <<
+         "2: Add invoices" << endl <<
+         "3: Update invoices" << endl <<
+         "Select: ";
+
+    int input;
+    cin >> input;
+    if (input == Action::List) {
+        cout << "List invoices" << endl;
+    }
+
+    return 0;
+}
+```
+
+### 4.10 Strong Typed Enumerations
+
+There is a problem with this kind of defining an enum, with our current definion, we cannot have another enum with the same members.
+
+So if we duplicate this, let's call the second enum `Operation`, so we have two different enums with the same members.
+
+```cpp
+enum Action {
+    List = 1,
+    Add,
+    Update
+};
+
+enum Operation {
+    List = 1,
+    Add,
+    Update
+};
+```
+
+Now look we have a compilation error saying "conflicts with a previous declaration". Now the error is complaining that we have redefined the list enumerator, this is a problem with classic enums in C++.
+
+So C++11 introduced a new kind of enum to solve this problem, that is called a **strongly typed enum**.
+
+![enum_0.png](./images/enum_0.png)
+
+```cpp
+enum class Action {
+    List = 1,
+    Add,
+    Update
+};
+
+enum class Operation {
+    List = 1,
+    Add,
+    Update
+};
+```
+
+So going forward we should always use strongly typed enums to prevent name collisions. Now these enums are slightly different from the class enums you saw in previously.
+
+So down here now we have a compliation error:
+
+![enum_1.png](./images/enum_1.png)
+
+So the complier doesn't know how to compare an integer with an action, we didn't have this problem in the previous lesson, because classic enums get implicitly converted to integers.
+
+But that is not the case with strongly type enums, so to solve this problem, we have to explictly cast this action to an integer.
+
+```cpp
+if (input == static_cast<int>(Action::List)) {
+        cout << "List invoices" << endl;
+    }
+```
 
 ## 5 Stream
