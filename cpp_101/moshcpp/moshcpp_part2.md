@@ -1420,3 +1420,147 @@ if (input == static_cast<int>(Action::List)) {
 ```
 
 ## 5 Stream
+
+### 5.1 Understanding Streams
+
+In real life applications, we want to be able to read or write data to a variety of sources, not just terminal windows.
+
+We want to be able to read data from a file or network, and so on. We can work with all these data sources the same way - streams.
+
+![stream_0.png](./images/stream_0.png)
+
+You can think of a stream as a data source or destination. Now we have various types of streams but all these have the same interface, meaning that they have the same functions and we can work with them the same way.
+
+![stream_1.png](./images/stream_1.png)
+
+![stream_2.png](./images/stream_2.png)
+
+![stream_3.png](./images/stream_3.png)
+
+### 5.2 Writing to Streams
+
+![stream_4.png](./images/stream_4.png)
+
+`cout` is the name of an object, the type of this object is `ostream`. So `cout` is an instance of the ouput stream class.
+
+![stream_5.png](./images/stream_5.png)
+
+![stream_6.png](./images/stream_6.png)
+
+![stream_7.png](./images/stream_7.png)
+
+### 5.3 Reading from Streams
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    cout << "First: ";
+    int first;
+    cin >> first;
+
+    cout << "Second: ";
+    int second;
+    cin >> second;
+
+    cout << "You entered " << first << " and " << second << endl;
+
+    return 0;
+}
+```
+
+![stream_8.png](./images/stream_8.png)
+
+In the second time, our program didn't pause to capture the second number, it didn't behave probably.
+
+Why is this happening? All these input streams, whether it's the standard input stream or an input stream for reading data from a file, all these streams have what we call a buffer.
+
+A buffer is a temporary storage in memory for reading values, when we get to this line and read something from the user. What the user enters, first goes into the buffer. Now `cin` is going to read the value from the buffer, so it's going to start reading all these characters, until it gets to **_white space_**.
+
+When we go the the second `cin`, because the buffer is not empty, the program is not going to wait for the user to enter some value. It's going straight to the buffer and get the `20` and stored it in a second. That's why our program didn't pause.
+
+```cpp
+#include <iostream>
+
+using namespace std;
+
+int main() {
+    cout << "First: ";
+    int first;
+    cin >> first;
+    cin.ignore(10, '\n');
+
+    cout << "Second: ";
+    int second;
+    cin >> second;
+
+    cout << "You entered " << first << " and " << second << endl;
+
+    return 0;
+}
+```
+
+Why did we use `10` here, that's an arbitrary number, what if the user types so many more characters after the first value, so we cannot rely on 10 characters.
+
+So to properly clear all the remaining characters in the buffer, we should pass the largest value that we can represent using the stream size. That is the type of this parameter.
+
+```cpp
+cin.ignore(numeric_limits<streamsize>::max(), '\n');
+```
+
+![stream_9.png](./images/stream_9.png)
+
+![stream_10.png](./images/stream_10.png)
+
+### 5.4 Handling Input Errors
+
+```cpp
+int first;
+    while (true)
+    {
+        cout << "First: ";
+        cin >> first;
+        if (cin.fail()) {
+            cout << "Enter a valid number!" << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        else break;
+    }
+```
+
+```cpp
+#include <iostream>
+#include <limits>
+
+using namespace std;
+
+int getNumber(string prompt) {
+    int number;
+    while (true)
+    {
+        cout << prompt;
+        cin >> number;
+        if (cin.fail()) {
+            cout << "Enter a valid number!" << endl;
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        else break;
+    }
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+    return number;
+}
+
+int main() {
+    int first = getNumber("First: ");
+    int second = getNumber("Second: ");
+
+    cout << "You entered " << first << " and " << second << endl;
+
+    return 0;
+}
+```
