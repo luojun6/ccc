@@ -938,7 +938,7 @@ This is a liquid lens by a company called Varioptic which is acquired by Corning
 
 ### 2.2 A Brief History of Imaging
 
-#### 2.2.1 Pinhole
+#### 2.2.1 Pinhole Camera (1558)
 
 All this dates back to the pinhole camera, which is a concept that Chinese Philosophers were talking about back in 500 BC.
 
@@ -946,9 +946,292 @@ And then somewhere around 1000 AD, Arabian philosophers and scientists described
 
 It's only in the 16th century that it came to the West and became very popular among artists.
 
-![image_sensing_0](./images/image_sensing_0.jpeg)
+![image_sensing_0](./images/image_sensing_0.png)
 
-#### 2.2.2 Lens Based Camera Obscura
+#### 2.2.2 Lens Based Camera Obscura (1568)
+
+![image_sensing_1](./images/image_sensing_1.png)
+
+What happened was that you were able to create images that were much brighter, and with time, the effort was focused on making this process much more comfortable for the artist.
+
+![image_sensing_2](./images/image_sensing_2.png)
+
+1. The lens creates an image, which is, a vertical image.
+2. But this image is being folded by the use of a mirror ---- a 45-degree mirror.
+3. So that the final image is created on a horizontal plane, and the artist can very comfortably sit down and make a sketch of the scene.
+
+#### 2.2.3 Invention of File (1837)
+
+This is a photograph taken with a Daguerre type camera, which was invented by Daguerre in the 1830, this photograph was taken in 1837.
+
+For the first time, you could actually memorialize, document, or record a moment without an artist. And instantly, you simply press a button, and whatever it is that you see in front of you, you're able to record that on a physical layer. Just an amazing point in time in terms of human culture, human expression.
+
+![image_sensing_3](./images/image_sensing_3.png)
+
+How did this work? Film, essentially, typically, has a layer of silver halide on it. When you expose any point on the film, the silver halide gets converted to metallic silver. The amount of conversion depends on the exposure of that particular point.
+
+So you expose the film, and then you develop the film using a chemical process, you finally get a photograph that looks something like this.
+
+So you were able to get very nice, very clear, high-resolution, black and white photos. But taking this to color became really hard. It turns out that actually captureing an entire photograph with full color extremely challenging process. It requires some real inventions in chemistry.
+
+#### 2.2.4 Color Film (1887)
+
+![image_sensing_4](./images/image_sensing_4.png)
+
+The way this works is that you still use a silver halide layer, but then you have another layer sitting next to it, which is called a dye coupler. This dye coupler has pigments in it, there's some very interesting chemistry that happens when you expose these two layers to light.
+
+#### 2.2.5 Ernemann Camera (Consumer File Cameras) (1928)
+
+![image_sensing_5](./images/image_sensing_5.png)
+
+#### 2.2.6 Silicon Image Detector (1984)
+
+The most important invention was the invention of the silicon image detector. This thing, this litte chip here, does exactly what film can do, except you don't need to develop it. You don't need to get another chip every time you take a picture. The same chip can capture an infinite number of images for you.
+
+![image_sensing_6](./images/image_sensing_6.png)
+
+This is just an amazing concept, just opening up a new chapter in terms of communication and expression.
+
+#### 2.2.7 Digital Cameras (1997)
+
+![image_sensing_7](./images/image_sensing_7.png)
+
+#### 2.2.8 Phones with Cameras (2007)
+
+![image_sensing_8](./images/image_sensing_8.png)
+
+That was the beginning of a new revolution in imaging. On one hand, it really made a lot of things possible with respect to computer vision and artificial intelligence. And we are actually living in that moment right now.
+
+At the same time, there was a second revolution that was happening which is the explosion of visual communication. It turns out that the younger generation prefer to communicate using photos and videos over words, written words, and voice.
+
+So we began to see platforms like Snapchat, Tiktok and Instagram where billions of users communicate visually on a daily basis today.
+
+### 2.3 Types of Image Sensors
+
+#### 2.3.1 Converting Light into Eletric Charge
+
+Most image sensors in use today are made of silicon. Silicon has some amazing properties.
+
+Here you see a silicon atom, when you hit a silicon atom with a photon of sufficint energy, it releases an electron. What's created is called an electron-hole pair.
+
+![image_sensing_9](./images/image_sensing_9.png)
+
+So now, if you have a silicon crystal that's a lattice of silicon atoms, and you can make this with very high purity, you hit it with light. You have photon flux coming in. And you have electron flux, which is being generated. There is going to be an equilibrium between the photon flux and the electron flux.
+
+So really, silicon does most of the work for you when it comes to image sensing. You hit it with lights, it generates electrons. The work that remains to be done, which is really challenging is to be able to read out these electrons, convert them into voltage, and read them out.
+
+And also, not to forget that you are not looking at a single pixel, just one lattice of silicon. You actually have millions of pixels, that you want to be able to read these charges out from. That's where a lot of the work has gone in to create these image sensors.
+
+#### 2.3.2 Image Sensor: A Closer Look
+
+This is what an image sensor actually looks like.
+
+![image_sensing_10](./images/image_sensing_10.png)
+
+This is an 18 megapixel image sensor. Each pixel here is roughly one micron along each of its two dimensions, 1.25 microns in this case.
+
+![image_sensing_11](./images/image_sensing_11.png)
+
+That's really small, so you can actually pack in 100 million pixels on an image sensor today with ease using today's technology.
+
+Now, this isn't quite like Moore's law - in computations, according Moore's law, every 18 months you're doing be able to, with the same real estate, double your computational power. Well, that doesn't happen in the case of image sensors.
+
+In this case, you come down to around the wavelength of light, which is around, let's say half a micron. Once your pixel is in that region, further making smaller doesn't really help you because the resolution is now limited by this diffraction effect itself, the wavelength of light, the size of the wavelength of light. Making pixels any smaller doesn't really buy you anything.
+
+So image resolution will continue to grow a little bit, but at some point the only way you can increase resolution is by making the chips larger and larger.
+
+#### 2.3.3 Types of Image Sensors: CCD
+
+Let's talk about the first technology that's used to create image sensors. This is called CCD or Charge Coupled Devices.
+
+![image_sensing_12](./images/image_sensing_12.png)
+
+So here, you see your pixels. Each pixel has, look at it as a bucket. We call these potential wales. These are wales in which photons arrive and get converted into electrons. So it's photon to electron conversion.
+
+The real challenge is reading out, converting these electrons into a voltage that's proportional to the number of electrons.
+
+So the way CCD works is that each row passes its electron counts, all its electrons to the next row.
+
+![image_sensing_13](./images/image_sensing_13.png)
+
+![image_sensing_14](./images/image_sensing_14.png)
+
+And finally comes down to this bottom row, where it is read out horizontally one pixel at a time. That is the electrons in each pixel are converted to a voltage on the right side. The voltage here is an analog voltage, which is the converted by analog to digital conversion wihch is A to D conversion to get your digital output right output.
+
+![image_sensing_15](./images/image_sensing_15.png)
+
+![image_sensing_16](./images/image_sensing_16.png)
+
+That's the process that these pixels are read out in thi fashion. So that sounds simple, but it really is a transfer of charges from one row to the next, which is a real innovation here.
+
+This is a technique called bucket brigade. So imagine that you have a string of people. Each one has a bucket of water. And I would pass on my bucket to the next person and the same time take bucket from the person before me. So that's the way bucket brigde actually works.
+
+So in this case, how do you actually move these charges from row to row? Well, the way you do it is you apply electric fields to appropriate positions underneath these buckets to slide or to shift these charges from one row to the next. That is a really sophisticated piece of technology because along the way you don't want to lose any electrons. And you don't want to collect any spurious electrons either.
+
+#### 2.3.4 Types of Image Sensors: CMOS
+
+CMOS is Complementary Metal-Oxide Semiconductor, another type of technology.
+
+![image_sensing_17](./images/image_sensing_17.png)
+
+In this case, again, you have a potential wale, where you are collecting light, for instance this one right here.
+
+But sitting right next to it is also the circuit that converts your electrons to a voltage. So it's an electron to voltage conversion circuit which is sitting at each pixel. Each pixel has its own circuit, and it's not one circuit being shared by the entire chip.
+
+![image_sensing_18](./images/image_sensing_18.png)
+
+So in this particular technology, what you can do is simply address or pull one particular pixel and be able to read its voltage out. So you can go to this pixel right here or you can go to another pixel and so on.
+
+![image_sensing_19](./images/image_sensing_19.png)
+
+![image_sensing_20](./images/image_sensing_20.png)
+
+For that matter, if you were interested not in the entire image, but a small region in the image, you can read ouot those pixels at a much faster rate, because there are fewer pixels and less values to read out. You can actually increase the frame rate of the camera substantially by just reading out that region of interest.
+
+So a lot of flexibility in the case of CMOS tehcnology, but the price that you pay is that now your light sensitive area that you're exposing to the world is smaller because sitting next to it you need the circuit that converts electrons to voltage.
+
+I would say that CMOS technology dominates because of its flexibility. And it's really come a long way in terms of its quality.
+
+#### 2.3.5 Image Sensor: A Closer Look
+
+There's more to an image sensor.
+
+So here, you see the potential wales corresponding to pixels: the area of pixels == photodiodes.
+
+Then sitting on top of each one is a color filter. You see, a pixel doesn't really know which color of light is arriving there. It just is counting photons. So in order to measure color, you're going to use color filters which sit above the pixel itself, the potential wale.
+
+At any given location, you can only measure one color, because again, the pixel can't differentiate between colors.
+
+After you've captured your image, you can actually take these red, green, and blue values, which are scattered around the image and interpolate them to figure out what red, green, and blue would be at each point.
+
+![image_sensing_21](./images/image_sensing_21.png)
+
+And actually each pixel has a lens sitting on top of it, this is called microlens. This is not the lens that's forming the image. What this lens does is that it just takes light from the main lens, and it focuses this light onto the active area of the light sensitive area of the pixel --- the "Dye Layer". So this lens "Lenslet(Microlens)" focuses light onto this tiny little window here. The reason that this window size is smaller than the size of the pixel is because, often, there's circuitry, and there are leads and so on that are sitting around the pixel. And you don't want to waste the light that's falling on that region. So you take all the light, and you channel it down to the active area.
+
+Here, you see a scanning electron microscope, a beautiful image of the cross section of an image sensor.
+
+![image_sensing_22](./images/image_sensing_22.png)
+
+### 2.4 Resolution, Noise, Dynamic Range
+
+#### 2.4.1 Image Sensor Resolution
+
+The resolutiion is the number of pixels you have in the image.
+
+![image_sensing_23](./images/image_sensing_23.png)
+
+#### 2.4.2 Noise in Image Sensors
+
+**<span style="color:#2874A6">Noise:</span> Unwanted modification of signal during capture, conversion, transmission, processing.**
+
+All these various points in the pipline, if there's any modification that happens to a signal, and that's unwanted, the that is called noise. Now, obviously, in all cases, in all the signals, we want to minimize the noise.
+
+So we want to understand what are the sources of noise.
+
+**<span style="color:#2874A6">Photon Shot Noise:</span> (Scene Dependent)**
+
+- Quantum nature of light
+- Random arrival of photons
+
+**<span style="color:#2874A6">Readout Noise:</span> (Scene Independent)**
+
+- Eletronic Noise: Pre analog-to-digital conversion
+- Quantization Noise: Post analog-to-digital conversion
+
+**<span style="color:#2874A6">Other Noise:</span> (Scene Independent)**
+
+- Dark Current Noise: Thermally generated electrons
+- Fixed Pattern Noise: Defective pixels
+
+#### 2.4.3 Photon Shot Noise
+
+Let's say we wanted to mesaure the number of photons coming in from a source, a point in the scene, and you can imagine that your pixel is a bucket. And you take a measurement, a first measurement, and you're given 1 time unit to make this measurement.
+
+![image_sensing_24](./images/image_sensing_24.png)
+
+Let's say you measure 3 photons, if you repeat this measurement the second time, you might get 6 photons, and a third time you might get none.
+
+![image_sensing_25](./images/image_sensing_25.png)
+
+This is basically because of the variation that you have due to the random nature of the arrival to photons. This has nothing to do with the seonsor itself.
+
+#### 2.4.4 Photon Noise: Poisson Distribution
+
+You can model this using Poisson distribution, which is for the arrival of photons.
+
+Poisson distribution has a mean lambda($\lambda$), this is the value you actually want to measure because that's the brightness of the point, the so-called brightness of the point.
+
+![image_sensing_26](./images/image_sensing_26.png)
+
+But you're going to get other values around the mean. So the probability that you would get the signal value of _k_ is $\lambda$ to the part of _k_, _e_ to the power of $-\lambda$, divided by _k_ factorial.
+
+Here is a Poisson ditribution for a mean of 1. And as you start increasing the mean, an interesting thing happen, which is your variance, or your width, also increases. And for higher mean values, you end up geting something that looks like a Gaussian.
+
+![image_sensing_27](./images/image_sensing_27.png)
+
+So the Poisson distribution has this interesting property. The valirance of the signal is equal to the mean of the signal. It's scene dependent in the sense that the mean value that you're trying to measure is the brightness of the scene point.
+
+![image_sensing_28](./images/image_sensing_28.png)
+
+#### 2.4.5 Read Noise: Gaussion Distribution
+
+In the case of read noise, you are trying to convert a value, a number of eletrons that you've measured into a voltage. In the conversion process, your circuit might introduce noise, and that noise is often modeled as Gaussion noise, or Gaussion distribution.
+
+![image_sensing_29](./images/image_sensing_29.png)
+
+So Gaussion distribution has a mean($\mu$), which is a value you are trying to measure. But the probability that you end up taking on the value _x_ is 1 over $\sigma$ 2 $\pi$ --- square root of 2 $\pi$ --- _e_ to the power of $-{1\over{2}}$, _x_ minus $\mu$ which is the mean, divided by $\sigma$ which is the standard deviation of the Gaussion, whole thing squared.
+
+So if you have a high-quality sensor, you're going to have less spread in this distribution. If you have a low-quality sensor, you're going to have a large spared in the distribution.
+
+So this very much depends on the quality of the sensor and is scene independent. So this conversion noise, read noise, has nothing to do with the actual mean value that you're trying to measure.
+
+#### 2.4.6 Quantization Noise
+
+![image_sensing_30](./images/image_sensing_30.png)
+
+You have quantization noise. You are taking this anolog valtage, converting it into a digital value, and in doing so, you're going to say your output is going to be 12 bits, or 14 bits, or whatever it is, and therefore, you're going to get 1 of n integer values on the outside for each pixel.
+
+![image_sensing_31](./images/image_sensing_31.png)
+
+So you are taking an anolog value, and you are purposely converting it into a digital value. You are rounding it off in some way. And so, let's ay that the quantization step between two consecutive values is $\delta$. Then the variace of this noise turns out to be $\delta$ divided by 12.
+
+This tends to be pretty small for today's sensors, which are able to put out 10 bits, 12 bits of resolution --- of intensity resolution.
+
+#### 2.4.7 Other Noise Sources
+
+If you have your lens, you put your lens cap on it, which means there's absolutely no light going into the sensor, you might still measure non-zero values at pixels. That's because there's thermal noise, that some electrons are being ejected or released bby silicon atoms because of the temperature itself.
+
+![image_sensing_32](./images/image_sensing_32.png)
+
+And this doesn't really happen in the case of consumer photography, where the integration times are small. But in the case of astronomy for instance, you are looking at something really far away that's a really dim, and you want to expose the image for long periods of time, maybe minutes.
+
+In this case, your dark current noise could add up and could end up being a problem, which is why in applications like astronomy, often the image sensors are cooled, nitrogen cooled, kept at a certain temperature. They're very expensive systems that use CCD and cooling in order to minimize thermal noise.
+
+The Fixed Pattern Noise is just the result of any manufacturing process. This comes from the fact that when you manufacturing anything, no two things are identical.
+
+![image_sensing_33](./images/image_sensing_33.png)
+
+So you have millions of pixels, you're going to have slight variations in the responses of the characteristics of the pixels. Exactly how big the potential wale is, and how efficient the pixels in terms of conversion, and so on and so forth, so you get gain this sort of a pattern of gain associated with each pixel.
+
+Fortunately for us, we can calibrate this out. You can measure these pixels by showing scenes which are constants say, for instance, and brightness. And then all subsequent images can be corrected for fixed pattern noise.
+
+#### 2.4.8 Sensor Dynamic Range
+
+Dynamic range is the ratio of the maximum possible photon energy you can measure, and that is because you have a pixel with a potential well. When it fills up, any photons that come in after that simply cannot be measured, and so there i an upper limit to the brightness level that you can measure, and that is $B_{max}$.
+
+![image_sensing_34](./images/image_sensing_34.png)
+
+The ratio of $B_{max}$ to $B_{min}$, which is the smallest, the minimum detectable photon energy.So you would say, the minimum detectable should be as close as possible to zero. It's not the case because your image sensor is going to have some noise and so minimum detectable means detectable above the level of noise.
+
+So the dynamic range tells the range of brightness values that one can measure using this image sensor, and it's usually defined as $20log({B_{max}\over{B_{min}}})$, which is expressed in decibels.
+
+So here are the dynamic ranges, very roughly speaking of various things that we know. Vision systems, the human eye is deemed to be somewhere around 1 million to 1, which would be 12 decibels.
+
+![image_sensing_35](./images/image_sensing_35.png)
+
+And then video is interesting. Because in the case of video, you're constrained in terms of what exposue time you can use, integration time.
+
+Because in video, you want to have some minimum frame rate, frames per second, you're limited in terms of how long you can expose the image to light. It could be 30 milliseconds if you're doing 30 frames per seconds. That introduces noise becuase you're not measuring light long enough to get a stable measurement, and therefore, the dynmaic range tends to be lower, 45 to 1 in this particular case.
 
 ## 3 Imaging: Binary Images
 
